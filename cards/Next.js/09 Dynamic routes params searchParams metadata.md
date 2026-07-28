@@ -4,11 +4,12 @@
 [← 08 Route Handlers Middleware Edge и Node runtime](<./08 Route Handlers Middleware Edge и Node runtime.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Next.js 14 15 16 версии Turbopack Cache Components PPR →](<./10 Next.js 14 15 16 версии Turbopack Cache Components PPR.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Как в App Router работают динамические маршруты, `params`, `searchParams`, `generateStaticParams` и метаданные?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Динамический маршрут содержит часть URL, значение которой заранее неизвестно. В App Router такой сегмент обозначают квадратными скобками: файл `app/products/[id]/page.tsx` обрабатывает `/products/42`, а `params.id` содержит строку `"42"`.
 
@@ -57,49 +58,67 @@ Metadata наследуется от корневого layout к дочерни
 
 В Next.js 15 `params`, `searchParams`, `cookies()` и другие API, зависящие от запроса, стали асинхронными. Поэтому свежий пример с `await params` не описывает Next.js 14: для собеседования сначала следует назвать версию.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Чем `params` отличаются от `searchParams`?
->
-> **Ответ:** `params` являются частью структуры пути и обычно идентифицируют страницу или ресурс: `/users/42`. `searchParams` идут после `?` и описывают вариант представления: `/users?role=admin&page=2`. Удаление `params` обычно приводит к другому маршруту, а удаление `searchParams` оставляет тот же тип страницы с настройками по умолчанию.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Когда состояние интерфейса стоит хранить в `searchParams`?
->
-> **Ответ:** Когда его полезно сохранить в истории браузера, передать ссылкой или восстановить после перезагрузки: поисковый запрос, фильтр, сортировка, номер страницы. Временное состояние открытого выпадающего списка или текст ещё не отправленной формы обычно остаётся локальным, чтобы не засорять URL и историю.
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>params</code> отличаются от <code>searchParams</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Почему layout не получает `searchParams`?
->
-> **Ответ:** Layout переиспользуется при клиентских переходах и не выполняется заново при каждом изменении строки параметров запроса. Переданное один раз значение стало бы устаревшим. Page получает актуальные параметры для серверного рендеринга, а клиентский компонент может подписаться на URL через `useSearchParams`.
+`params` являются частью структуры пути и обычно идентифицируют страницу или ресурс: `/users/42`. `searchParams` идут после `?` и описывают вариант представления: `/users?role=admin&page=2`. Удаление `params` обычно приводит к другому маршруту, а удаление `searchParams` оставляет тот же тип страницы с настройками по умолчанию.
 
-> [!followup]
-> **Вопрос:** Почему `useSearchParams` может потребовать `Suspense`?
->
-> **Ответ:** На статически сформированной странице участок с `useSearchParams` должен быть дорендерен на клиенте, потому что актуальная строка запроса известна во время навигации. Граница `Suspense` позволяет оставить внешнюю часть страницы статической. В production-сборке отсутствие такой границы для статического маршрута может привести к ошибке.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем `[...slug]` отличается от `[[...slug]]`?
->
-> **Ответ:** Catch-all, то есть маршрут, захватывающий все оставшиеся сегменты, `[...slug]` требует хотя бы один сегмент: `/docs/react` подходит, а `/docs` нет. Optional catch-all `[[...slug]]` делает эту часть необязательной и допускает корневой путь `/docs`; в этом случае `slug` отсутствует. В обоих вариантах несколько сегментов приходят массивом строк.
+<details>
+<summary><strong>Вопрос:</strong> Когда состояние интерфейса стоит хранить в <code>searchParams</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Что делает `generateStaticParams` и заменяет ли он `getStaticPaths`?
->
-> **Ответ:** Он перечисляет динамические параметры для предварительной генерации страниц App Router. По назначению это ближайший аналог `getStaticPaths`, но работает в модели Server Components и сегментов маршрута. Поведение для неуказанных значений дополнительно регулирует `dynamicParams`.
+Когда его полезно сохранить в истории браузера, передать ссылкой или восстановить после перезагрузки: поисковый запрос, фильтр, сортировка, номер страницы. Временное состояние открытого выпадающего списка или текст ещё не отправленной формы обычно остаётся локальным, чтобы не засорять URL и историю.
 
-> [!followup]
-> **Вопрос:** Когда использовать `metadata`, а когда `generateMetadata`?
->
-> **Ответ:** Статический `metadata` подходит для постоянных значений раздела. `generateMetadata` нужен, если `title`, `description` или изображение для социальных сетей зависят от URL и загруженных данных. Оба варианта являются серверными API и не экспортируются из файла с `"use client"`.
+</details>
 
-> [!followup]
-> **Вопрос:** Как обработать несуществующий `id` или `slug`?
->
-> **Ответ:** После получения данных page вызывает `notFound()`, если ресурс отсутствует. Next.js показывает ближайший `not-found.tsx` и возвращает ответ 404. Это отличается от временной ошибки backend: её следует выбросить и передать ближайшему `error.tsx`.
+<details>
+<summary><strong>Вопрос:</strong> Почему layout не получает <code>searchParams</code>?</summary>
 
-#### Где это встречается во frontend
+Layout переиспользуется при клиентских переходах и не выполняется заново при каждом изменении строки параметров запроса. Переданное один раз значение стало бы устаревшим. Page получает актуальные параметры для серверного рендеринга, а клиентский компонент может подписаться на URL через `useSearchParams`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>useSearchParams</code> может потребовать <code>Suspense</code>?</summary>
+
+На статически сформированной странице участок с `useSearchParams` должен быть дорендерен на клиенте, потому что актуальная строка запроса известна во время навигации. Граница `Suspense` позволяет оставить внешнюю часть страницы статической. В production-сборке отсутствие такой границы для статического маршрута может привести к ошибке.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>[...slug]</code> отличается от <code>[[...slug]]</code>?</summary>
+
+Catch-all, то есть маршрут, захватывающий все оставшиеся сегменты, `[...slug]` требует хотя бы один сегмент: `/docs/react` подходит, а `/docs` нет. Optional catch-all `[[...slug]]` делает эту часть необязательной и допускает корневой путь `/docs`; в этом случае `slug` отсутствует. В обоих вариантах несколько сегментов приходят массивом строк.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что делает <code>generateStaticParams</code> и заменяет ли он <code>getStaticPaths</code>?</summary>
+
+Он перечисляет динамические параметры для предварительной генерации страниц App Router. По назначению это ближайший аналог `getStaticPaths`, но работает в модели Server Components и сегментов маршрута. Поведение для неуказанных значений дополнительно регулирует `dynamicParams`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Когда использовать <code>metadata</code>, а когда <code>generateMetadata</code>?</summary>
+
+Статический `metadata` подходит для постоянных значений раздела. `generateMetadata` нужен, если `title`, `description` или изображение для социальных сетей зависят от URL и загруженных данных. Оба варианта являются серверными API и не экспортируются из файла с `"use client"`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как обработать несуществующий <code>id</code> или <code>slug</code>?</summary>
+
+После получения данных page вызывает `notFound()`, если ресурс отсутствует. Next.js показывает ближайший `not-found.tsx` и возвращает ответ 404. Это отличается от временной ошибки backend: её следует выбросить и передать ближайшему `error.tsx`.
+
+</details>
+
+## Где это встречается во frontend
 
 | Сценарий | Механизм |
 | --- | --- |
@@ -110,7 +129,7 @@ Metadata наследуется от корневого layout к дочерни
 | 404 для неизвестного slug | `notFound()` или `dynamicParams = false` |
 | Title карточки товара | `generateMetadata` |
 
-#### Связанные темы
+## Связанные темы
 
 - [02 App Router pages layouts loading error route handlers](<./02 App Router pages layouts loading error route handlers.md>)
 - [04 SSR SSG ISR Streaming и hydration](<./04 SSR SSG ISR Streaming и hydration.md>)
@@ -118,7 +137,7 @@ Metadata наследуется от корневого layout к дочерни
 - [12 Route Groups Parallel и Intercepting Routes](<./12 Route Groups Parallel и Intercepting Routes.md>)
 - [04 URL origin domain path query fragment](<../Web Basics/04 URL origin domain path query fragment.md>)
 
-#### Источники
+## Источники
 
 - [Next.js 14 docs: Dynamic Routes](https://nextjs.org/docs/14/app/building-your-application/routing/dynamic-routes)
 - [Next.js 14 docs: generateStaticParams](https://nextjs.org/docs/14/app/api-reference/functions/generate-static-params)

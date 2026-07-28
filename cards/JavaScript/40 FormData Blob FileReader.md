@@ -4,11 +4,12 @@
 [← 39 Cookies document.cookie SameSite credentials](<./39 Cookies document.cookie SameSite credentials.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [41 postMessage BroadcastChannel →](<./41 postMessage BroadcastChannel.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Как связаны `FormData`, `Blob`, `File`, object URL и `FileReader`? Как безопасно отправлять и читать файлы?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 `Blob` представляет неизменяемую последовательность bytes с `size` и необязательным MIME type. Его можно создать из строк, buffers и других blobs, получить часть через `slice` и читать через Promise-методы `text()`, `arrayBuffer()` или поток `stream()`.
 
@@ -34,64 +35,88 @@ await fetch("/api/upload", {
 
 `FileReader` является event-based API чтения Blob как text, ArrayBuffer или data URL. Для нового Promise-кода методы Blob обычно проще. FileReader остаётся полезен для старых сред, progress events чтения и `readAsDataURL`.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Чем `append` отличается от `set` у FormData?
->
-> **Ответ:** `append(name, value)` добавляет ещё одно значение и сохраняет предыдущие. `set` удаляет существующие значения этого имени и оставляет одно новое. Для нескольких файлов одного поля используют `append`; для одиночного редактируемого значения чаще подходит `set`.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Какие элементы формы не попадут в `new FormData(form)`?
->
-> **Ответ:** Controls без `name`, disabled controls, unchecked checkbox/radio и часть button controls. Значение file input представлено File. Если важна конкретная submit button с её name/value, современный constructor может получить submitter вторым аргументом или обработчик использует `SubmitEvent.submitter`.
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>append</code> отличается от <code>set</code> у FormData?</summary>
 
-> [!followup]
-> **Вопрос:** Когда отправлять JSON, а когда FormData?
->
-> **Ответ:** JSON удобен для структурированных текстовых данных и явного API contract. FormData нужен для browser-compatible multipart, особенно при File/Blob. Вложенный объект внутри FormData не сериализуется автоматически: обычный объект превратится в строку `"[object Object]"`, поэтому его явно записывают JSON-строкой или раскладывают по согласованной схеме.
+`append(name, value)` добавляет ещё одно значение и сохраняет предыдущие. `set` удаляет существующие значения этого имени и оставляет одно новое. Для нескольких файлов одного поля используют `append`; для одиночного редактируемого значения чаще подходит `set`.
 
-> [!followup]
-> **Вопрос:** Как показать preview изображения?
->
-> **Ответ:** Создать `URL.createObjectURL(file)` и назначить URL элементу `img`, video или ссылке. Object URL удерживает ресурс до `URL.revokeObjectURL(url)` или завершения document. Старый URL освобождают после загрузки или замены, а не сразу после назначения, иначе потребитель может не успеть прочитать его.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем object URL отличается от data URL?
->
-> **Ответ:** Object URL является короткой ссылкой браузера на Blob без base64-копии. Data URL содержит сами bytes в строке, увеличивает размер примерно из-за base64 и занимает JavaScript memory. Для preview большого файла object URL обычно дешевле; data URL нужен, когда данные действительно должны быть встроены в текстовый формат.
+<details>
+<summary><strong>Вопрос:</strong> Какие элементы формы не попадут в <code>new FormData(form)</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Можно ли доверять `file.type`, extension и атрибуту `accept`?
->
-> **Ответ:** Нет. `accept` является подсказкой file picker, а MIME и filename могут быть неточными или подменёнными. Client validation улучшает UX, но сервер повторно проверяет размер, фактический формат, допустимые расширения, имя хранения и security policy. Загруженный пользовательский файл нельзя бездумно отдавать как активный HTML.
+Controls без `name`, disabled controls, unchecked checkbox/radio и часть button controls. Значение file input представлено File. Если важна конкретная submit button с её name/value, современный constructor может получить submitter вторым аргументом или обработчик использует `SubmitEvent.submitter`.
 
-> [!followup]
-> **Вопрос:** Как показать upload progress с `fetch`?
->
-> **Ответ:** Обычный `fetch` не предоставляет простой стабильный progress event загрузки request body во всех целевых браузерах. Если progress обязателен, используют `XMLHttpRequest.upload`, поддерживаемую библиотеку или контролируемую chunk/resumable upload схему. Download progress можно считать, читая `response.body` как stream, если известен общий размер.
+</details>
 
-> [!followup]
-> **Вопрос:** Как обрабатывать большой файл?
->
-> **Ответ:** Не читать весь файл в строку и не хранить base64 в React state. Использовать `Blob.stream`, chunks, Worker для CPU-heavy parse, incremental upload или серверную обработку. Нужно поддержать отмену, progress, лимиты памяти и partial failure. Выбранная библиотека parser должна уметь работать с chunks, иначе stream только переносит место полной буферизации.
+<details>
+<summary><strong>Вопрос:</strong> Когда отправлять JSON, а когда FormData?</summary>
 
-> [!followup]
-> **Вопрос:** Можно ли программно установить путь file input?
->
-> **Ответ:** Нет. Browser не позволяет странице выбрать локальный файл без действия пользователя. Значение file input можно очистить, но нельзя назначить произвольный File path. В React file input остаётся uncontrolled, а выбранный `FileList` читают из event или ref.
+JSON удобен для структурированных текстовых данных и явного API contract. FormData нужен для browser-compatible multipart, особенно при File/Blob. Вложенный объект внутри FormData не сериализуется автоматически: обычный объект превратится в строку `"[object Object]"`, поэтому его явно записывают JSON-строкой или раскладывают по согласованной схеме.
 
-> [!followup]
-> **Вопрос:** Что происходит с File при structured clone?
->
-> **Ответ:** Blob и File поддерживаются structured clone и могут передаваться Worker без преобразования в JSON. Это не означает, что тяжёлый parse бесплатен: worker всё равно должен прочитать bytes. Для `ArrayBuffer` после чтения можно использовать transfer, если нужно переместить владение без копирования.
+</details>
 
-> [!followup]
-> **Вопрос:** Как скачать созданный на клиенте файл?
->
-> **Ответ:** Создать Blob, object URL и ссылку `<a download>`, инициировать ожидаемый пользовательский сценарий, затем удалить ссылку и revoke URL. Имя из `download` является подсказкой. Для очень больших экспортов лучше генерировать поток на сервере или использовать streaming-подход, чтобы не собрать весь файл в памяти страницы.
+<details>
+<summary><strong>Вопрос:</strong> Как показать preview изображения?</summary>
 
-#### Мини-задача
+Создать `URL.createObjectURL(file)` и назначить URL элементу `img`, video или ссылке. Object URL удерживает ресурс до `URL.revokeObjectURL(url)` или завершения document. Старый URL освобождают после загрузки или замены, а не сразу после назначения, иначе потребитель может не успеть прочитать его.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем object URL отличается от data URL?</summary>
+
+Object URL является короткой ссылкой браузера на Blob без base64-копии. Data URL содержит сами bytes в строке, увеличивает размер примерно из-за base64 и занимает JavaScript memory. Для preview большого файла object URL обычно дешевле; data URL нужен, когда данные действительно должны быть встроены в текстовый формат.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Можно ли доверять <code>file.type</code>, extension и атрибуту <code>accept</code>?</summary>
+
+Нет. `accept` является подсказкой file picker, а MIME и filename могут быть неточными или подменёнными. Client validation улучшает UX, но сервер повторно проверяет размер, фактический формат, допустимые расширения, имя хранения и security policy. Загруженный пользовательский файл нельзя бездумно отдавать как активный HTML.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как показать upload progress с <code>fetch</code>?</summary>
+
+Обычный `fetch` не предоставляет простой стабильный progress event загрузки request body во всех целевых браузерах. Если progress обязателен, используют `XMLHttpRequest.upload`, поддерживаемую библиотеку или контролируемую chunk/resumable upload схему. Download progress можно считать, читая `response.body` как stream, если известен общий размер.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как обрабатывать большой файл?</summary>
+
+Не читать весь файл в строку и не хранить base64 в React state. Использовать `Blob.stream`, chunks, Worker для CPU-heavy parse, incremental upload или серверную обработку. Нужно поддержать отмену, progress, лимиты памяти и partial failure. Выбранная библиотека parser должна уметь работать с chunks, иначе stream только переносит место полной буферизации.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Можно ли программно установить путь file input?</summary>
+
+Нет. Browser не позволяет странице выбрать локальный файл без действия пользователя. Значение file input можно очистить, но нельзя назначить произвольный File path. В React file input остаётся uncontrolled, а выбранный `FileList` читают из event или ref.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что происходит с File при structured clone?</summary>
+
+Blob и File поддерживаются structured clone и могут передаваться Worker без преобразования в JSON. Это не означает, что тяжёлый parse бесплатен: worker всё равно должен прочитать bytes. Для `ArrayBuffer` после чтения можно использовать transfer, если нужно переместить владение без копирования.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как скачать созданный на клиенте файл?</summary>
+
+Создать Blob, object URL и ссылку `<a download>`, инициировать ожидаемый пользовательский сценарий, затем удалить ссылку и revoke URL. Имя из `download` является подсказкой. Для очень больших экспортов лучше генерировать поток на сервере или использовать streaming-подход, чтобы не собрать весь файл в памяти страницы.
+
+</details>
+
+## Мини-задача
 
 ```js
 const formData = new FormData();
@@ -103,12 +128,14 @@ formData.set("tag", "web");
 console.log(formData.getAll("tag"));
 ```
 
-> [!followup]
-> **Вопрос:** Что будет выведено?
->
-> **Ответ:** `["web"]`. Два `append` создали повторяющиеся значения, после чего `set` заменил все записи с именем `tag` одной новой.
+<details>
+<summary><strong>Вопрос:</strong> Что будет выведено?</summary>
 
-#### Где это встречается во frontend
+`["web"]`. Два `append` создали повторяющиеся значения, после чего `set` заменил все записи с именем `tag` одной новой.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | API | Главный нюанс |
 | --- | --- | --- |
@@ -119,7 +146,7 @@ console.log(formData.getAll("tag"));
 | Большой import | Stream и Worker | Не буферизовать всё без необходимости |
 | File validation | Client и server | MIME/extension не являются доказательством |
 
-#### Связанные темы
+## Связанные темы
 
 - [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
 - [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
@@ -128,7 +155,7 @@ console.log(formData.getAll("tag"));
 - [01 Формы во frontend](<../Forms/01 Формы во frontend.md>)
 - [02 Controlled uncontrolled и FormData](<../Forms/02 Controlled uncontrolled и FormData.md>)
 
-#### Источники
+## Источники
 
 - [MDN: `FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 - [MDN: `Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob)

@@ -4,11 +4,12 @@
 [← 08 Script defer async module preload](<./08 Script defer async module preload.md>) · [↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Shadow DOM Web Components slots →](<./10 Shadow DOM Web Components slots.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Что такое `iframe` и какие нюансы безопасности у него есть?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 `<iframe>` встраивает в страницу отдельный HTML-документ. У него собственные `window`, DOM, навигация и загрузка ресурсов. Его origin - источник, определяемый протоколом, доменом и портом URL, - может совпадать с origin родителя или отличаться от него. В `iframe` часто помещают карты, видео, платёжные формы, документы, внешние виджеты и изолированный пользовательский контент.
 
@@ -24,44 +25,60 @@
 
 Отдельный риск - clickjacking: чужой сайт может попытаться встроить вашу страницу в `iframe` и обманом заставить пользователя кликнуть. От этого защищаются через CSP `frame-ancestors` или старый `X-Frame-Options`.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Можно ли читать DOM cross-origin iframe?
->
-> **Ответ:** Нет. Политика same-origin запрещает родительской странице читать DOM, cookie, браузерные хранилища и JavaScript-состояние `iframe` другого origin. Можно общаться через `postMessage`, если обе стороны это поддерживают.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Как безопасно общаться с iframe?
->
-> **Ответ:** Через `postMessage`, указывая конкретный `targetOrigin`, а не `*`, если origin известен. Получатель проверяет `event.origin`, ожидаемое окно в `event.source` и структуру `event.data`. После проверки сообщение передают только тем операциям, которые разрешены протоколом взаимодействия.
+<details>
+<summary><strong>Вопрос:</strong> Можно ли читать DOM cross-origin iframe?</summary>
 
-> [!followup]
-> **Вопрос:** Что делает `sandbox`?
->
-> **Ответ:** Включает набор ограничений для `iframe`. Отдельные возможности возвращаются через флаги вроде `allow-scripts`, `allow-forms`, `allow-popups`, `allow-same-origin`. По умолчанию `sandbox` лучше делать максимально строгим.
+Нет. Политика same-origin запрещает родительской странице читать DOM, cookie, браузерные хранилища и JavaScript-состояние `iframe` другого origin. Можно общаться через `postMessage`, если обе стороны это поддерживают.
 
-> [!followup]
-> **Вопрос:** Чем опасно `allow-scripts allow-same-origin` вместе?
->
-> **Ответ:** `allow-scripts` возвращает выполнение JavaScript, а `allow-same-origin` возвращает документу его обычный origin вместо непрозрачного. Для same-origin документа это может восстановить доступ к родителю и позволить скрипту удалить `sandbox`. Для недоверенного содержимого используют отдельный origin и выдают только необходимые разрешения.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем `sandbox` отличается от `allow`?
->
-> **Ответ:** `sandbox` ограничивает выполнение скриптов, формы, навигацию, origin и другие базовые возможности встроенного документа. `allow` определяет верхнюю границу для отдельных возможностей браузера через Permissions Policy, например камеры или полноэкранного режима. Даже разрешённая камера всё равно может потребовать согласия пользователя.
+<details>
+<summary><strong>Вопрос:</strong> Как безопасно общаться с iframe?</summary>
 
-> [!followup]
-> **Вопрос:** Что такое clickjacking?
->
-> **Ответ:** Это атака, при которой важную страницу помещают в прозрачный или замаскированный `iframe` и подставляют её элементы под ожидаемый клик пользователя. Сервер защищаемой страницы должен запретить нежелательное встраивание директивой CSP `frame-ancestors`; `X-Frame-Options` остаётся более старым и менее гибким заголовком.
+Через `postMessage`, указывая конкретный `targetOrigin`, а не `*`, если origin известен. Получатель проверяет `event.origin`, ожидаемое окно в `event.source` и структуру `event.data`. После проверки сообщение передают только тем операциям, которые разрешены протоколом взаимодействия.
 
-> [!followup]
-> **Вопрос:** Чем CSP `frame-src` отличается от `frame-ancestors`?
->
-> **Ответ:** `frame-src` ограничивает, какие источники текущая страница может загружать в `<iframe>`. `frame-ancestors` задаётся защищаемой страницей и определяет, какие родительские страницы имеют право встроить её. От clickjacking защищает именно `frame-ancestors`.
+</details>
 
-#### Где это встречается во frontend
+<details>
+<summary><strong>Вопрос:</strong> Что делает <code>sandbox</code>?</summary>
+
+Включает набор ограничений для `iframe`. Отдельные возможности возвращаются через флаги вроде `allow-scripts`, `allow-forms`, `allow-popups`, `allow-same-origin`. По умолчанию `sandbox` лучше делать максимально строгим.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем опасно <code>allow-scripts allow-same-origin</code> вместе?</summary>
+
+`allow-scripts` возвращает выполнение JavaScript, а `allow-same-origin` возвращает документу его обычный origin вместо непрозрачного. Для same-origin документа это может восстановить доступ к родителю и позволить скрипту удалить `sandbox`. Для недоверенного содержимого используют отдельный origin и выдают только необходимые разрешения.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>sandbox</code> отличается от <code>allow</code>?</summary>
+
+`sandbox` ограничивает выполнение скриптов, формы, навигацию, origin и другие базовые возможности встроенного документа. `allow` определяет верхнюю границу для отдельных возможностей браузера через Permissions Policy, например камеры или полноэкранного режима. Даже разрешённая камера всё равно может потребовать согласия пользователя.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое clickjacking?</summary>
+
+Это атака, при которой важную страницу помещают в прозрачный или замаскированный `iframe` и подставляют её элементы под ожидаемый клик пользователя. Сервер защищаемой страницы должен запретить нежелательное встраивание директивой CSP `frame-ancestors`; `X-Frame-Options` остаётся более старым и менее гибким заголовком.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем CSP <code>frame-src</code> отличается от <code>frame-ancestors</code>?</summary>
+
+`frame-src` ограничивает, какие источники текущая страница может загружать в `<iframe>`. `frame-ancestors` задаётся защищаемой страницей и определяет, какие родительские страницы имеют право встроить её. От clickjacking защищает именно `frame-ancestors`.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | Что важно |
 | --- | --- |
@@ -71,14 +88,14 @@
 | Виджет партнёра | Проверка origin и схемы сообщений |
 | Защита админки | CSP `frame-ancestors 'none'` |
 
-#### Связанные темы
+## Связанные темы
 
 - [41 postMessage BroadcastChannel](<../JavaScript/41 postMessage BroadcastChannel.md>)
 - [06 CSP security headers clickjacking](<../Security/06 CSP security headers clickjacking.md>)
 - [05 CORS same-origin preflight credentials](<../Security/05 CORS same-origin preflight credentials.md>)
 - [07 Images responsive media alt lazy loading](<./07 Images responsive media alt lazy loading.md>)
 
-#### Источники
+## Источники
 
 - [MDN: iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/iframe)
 - [MDN: postMessage](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)

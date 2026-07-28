@@ -4,11 +4,12 @@
 [← 45 DOM API innerHTML layout thrashing](<./45 DOM API innerHTML layout thrashing.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [47 Service Worker Cache API PWA →](<./47 Service Worker Cache API PWA.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Что такое Streams API? Как читать `ReadableStream`, учитывать backpressure и разбирать данные, разделённые произвольными chunks?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Streams API обрабатывает данные постепенно, не ожидая полного результата в памяти. `ReadableStream` предоставляет chunks для чтения, `WritableStream` принимает chunks, а `TransformStream` преобразует поток между ними. Chunk может быть bytes, строкой или объектом в зависимости от источника.
 
@@ -36,71 +37,95 @@ Backpressure, или обратное давление, означает, что
 
 Границы chunks технические и не совпадают с границами Unicode-символов, строк или JSON-сообщений. TextDecoder в streaming mode сохраняет неполную последовательность bytes между вызовами. Поверх текста протокол должен задать framing, например newline-delimited JSON, длину сообщения или SSE format.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Чем stream отличается от `await response.json()`?
->
-> **Ответ:** `json()` сначала читает body целиком, затем вызывает обычный JSON parser. Это проще для небольшого ответа. Stream позволяет показать progress или обработать записи раньше, но стандартный JSON-документ всё равно трудно разбирать по частям без специализированного streaming parser. Для настоящего streaming сервер часто использует NDJSON, SSE или другой framed format.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Почему нельзя считать один chunk одной строкой?
->
-> **Ответ:** Размер chunk выбирают сеть и stream implementation. Одна строка может прийти частями, а несколько строк одним chunk. Даже один UTF-8 символ может разделиться между chunks. Parser хранит остаток неполной записи, добавляет новый decoded text, извлекает только полные frames и оставляет хвост до следующего чтения.
+<details>
+<summary><strong>Вопрос:</strong> Чем stream отличается от <code>await response.json()</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Как правильно декодировать UTF-8 stream?
->
-> **Ответ:** Использовать `TextDecoder.decode(bytes, { stream: true })` для промежуточных chunks и финальный `decoder.decode()` после завершения либо пропустить поток через `new TextDecoderStream()`. Обычный независимый decode каждого chunk может заменить разделённый символ на replacement character.
+`json()` сначала читает body целиком, затем вызывает обычный JSON parser. Это проще для небольшого ответа. Stream позволяет показать progress или обработать записи раньше, но стандартный JSON-документ всё равно трудно разбирать по частям без специализированного streaming parser. Для настоящего streaming сервер часто использует NDJSON, SSE или другой framed format.
 
-> [!followup]
-> **Вопрос:** Для чего нужны `pipeThrough` и `pipeTo`?
->
-> **Ответ:** `readable.pipeThrough(transform)` связывает readable с TransformStream и возвращает преобразованный readable. `pipeTo(writable)` передаёт chunks в destination и возвращает Promise завершения. Pipeline автоматически распространяет backpressure и по умолчанию errors/cancellation, что надёжнее ручного цикла для последовательности стандартных transforms.
->
-> ```js
-> const textStream = response.body.pipeThrough(new TextDecoderStream());
-> for await (const textChunk of textStream) {
->   consumeText(textChunk);
-> }
-> ```
+</details>
 
-> [!followup]
-> **Вопрос:** Как отменить чтение?
->
-> **Ответ:** `reader.cancel(reason)` сообщает stream, что consumer больше не нужен. Если stream принадлежит `fetch`, надёжнее также отменить request через исходный `AbortController`, чтобы прекратить network operation. Освобождение lock через `releaseLock` само по себе не отменяет source.
+<details>
+<summary><strong>Вопрос:</strong> Почему нельзя считать один chunk одной строкой?</summary>
 
-> [!followup]
-> **Вопрос:** Как показать download progress?
->
-> **Ответ:** Суммировать `value.byteLength` при чтении. Общий размер можно взять из `Content-Length`, если header доступен и присутствует. Он может отсутствовать, а при compression размер передаваемого и декодированного body может различаться, поэтому progress иногда бывает только indeterminate.
+Размер chunk выбирают сеть и stream implementation. Одна строка может прийти частями, а несколько строк одним chunk. Даже один UTF-8 символ может разделиться между chunks. Parser хранит остаток неполной записи, добавляет новый decoded text, извлекает только полные frames и оставляет хвост до следующего чтения.
 
-> [!followup]
-> **Вопрос:** Что происходит при ошибке stream?
->
-> **Ответ:** `reader.read`, `pipeTo` или async iteration завершаются rejected Promise. Pipeline отменяет или abort-ит связанные стороны по правилам options. Consumer должен обработать частично применённые данные: удалить незавершённую запись, пометить результат incomplete или уметь продолжить с cursor.
+</details>
 
-> [!followup]
-> **Вопрос:** Можно ли читать stream двумя consumers?
->
-> **Ответ:** Один stream может иметь только один активный reader. `stream.tee()` создаёт две branches, а `response.clone()` использует похожую идею для body. Если один consumer медленный, данные могут буферизоваться для него без жёсткого ограничения, поэтому tee большого потока не является бесплатным broadcast.
+<details>
+<summary><strong>Вопрос:</strong> Как правильно декодировать UTF-8 stream?</summary>
 
-> [!followup]
-> **Вопрос:** Уменьшает ли stream память автоматически?
->
-> **Ответ:** Только если весь pipeline действительно обрабатывает и освобождает chunks постепенно. Если consumer складывает каждую часть в массив, собирает одну гигантскую строку или библиотека в конце буферизует всё, peak memory остаётся большой. Нужно анализировать каждую стадию.
+Использовать `TextDecoder.decode(bytes, { stream: true })` для промежуточных chunks и финальный `decoder.decode()` после завершения либо пропустить поток через `new TextDecoderStream()`. Обычный независимый decode каждого chunk может заменить разделённый символ на replacement character.
 
-> [!followup]
-> **Вопрос:** Что такое BYOB reader?
->
-> **Ответ:** Bring Your Own Buffer reader позволяет consumer передавать заранее выделенный buffer для byte stream, уменьшая число allocations и копирований. Он создаётся через `getReader({ mode: "byob" })` только для подходящего readable byte stream. Это оптимизация бинарных pipelines, а не обязательный API для обычного fetch.
+</details>
 
-> [!followup]
-> **Вопрос:** Когда обработку chunks переносить в Worker?
->
-> **Ответ:** Когда decode, decompression, parsing или aggregation создают long tasks на main thread. Само чтение network stream не гарантирует отзывчивость. Нужно учесть цену пересылки chunks; transferable `ArrayBuffer` или transferable streams в поддерживаемой архитектуре снижают копирование.
+<details>
+<summary><strong>Вопрос:</strong> Для чего нужны <code>pipeThrough</code> и <code>pipeTo</code>?</summary>
 
-#### Мини-задача
+`readable.pipeThrough(transform)` связывает readable с TransformStream и возвращает преобразованный readable. `pipeTo(writable)` передаёт chunks в destination и возвращает Promise завершения. Pipeline автоматически распространяет backpressure и по умолчанию errors/cancellation, что надёжнее ручного цикла для последовательности стандартных transforms.
+
+```js
+const textStream = response.body.pipeThrough(new TextDecoderStream());
+for await (const textChunk of textStream) {
+  consumeText(textChunk);
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как отменить чтение?</summary>
+
+`reader.cancel(reason)` сообщает stream, что consumer больше не нужен. Если stream принадлежит `fetch`, надёжнее также отменить request через исходный `AbortController`, чтобы прекратить network operation. Освобождение lock через `releaseLock` само по себе не отменяет source.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как показать download progress?</summary>
+
+Суммировать `value.byteLength` при чтении. Общий размер можно взять из `Content-Length`, если header доступен и присутствует. Он может отсутствовать, а при compression размер передаваемого и декодированного body может различаться, поэтому progress иногда бывает только indeterminate.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что происходит при ошибке stream?</summary>
+
+`reader.read`, `pipeTo` или async iteration завершаются rejected Promise. Pipeline отменяет или abort-ит связанные стороны по правилам options. Consumer должен обработать частично применённые данные: удалить незавершённую запись, пометить результат incomplete или уметь продолжить с cursor.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Можно ли читать stream двумя consumers?</summary>
+
+Один stream может иметь только один активный reader. `stream.tee()` создаёт две branches, а `response.clone()` использует похожую идею для body. Если один consumer медленный, данные могут буферизоваться для него без жёсткого ограничения, поэтому tee большого потока не является бесплатным broadcast.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Уменьшает ли stream память автоматически?</summary>
+
+Только если весь pipeline действительно обрабатывает и освобождает chunks постепенно. Если consumer складывает каждую часть в массив, собирает одну гигантскую строку или библиотека в конце буферизует всё, peak memory остаётся большой. Нужно анализировать каждую стадию.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое BYOB reader?</summary>
+
+Bring Your Own Buffer reader позволяет consumer передавать заранее выделенный buffer для byte stream, уменьшая число allocations и копирований. Он создаётся через `getReader({ mode: "byob" })` только для подходящего readable byte stream. Это оптимизация бинарных pipelines, а не обязательный API для обычного fetch.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Когда обработку chunks переносить в Worker?</summary>
+
+Когда decode, decompression, parsing или aggregation создают long tasks на main thread. Само чтение network stream не гарантирует отзывчивость. Нужно учесть цену пересылки chunks; transferable `ArrayBuffer` или transferable streams в поддерживаемой архитектуре снижают копирование.
+
+</details>
+
+## Мини-задача
 
 ```js
 const decoder = new TextDecoder();
@@ -121,12 +146,14 @@ buffer += decoder.decode();
 if (buffer) consume(JSON.parse(buffer));
 ```
 
-> [!followup]
-> **Вопрос:** Зачем хранить `buffer` и вызывать финальный `decode()`?
->
-> **Ответ:** Последний элемент после `split` может быть неполной NDJSON-строкой и должен дождаться следующего chunk. Финальный `decode()` сбрасывает bytes незавершённой UTF-8 последовательности внутри decoder. После конца stream оставшийся frame обрабатывается отдельно.
+<details>
+<summary><strong>Вопрос:</strong> Зачем хранить <code>buffer</code> и вызывать финальный <code>decode()</code>?</summary>
 
-#### Где это встречается во frontend
+Последний элемент после `split` может быть неполной NDJSON-строкой и должен дождаться следующего chunk. Финальный `decode()` сбрасывает bytes незавершённой UTF-8 последовательности внутри decoder. После конца stream оставшийся frame обрабатывается отдельно.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | Stream-подход | Главный риск |
 | --- | --- | --- |
@@ -137,7 +164,7 @@ if (buffer) consume(JSON.parse(buffer));
 | Два consumers | `tee`/clone | Буферизация медленной branch |
 | CPU-heavy parse | Worker | Цена передачи chunks |
 
-#### Связанные темы
+## Связанные темы
 
 - [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
 - [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
@@ -146,7 +173,7 @@ if (buffer) consume(JSON.parse(buffer));
 - [54 Строки Unicode и кодировки](<./54 Строки Unicode и кодировки.md>)
 - [55 ArrayBuffer TypedArray DataView](<./55 ArrayBuffer TypedArray DataView.md>)
 
-#### Источники
+## Источники
 
 - [MDN: Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
 - [MDN: `ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)

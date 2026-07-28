@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import os
 import re
 import sys
@@ -17,6 +18,7 @@ LEGACY_CARDS_DIR = ROOT / "Мок-собесы для ведущего"
 WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\((<[^>]+>|[^)]+)\)")
 GENERATED_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(<([^>]+)>\)")
+FOLLOWUP_BLOCK_RE = re.compile(r"(?m)^> \[!followup\][^\n]*(?:\n>.*)*")
 TOP_NAV_RE = re.compile(
     r"\n?<!-- CARD-NAV-TOP:START -->.*?<!-- CARD-NAV-TOP:END -->\n?",
     re.DOTALL,
@@ -236,6 +238,98 @@ def card_navigation(path: Path, topic: Path, previous: Path | None, following: P
     return " · ".join(parts)
 
 
+def summary_text(markdown: str) -> str:
+    markdown = re.sub(r"\[([^\]]+)\]\((?:<[^>]+>|[^)]+)\)", r"\1", markdown)
+    escaped = html.escape(markdown.strip(), quote=False)
+    escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
+    escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
+    return escaped
+
+
+def repair_question_summaries(content: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        question = re.sub(
+            r"\[([^\]]+)\]\((?:&lt;.*?&gt;|[^)]+)\)",
+            r"\1",
+            match.group(1),
+        )
+        return f"<summary><strong>Вопрос:</strong> {question}</summary>"
+
+    return re.sub(
+        r"<summary><strong>Вопрос:</strong> (.*?)</summary>",
+        replace,
+        content,
+    )
+
+
+def convert_followup_block(match: re.Match[str]) -> str:
+    block = match.group(0)
+    lines = block.splitlines()
+    quoted_lines = [re.sub(r"^> ?", "", line) for line in lines[1:]]
+
+    question_index = next(
+        (index for index, line in enumerate(quoted_lines) if line.startswith("**Вопрос:**")),
+        None,
+    )
+    answer_index = next(
+        (index for index, line in enumerate(quoted_lines) if line.startswith("**Ответ:**")),
+        None,
+    )
+    if question_index is None or answer_index is None or answer_index <= question_index:
+        return block
+
+    question_lines = [quoted_lines[question_index].removeprefix("**Вопрос:**").strip()]
+    question_lines.extend(line.strip() for line in quoted_lines[question_index + 1 : answer_index] if line.strip())
+    question = " ".join(part for part in question_lines if part).strip()
+
+    answer_lines = [quoted_lines[answer_index].removeprefix("**Ответ:**").strip()]
+    answer_lines.extend(quoted_lines[answer_index + 1 :])
+    while answer_lines and not answer_lines[0].strip():
+        answer_lines.pop(0)
+    while answer_lines and not answer_lines[-1].strip():
+        answer_lines.pop()
+    answer = "\n".join(answer_lines).strip()
+    if not question or not answer:
+        return block
+
+    return (
+        "<details>\n"
+        f"<summary><strong>Вопрос:</strong> {summary_text(question)}</summary>\n\n"
+        f"{answer}\n\n"
+        "</details>"
+    )
+
+
+def collapse_main_answer(content: str) -> str:
+    answer_heading = re.search(r"(?m)^## Ответ\s*$", content)
+    if answer_heading is None:
+        return content
+
+    next_section = re.search(r"(?m)^## ", content[answer_heading.end() :])
+    answer_end = answer_heading.end() + next_section.start() if next_section else len(content)
+    answer = content[answer_heading.end() : answer_end].strip()
+    if not answer:
+        return content
+
+    details = (
+        "<details>\n"
+        "<summary><strong>Показать ответ</strong></summary>\n\n"
+        f"{answer}\n\n"
+        "</details>\n\n"
+    )
+    return content[: answer_heading.start()] + details + content[answer_end:]
+
+
+def format_card_for_github(content: str) -> str:
+    content = re.sub(r"(?m)^#####\s+", "### ", content)
+    content = re.sub(r"(?m)^####\s+", "## ", content)
+    content = collapse_main_answer(content)
+    content = FOLLOWUP_BLOCK_RE.sub(convert_followup_block, content)
+    content = repair_question_summaries(content)
+    content = re.sub(r"(?m)^> \[!context\].*$", "> [!NOTE]", content)
+    return content
+
+
 def generate_card(path: Path, topic: Path, previous: Path | None, following: Path | None) -> None:
     content = read_text(path)
     content = TOP_NAV_RE.sub("\n", content)
@@ -243,6 +337,7 @@ def generate_card(path: Path, topic: Path, previous: Path | None, following: Pat
     content = re.sub(r"(?:\n\s*---\s*)+\Z", "", content)
     content = convert_wikilinks(path, content).strip()
     content = repair_generated_links(path, content)
+    content = format_card_for_github(content)
 
     if not re.match(r"^#\s+", content):
         content = f"# {card_title(path)}\n\n{content}"
@@ -293,8 +388,15 @@ def generate_root_readme(topics: list[Path]) -> None:
 
 1. Выберите раздел в таблице ниже.
 2. Откройте первую карточку или нужный вопрос из оглавления раздела.
-3. Перемещайтесь кнопками **←**, **↑** и **→** в начале или конце карточки.
-4. Для поиска по всей базе используйте поиск GitHub по репозиторию.
+3. Сформулируйте ответ самостоятельно и раскройте блок **Показать ответ**.
+4. Перемещайтесь кнопками **←**, **↑** и **→** в начале или конце карточки.
+5. Для поиска по всей базе используйте поиск GitHub по репозиторию.
+
+Пример поискового запроса:
+
+```text
+repo:alexy-bott/frontend-interview-cards generics
+```
 
 ## Разделы
 
@@ -352,6 +454,7 @@ def validate_link(source: Path, destination: str) -> str | None:
 
 def without_code(content: str) -> str:
     content = re.sub(r"(?ms)^(```|~~~).*?^\1\s*$", "", content)
+    content = re.sub(r"(?s)<code>.*?</code>", "", content)
     return re.sub(r"`+[^`\n]*`+", "", content)
 
 
@@ -371,12 +474,23 @@ def validate() -> list[str]:
             issues.append(f"{topic.relative_to(ROOT)}: README.md is missing")
         for card in card_files(topic):
             content = read_text(card)
+            content_without_code = without_code(content)
             if not content.startswith("# "):
                 issues.append(f"{card.relative_to(ROOT)}: H1 title is missing")
             if content.count("<!-- CARD-NAV-TOP:START -->") != 1:
                 issues.append(f"{card.relative_to(ROOT)}: top navigation is missing or duplicated")
             if content.count("<!-- CARD-NAV-BOTTOM:START -->") != 1:
                 issues.append(f"{card.relative_to(ROOT)}: bottom navigation is missing or duplicated")
+            if len(re.findall(r"(?m)^## Вопрос\s*$", content_without_code)) != 1:
+                issues.append(f"{card.relative_to(ROOT)}: H2 question heading is missing or duplicated")
+            if content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 1:
+                issues.append(f"{card.relative_to(ROOT)}: collapsible main answer is missing or duplicated")
+            if re.search(r"(?m)^#{4,6}\s+", content_without_code):
+                issues.append(f"{card.relative_to(ROOT)}: heading hierarchy still skips levels")
+            if "> [!followup]" in content_without_code or "> [!context]" in content_without_code:
+                issues.append(f"{card.relative_to(ROOT)}: unsupported Obsidian callout remains")
+            if content_without_code.count("<details>") != content_without_code.count("</details>"):
+                issues.append(f"{card.relative_to(ROOT)}: unbalanced details elements")
 
     markdown_files = sorted(CARDS_DIR.rglob("*.md")) + [ROOT / "README.md"]
     for path in markdown_files:

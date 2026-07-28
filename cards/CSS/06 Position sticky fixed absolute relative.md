@@ -4,11 +4,12 @@
 [← 05 Центрирование в CSS](<./05 Центрирование в CSS.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Stacking context z-index overflow →](<./07 Stacking context z-index overflow.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Как работает `position`: `static`, `relative`, `absolute`, `fixed`, `sticky`?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 `position` выбирает схему позиционирования элемента и область, относительно которой работают свойства смещения `top`, `right`, `bottom`, `left` или их короткая запись `inset`.
 
@@ -26,35 +27,45 @@
 
 На нужной оси у sticky должен быть задан хотя бы один порог: без `top`, `bottom` или логического аналога поведение останется обычным `relative`. Предок с `overflow: hidden`, `auto` или `scroll` может стать ближайшим механизмом прокрутки, даже если пользователь фактически прокручивает страницу. Кроме того, контейнер должен быть достаточно больше sticky-элемента, чтобы у него появился диапазон перемещения.
 
-#### Встречные вопросы
+</details>
 
-> [!followup] Containing block
-> **Вопрос:** Относительно чего позиционируется `absolute`?
->
-> **Ответ:** Относительно containing block, то есть области отсчёта для размеров и смещений. Для `absolute` это часто padding box - коробка до внешнего края `padding` - ближайшего предка с `position` не `static`. Но containing block также могут создать, например, `transform`, `filter` или `contain`, поэтому одного поиска `position: relative` иногда недостаточно.
->
-> Например, карточке задают `position: relative`, а небольшой метке внутри неё - `position: absolute; top: 8px; right: 8px`.
+## Встречные вопросы
 
-> [!followup] Out of flow
-> **Вопрос:** Что значит элемент вынут из потока?
->
-> **Ответ:** Другие элементы раскладки ведут себя так, будто его обычного места нет. `absolute`/`fixed` элемент не резервирует пространство в потоке документа, поэтому может перекрывать другие элементы.
+<details>
+<summary><strong>Вопрос:</strong> Относительно чего позиционируется <code>absolute</code>?</summary>
 
-> [!followup] Sticky не работает
-> **Вопрос:** Почему `position: sticky` может не работать?
->
-> **Ответ:** На нужной оси не задан порог `top`/`bottom`, предок с `overflow` создал другой контейнер прокрутки, контейнер слишком мал или sticky-элемент растянут на всю его высоту. Sticky может работать технически правильно, но прилипать внутри не той прокручиваемой области, которую ожидал разработчик.
->
-> Проверяют контейнер прокрутки, размеры родителя, наличие `top`, `overflow` у предков и то, достаточно ли места для перемещения элемента.
+Относительно containing block, то есть области отсчёта для размеров и смещений. Для `absolute` это часто padding box - коробка до внешнего края `padding` - ближайшего предка с `position` не `static`. Но containing block также могут создать, например, `transform`, `filter` или `contain`, поэтому одного поиска `position: relative` иногда недостаточно.
 
-> [!followup] Fixed и transform
-> **Вопрос:** Почему fixed элемент вдруг позиционируется не относительно viewport?
->
-> **Ответ:** `transform`, `filter` или `perspective` на предке может создать containing block для fixed-потомков. Это частая причина странного поведения `fixed` внутри трансформированных контейнеров.
+Например, карточке задают `position: relative`, а небольшой метке внутри неё - `position: absolute; top: 8px; right: 8px`.
 
-#### Где это встречается во frontend
+</details>
 
-> [!context] Практика
+<details>
+<summary><strong>Вопрос:</strong> Что значит элемент вынут из потока?</summary>
+
+Другие элементы раскладки ведут себя так, будто его обычного места нет. `absolute`/`fixed` элемент не резервирует пространство в потоке документа, поэтому может перекрывать другие элементы.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>position: sticky</code> может не работать?</summary>
+
+На нужной оси не задан порог `top`/`bottom`, предок с `overflow` создал другой контейнер прокрутки, контейнер слишком мал или sticky-элемент растянут на всю его высоту. Sticky может работать технически правильно, но прилипать внутри не той прокручиваемой области, которую ожидал разработчик.
+
+Проверяют контейнер прокрутки, размеры родителя, наличие `top`, `overflow` у предков и то, достаточно ли места для перемещения элемента.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему fixed элемент вдруг позиционируется не относительно viewport?</summary>
+
+`transform`, `filter` или `perspective` на предке может создать containing block для fixed-потомков. Это частая причина странного поведения `fixed` внутри трансформированных контейнеров.
+
+</details>
+
+## Где это встречается во frontend
+
+> [!NOTE]
 > | UI | Позиционирование |
 > | --- | --- |
 > | Badge в карточке | `absolute` внутри `relative` |
@@ -64,7 +75,7 @@
 > | Anchor для badge/icon | `relative` на контейнере + `absolute` у потомка |
 > | Сдвиг декоративного элемента | `relative` |
 
-#### Связанные темы
+## Связанные темы
 
 - Позиционирование
 - Stacking context и z-index
@@ -72,7 +83,7 @@
 - [07 Stacking context z-index overflow](<./07 Stacking context z-index overflow.md>)
 - [13 Portal](<../React/13 Portal.md>)
 
-#### Источники
+## Источники
 
 - [MDN: position](https://developer.mozilla.org/en-US/docs/Web/CSS/position)
 - [MDN: Layout and containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display/Containing_block)

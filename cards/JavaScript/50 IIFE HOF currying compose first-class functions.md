@@ -4,11 +4,12 @@
 [← 49 Microtasks queueMicrotask nextTick и rejection](<./49 Microtasks queueMicrotask nextTick и rejection.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [51 OOP classes new static instanceof →](<./51 OOP classes new static instanceof.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Что означают first-class functions, higher-order function, currying, partial application, compose/pipe и IIFE?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 First-class functions означает, что функции в JavaScript являются обычными значениями. Их можно присваивать переменным и properties, хранить в коллекциях, передавать аргументом и возвращать как результат. На этом основаны callbacks, event handlers, middleware, hooks и factories.
 
@@ -34,86 +35,112 @@ Compose соединяет функции так, что результат од
 
 IIFE, Immediately Invoked Function Expression, является function expression, которая вызывается сразу после создания: `(function () { ... })()`. До ES modules и block scope её использовали для изоляции переменных от global scope. В современном модульном коде такая необходимость встречается реже.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Callback всегда является асинхронным?
->
-> **Ответ:** Нет. Callback только передан другой функции для вызова. `map` вызывает его синхронно в текущем стеке, `setTimeout` позже как task, а `.then` позже как microtask. First-class function ничего не говорит о времени выполнения.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Чем функция высшего порядка отличается от callback?
->
-> **Ответ:** Callback является функцией, переданной для будущего или управляемого вызова. HOF является функцией, которая принимает или возвращает функцию. В `items.map(selectName)` метод `map` является HOF, а `selectName` callback. Возвращённый wrapper тоже делает factory HOF, даже если она не принимает callback.
+<details>
+<summary><strong>Вопрос:</strong> Callback всегда является асинхронным?</summary>
 
-> [!followup]
-> **Вопрос:** Как HOF связана с closure?
->
-> **Ответ:** Возвращённая функция может использовать bindings внешнего вызова после его завершения. `withRole("editor")` создаёт closure над `role` и возвращает специализированную проверку. HOF определяет форму API, а closure сохраняет конфигурацию между вызовами.
+Нет. Callback только передан другой функции для вызова. `map` вызывает его синхронно в текущем стеке, `setTimeout` позже как task, а `.then` позже как microtask. First-class function ничего не говорит о времени выполнения.
 
-> [!followup]
-> **Вопрос:** Чем currying отличается от partial application?
->
-> **Ответ:** Полное currying обычно превращает n-аргументную функцию в последовательность одноаргументных функций. Partial application фиксирует любое подмножество аргументов и возвращает функцию оставшейся арности. `fn.bind(null, firstArg)` является partial application, но не обязательно currying всей функции.
+</details>
 
-> [!followup]
-> **Вопрос:** Где currying реально встречается во frontend?
->
-> **Ответ:** В Redux middleware формы `store => next => action => result`, factories validators, selectors и handlers с заранее известной конфигурацией. Часто разработчик использует частичное применение без строгого currying: `createValidator(options)` возвращает `validate(value)`. Абстракция полезна, когда повторно используется зафиксированный контекст, а не ради количества стрелок.
+<details>
+<summary><strong>Вопрос:</strong> Чем функция высшего порядка отличается от callback?</summary>
 
-> [!followup]
-> **Вопрос:** Как реализовать `pipe`?
->
-> **Ответ:** Для синхронных unary functions, то есть функций с одним входом на каждом шаге:
->
-> ```js
-> const pipe = (...functions) => (input) =>
->   functions.reduce((value, fn) => fn(value), input);
-> ```
->
-> Контракт должен быть совместимым: output одного шага подходит input следующего. Первый шаг с несколькими аргументами обычно оборачивают отдельно.
+Callback является функцией, переданной для будущего или управляемого вызова. HOF является функцией, которая принимает или возвращает функцию. В `items.map(selectName)` метод `map` является HOF, а `selectName` callback. Возвращённый wrapper тоже делает factory HOF, даже если она не принимает callback.
 
-> [!followup]
-> **Вопрос:** Как compose/pipe работают с Promise?
->
-> **Ответ:** Обычный `reduce` передаст Promise следующей синхронной функции как объект. Для асинхронного pipeline каждый шаг ждут:
->
-> ```js
-> const pipeAsync = (...functions) => (input) =>
->   functions.reduce(
->     (promise, fn) => promise.then(fn),
->     Promise.resolve(input),
->   );
-> ```
->
-> Ошибка шага становится rejection общего pipeline и обрабатывается одной осмысленной границей.
+</details>
 
-> [!followup]
-> **Вопрос:** Как Redux middleware связан с currying и compose?
->
-> **Ответ:** Middleware получает store API, возвращает функцию для `next`, затем handler `action`. Каждый уровень замыкает известную зависимость. Redux compose соединяет middleware так, чтобы action прошёл через цепочку wrappers, а каждый middleware мог вызвать `next(action)`, изменить action, вернуть результат или остановить передачу.
+<details>
+<summary><strong>Вопрос:</strong> Как HOF связана с closure?</summary>
 
-> [!followup]
-> **Вопрос:** Всегда ли композиция улучшает читаемость?
->
-> **Ответ:** Нет. Короткий pipeline чистых преобразований читается хорошо, но длинная point-free цепочка скрывает промежуточные значения, branching, async errors и типы. Если шаг требует объясняющего имени, условной логики или отладки, обычная последовательность локальных переменных может быть понятнее.
+Возвращённая функция может использовать bindings внешнего вызова после его завершения. `withRole("editor")` создаёт closure над `role` и возвращает специализированную проверку. HOF определяет форму API, а closure сохраняет конфигурацию между вызовами.
 
-> [!followup]
-> **Вопрос:** Для чего IIFE использовали до modules?
->
-> **Ответ:** `var` имел function scope, а classic scripts делили global scope. Function expression создавала закрытую область и могла вернуть публичный API, скрывая private variables. ES modules уже имеют module scope, а `let`/`const` дают block scope, поэтому IIFE чаще остаётся в legacy bundle или одноразовом script.
+</details>
 
-> [!followup]
-> **Вопрос:** Есть ли у IIFE практические ловушки?
->
-> **Ответ:** Если она начинается сразу после выражения без semicolon, parser может попытаться вызвать результат предыдущей строки. Поэтому legacy-код часто пишет `;(function () {})()`. Async IIFE позволяет использовать `await` в classic script, но в ESM обычно понятнее top-level await или именованная async init function.
+<details>
+<summary><strong>Вопрос:</strong> Чем currying отличается от partial application?</summary>
 
-> [!followup]
-> **Вопрос:** Чем pure function важна для composition?
->
-> **Ответ:** Pure function возвращает результат только из аргументов и не меняет внешнее состояние. Такие шаги легче переставлять, тестировать и повторно запускать. Composition может включать side effects, но тогда порядок становится частью поведения и pipeline уже нельзя свободно преобразовывать.
+Полное currying обычно превращает n-аргументную функцию в последовательность одноаргументных функций. Partial application фиксирует любое подмножество аргументов и возвращает функцию оставшейся арности. `fn.bind(null, firstArg)` является partial application, но не обязательно currying всей функции.
 
-#### Мини-задача
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Где currying реально встречается во frontend?</summary>
+
+В Redux middleware формы `store => next => action => result`, factories validators, selectors и handlers с заранее известной конфигурацией. Часто разработчик использует частичное применение без строгого currying: `createValidator(options)` возвращает `validate(value)`. Абстракция полезна, когда повторно используется зафиксированный контекст, а не ради количества стрелок.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как реализовать <code>pipe</code>?</summary>
+
+Для синхронных unary functions, то есть функций с одним входом на каждом шаге:
+
+```js
+const pipe = (...functions) => (input) =>
+  functions.reduce((value, fn) => fn(value), input);
+```
+
+Контракт должен быть совместимым: output одного шага подходит input следующего. Первый шаг с несколькими аргументами обычно оборачивают отдельно.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как compose/pipe работают с Promise?</summary>
+
+Обычный `reduce` передаст Promise следующей синхронной функции как объект. Для асинхронного pipeline каждый шаг ждут:
+
+```js
+const pipeAsync = (...functions) => (input) =>
+  functions.reduce(
+    (promise, fn) => promise.then(fn),
+    Promise.resolve(input),
+  );
+```
+
+Ошибка шага становится rejection общего pipeline и обрабатывается одной осмысленной границей.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как Redux middleware связан с currying и compose?</summary>
+
+Middleware получает store API, возвращает функцию для `next`, затем handler `action`. Каждый уровень замыкает известную зависимость. Redux compose соединяет middleware так, чтобы action прошёл через цепочку wrappers, а каждый middleware мог вызвать `next(action)`, изменить action, вернуть результат или остановить передачу.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Всегда ли композиция улучшает читаемость?</summary>
+
+Нет. Короткий pipeline чистых преобразований читается хорошо, но длинная point-free цепочка скрывает промежуточные значения, branching, async errors и типы. Если шаг требует объясняющего имени, условной логики или отладки, обычная последовательность локальных переменных может быть понятнее.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Для чего IIFE использовали до modules?</summary>
+
+`var` имел function scope, а classic scripts делили global scope. Function expression создавала закрытую область и могла вернуть публичный API, скрывая private variables. ES modules уже имеют module scope, а `let`/`const` дают block scope, поэтому IIFE чаще остаётся в legacy bundle или одноразовом script.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Есть ли у IIFE практические ловушки?</summary>
+
+Если она начинается сразу после выражения без semicolon, parser может попытаться вызвать результат предыдущей строки. Поэтому legacy-код часто пишет `;(function () {})()`. Async IIFE позволяет использовать `await` в classic script, но в ESM обычно понятнее top-level await или именованная async init function.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем pure function важна для composition?</summary>
+
+Pure function возвращает результат только из аргументов и не меняет внешнее состояние. Такие шаги легче переставлять, тестировать и повторно запускать. Composition может включать side effects, но тогда порядок становится частью поведения и pipeline уже нельзя свободно преобразовывать.
+
+</details>
+
+## Мини-задача
 
 ```js
 const pipe = (...functions) => (input) =>
@@ -127,12 +154,14 @@ const makeSlug = pipe(normalize, toSlug);
 console.log(makeSlug("  React Patterns  "));
 ```
 
-> [!followup]
-> **Вопрос:** Что будет выведено и в каком порядке вызываются функции?
->
-> **Ответ:** `"react-patterns"`. `pipe` идёт слева направо: сначала `normalize` удаляет внешние пробелы и меняет регистр, затем `toSlug` заменяет внутренний пробел дефисом.
+<details>
+<summary><strong>Вопрос:</strong> Что будет выведено и в каком порядке вызываются функции?</summary>
 
-#### Где это встречается во frontend
+`"react-patterns"`. `pipe` идёт слева направо: сначала `normalize` удаляет внешние пробелы и меняет регистр, затем `toSlug` заменяет внутренний пробел дефисом.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | Механизм | Польза |
 | --- | --- | --- |
@@ -143,7 +172,7 @@ console.log(makeSlug("  React Patterns  "));
 | React HOC | HOF над component | Добавить cross-cutting behavior |
 | Legacy bundle | IIFE | Не загрязнять global scope |
 
-#### Связанные темы
+## Связанные темы
 
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [08 Замыкание](<./08 Замыкание.md>)
@@ -153,7 +182,7 @@ console.log(makeSlug("  React Patterns  "));
 - [03 Strategy во frontend](<../Patterns/03 Strategy во frontend.md>)
 - [24 HOC render props PureComponent Component lifecycle](<../React/24 HOC render props PureComponent Component lifecycle.md>)
 
-#### Источники
+## Источники
 
 - [MDN: functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions)
 - [MDN: closures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures)

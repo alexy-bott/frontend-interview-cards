@@ -4,11 +4,12 @@
 [← 32 Observer APIs](<./32 Observer APIs.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [34 Garbage collection →](<./34 Garbage collection.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Чем отличаются `requestAnimationFrame` и `requestIdleCallback`? Как планировать визуальную и фоновую работу на main thread?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 `requestAnimationFrame(callback)` просит браузер вызвать callback перед будущим repaint. Он предназначен для работы, которая должна попасть в визуальный кадр: JavaScript-анимации, canvas, применение последнего положения drag или scroll. Вызов одноразовый, поэтому для продолжения анимации callback планирует следующий rAF сам.
 
@@ -32,74 +33,98 @@ frameId = requestAnimationFrame(step);
 
 Оба callback выполняются на main thread. rAF выбирает момент перед кадром, idle callback ищет свободный бюджет, но ни один API не ускоряет тяжёлый алгоритм и не переносит его в другой поток.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Почему rAF лучше `setInterval` для анимации?
->
-> **Ответ:** Он синхронизирован с rendering opportunity и обычно вызывается с частотой дисплея. Браузер может приостановить rAF в скрытой вкладке, не выполняя невидимую анимацию. Interval не знает время paint, может сработать между кадрами и продолжает измерять только таймерную задержку. При этом тяжёлый rAF callback всё равно сорвёт кадр.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** rAF является task или microtask?
->
-> **Ответ:** Нет, это callback отдельного шага rendering pipeline. После task и microtask checkpoint браузер при наличии rendering opportunity вызывает rAF callbacks, затем выполняет необходимые style/layout и paint-шаги. Конкретный кадр может быть отложен, если main thread занят или документ скрыт.
+<details>
+<summary><strong>Вопрос:</strong> Почему rAF лучше <code>setInterval</code> для анимации?</summary>
 
-> [!followup]
-> **Вопрос:** Почему нельзя увеличивать координату на фиксированное число за кадр?
->
-> **Ответ:** Скорость станет зависеть от частоты вызовов: на 120 Гц анимация пройдёт путь примерно вдвое быстрее, чем на 60 Гц. Нужно вычислять прогресс из разницы timestamps и ограничивать его длительностью. После паузы вкладки большой delta также следует обработать осознанно.
+Он синхронизирован с rendering opportunity и обычно вызывается с частотой дисплея. Браузер может приостановить rAF в скрытой вкладке, не выполняя невидимую анимацию. Interval не знает время paint, может сработать между кадрами и продолжает измерять только таймерную задержку. При этом тяжёлый rAF callback всё равно сорвёт кадр.
 
-> [!followup]
-> **Вопрос:** Как использовать rAF как throttle для scroll или pointermove?
->
-> **Ответ:** Handler сохраняет последние координаты и ставит rAF только если кадр ещё не запланирован. В rAF он сбрасывает флаг и применяет последнее значение. Если вызывать rAF на каждое входное событие без такого флага, браузер вызовет все накопленные callbacks в одном кадре.
+</details>
 
-> [!followup]
-> **Вопрос:** В каком порядке читать и изменять layout в rAF?
->
-> **Ответ:** Сначала сгруппировать необходимые reads вроде `getBoundingClientRect`, затем writes вроде изменения `style` или class. Чередование write-read-write может заставить браузер синхронно пересчитывать layout несколько раз. rAF даёт удобную границу кадра, но сам по себе не предотвращает layout thrashing.
+<details>
+<summary><strong>Вопрос:</strong> rAF является task или microtask?</summary>
 
-> [!followup]
-> **Вопрос:** Как обрабатывать очередь через `requestIdleCallback`?
->
-> **Ответ:** Выполнять маленькие элементы, пока `deadline.timeRemaining()` остаётся выше безопасного порога или пока `didTimeout` требует сделать ограниченный обязательный шаг. Если очередь не пуста, запланировать новый idle callback. Один длинный цикл внутри callback уничтожает смысл idle scheduling.
->
-> ```js
-> function processQueue(deadline) {
->   while (queue.length && (deadline.timeRemaining() > 1 || deadline.didTimeout)) {
->     processItem(queue.shift());
->   }
->
->   if (queue.length) requestIdleCallback(processQueue, { timeout: 2000 });
-> }
-> ```
+Нет, это callback отдельного шага rendering pipeline. После task и microtask checkpoint браузер при наличии rendering opportunity вызывает rAF callbacks, затем выполняет необходимые style/layout и paint-шаги. Конкретный кадр может быть отложен, если main thread занят или документ скрыт.
 
-> [!followup]
-> **Вопрос:** Гарантирует ли option `timeout` свободное время?
->
-> **Ответ:** Нет. Она лишь требует вызвать callback не позднее предела, даже если idle budget нет; тогда `didTimeout` будет `true`, а работа может конкурировать с вводом и кадром. Timeout применяют к действительно необходимой отложенной задаче и всё равно ограничивают объём одного вызова.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем заменить `requestIdleCallback` при отсутствии поддержки?
->
-> **Ответ:** Зависит от задачи. Небольшую работу можно отложить через timer с chunking, приоритетную планировать через доступный Scheduler API или библиотечный scheduler, CPU-heavy переносить в Worker. `setTimeout` не знает idle budget и является только fallback со своей семантикой, а не полным полифилом.
+<details>
+<summary><strong>Вопрос:</strong> Почему нельзя увеличивать координату на фиксированное число за кадр?</summary>
 
-> [!followup]
-> **Вопрос:** Подходит ли idle callback для обязательной аналитики при закрытии страницы?
->
-> **Ответ:** Нет, он может вообще не успеть выполниться. Для отправки небольших данных при завершении страницы применяют подходящий lifecycle и `navigator.sendBeacon` или `fetch` с `keepalive`, учитывая ограничения. Необязательную подготовку аналитики можно выполнять в idle раньше.
+Скорость станет зависеть от частоты вызовов: на 120 Гц анимация пройдёт путь примерно вдвое быстрее, чем на 60 Гц. Нужно вычислять прогресс из разницы timestamps и ограничивать его длительностью. После паузы вкладки большой delta также следует обработать осознанно.
 
-> [!followup]
-> **Вопрос:** Чем эти API отличаются от Web Worker?
->
-> **Ответ:** rAF и idle только планируют callback на main thread. Worker выполняет JavaScript в отдельном потоке и подходит для вычислений, которым не нужен DOM. Результат Worker всё равно применяется к UI на main thread, часто в ближайшем rAF, если он визуальный.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем `requestIdleCallback` отличается от React `useTransition`?
->
-> **Ответ:** Idle callback является browser API для произвольной низкоприоритетной функции. `useTransition` помечает React state update как non-urgent и позволяет React планировать interruptible render. Он не ждёт буквального простоя браузера и не предназначен для запуска произвольной фоновой задачи.
+<details>
+<summary><strong>Вопрос:</strong> Как использовать rAF как throttle для scroll или pointermove?</summary>
 
-#### Мини-задача
+Handler сохраняет последние координаты и ставит rAF только если кадр ещё не запланирован. В rAF он сбрасывает флаг и применяет последнее значение. Если вызывать rAF на каждое входное событие без такого флага, браузер вызовет все накопленные callbacks в одном кадре.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> В каком порядке читать и изменять layout в rAF?</summary>
+
+Сначала сгруппировать необходимые reads вроде `getBoundingClientRect`, затем writes вроде изменения `style` или class. Чередование write-read-write может заставить браузер синхронно пересчитывать layout несколько раз. rAF даёт удобную границу кадра, но сам по себе не предотвращает layout thrashing.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как обрабатывать очередь через <code>requestIdleCallback</code>?</summary>
+
+Выполнять маленькие элементы, пока `deadline.timeRemaining()` остаётся выше безопасного порога или пока `didTimeout` требует сделать ограниченный обязательный шаг. Если очередь не пуста, запланировать новый idle callback. Один длинный цикл внутри callback уничтожает смысл idle scheduling.
+
+```js
+function processQueue(deadline) {
+  while (queue.length && (deadline.timeRemaining() > 1 || deadline.didTimeout)) {
+    processItem(queue.shift());
+  }
+
+  if (queue.length) requestIdleCallback(processQueue, { timeout: 2000 });
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Гарантирует ли option <code>timeout</code> свободное время?</summary>
+
+Нет. Она лишь требует вызвать callback не позднее предела, даже если idle budget нет; тогда `didTimeout` будет `true`, а работа может конкурировать с вводом и кадром. Timeout применяют к действительно необходимой отложенной задаче и всё равно ограничивают объём одного вызова.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем заменить <code>requestIdleCallback</code> при отсутствии поддержки?</summary>
+
+Зависит от задачи. Небольшую работу можно отложить через timer с chunking, приоритетную планировать через доступный Scheduler API или библиотечный scheduler, CPU-heavy переносить в Worker. `setTimeout` не знает idle budget и является только fallback со своей семантикой, а не полным полифилом.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Подходит ли idle callback для обязательной аналитики при закрытии страницы?</summary>
+
+Нет, он может вообще не успеть выполниться. Для отправки небольших данных при завершении страницы применяют подходящий lifecycle и `navigator.sendBeacon` или `fetch` с `keepalive`, учитывая ограничения. Необязательную подготовку аналитики можно выполнять в idle раньше.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем эти API отличаются от Web Worker?</summary>
+
+rAF и idle только планируют callback на main thread. Worker выполняет JavaScript в отдельном потоке и подходит для вычислений, которым не нужен DOM. Результат Worker всё равно применяется к UI на main thread, часто в ближайшем rAF, если он визуальный.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>requestIdleCallback</code> отличается от React <code>useTransition</code>?</summary>
+
+Idle callback является browser API для произвольной низкоприоритетной функции. `useTransition` помечает React state update как non-urgent и позволяет React планировать interruptible render. Он не ждёт буквального простоя браузера и не предназначен для запуска произвольной фоновой задачи.
+
+</details>
+
+## Мини-задача
 
 ```js
 let start;
@@ -116,12 +141,14 @@ function step(timestamp) {
 requestAnimationFrame(step);
 ```
 
-> [!followup]
-> **Вопрос:** Почему анимация сохранит примерно одинаковую длительность на экранах с разной частотой?
->
-> **Ответ:** Позиция зависит от прошедшего времени `timestamp - start`, а не от числа вызовов. На экране с высокой частотой будет больше промежуточных положений, но progress достигнет `1` примерно через те же 300 миллисекунд.
+<details>
+<summary><strong>Вопрос:</strong> Почему анимация сохранит примерно одинаковую длительность на экранах с разной частотой?</summary>
 
-#### Где это встречается во frontend
+Позиция зависит от прошедшего времени `timestamp - start`, а не от числа вызовов. На экране с высокой частотой будет больше промежуточных положений, но progress достигнет `1` примерно через те же 300 миллисекунд.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | Инструмент | Ограничение |
 | --- | --- | --- |
@@ -132,7 +159,7 @@ requestAnimationFrame(step);
 | Обязательная работа | Явный scheduler/lifecycle | Не надеяться на idle |
 | CPU-heavy расчёт | Web Worker | UI применяет только результат |
 
-#### Связанные темы
+## Связанные темы
 
 - [24 Event Loop](<./24 Event Loop.md>)
 - [30 Debounce и throttle](<./30 Debounce и throttle.md>)
@@ -142,7 +169,7 @@ requestAnimationFrame(step);
 - [02 Rendering pipeline reflow repaint composite](<../Browser Internals/02 Rendering pipeline reflow repaint composite.md>)
 - [16 useTransition и useDeferredValue](<../React/16 useTransition и useDeferredValue.md>)
 
-#### Источники
+## Источники
 
 - [MDN: `requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)
 - [MDN: `requestIdleCallback`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback)

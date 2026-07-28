@@ -4,11 +4,12 @@
 [← 01 Что такое Git и зачем он frontend разработчику](<./01 Что такое Git и зачем он frontend разработчику.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Branching strategy feature branch main trunk git flow →](<./03 Branching strategy feature branch main trunk git flow.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Что такое working tree, index, commit, `HEAD`, branch и remote в Git? Как изменение проходит между ними?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 При обычной работе Git сравнивает три состояния проекта: снимок в текущем commit, подготовленное состояние в index и файлы в working tree. Понимание этих трёх слоёв объясняет поведение `status`, `diff`, `add`, `commit`, `restore` и `reset`.
 
@@ -32,56 +33,76 @@ HEAD -> main -> commit C
              working tree -> текущие правки
 ```
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Что показывает `git status`?
->
-> **Ответ:** Команда сопоставляет состояние `HEAD`, index и working tree. Изменения между `HEAD` и index показываются как staged, между index и working tree - как not staged. Отдельно выводятся untracked-файлы, которых ещё нет в index и текущем commit.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Чем отличаются `git diff` и `git diff --staged`?
->
-> **Ответ:** `git diff` показывает unstaged-разницу между working tree и index. `git diff --staged`, также доступный как `--cached`, показывает разницу между index и `HEAD`, то есть содержимое будущего commit. Для полной проверки перед commit полезно посмотреть обе команды.
+<details>
+<summary><strong>Вопрос:</strong> Что показывает <code>git status</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Что делает `git add`?
->
-> **Ответ:** `git add` записывает текущее содержимое выбранных файлов в index. Команда не просто помечает файл галочкой: index хранит конкретную подготовленную версию. `git add -p` позволяет добавить не весь файл, а выбранные фрагменты diff, чтобы разделить изменения на логические commits.
+Команда сопоставляет состояние `HEAD`, index и working tree. Изменения между `HEAD` и index показываются как staged, между index и working tree - как not staged. Отдельно выводятся untracked-файлы, которых ещё нет в index и текущем commit.
 
-> [!followup]
-> **Вопрос:** Что происходит при `git commit`?
->
-> **Ответ:** Git создаёт commit из снимка в index, связывает его с текущим `HEAD` как с родителем и передвигает текущую ветку на новый commit. Unstaged-изменения из working tree в него не попадут.
+</details>
 
-> [!followup]
-> **Вопрос:** Что такое detached HEAD?
->
-> **Ответ:** В этом состоянии `HEAD` указывает прямо на commit, а не на ветку. Новые commits создавать можно, но обычная ветка не будет автоматически двигаться вместе с ними. Чтобы не потерять доступ к такой линии после переключения, от нужного commit создают ветку, например `git switch -c experiment`.
+<details>
+<summary><strong>Вопрос:</strong> Чем отличаются <code>git diff</code> и <code>git diff --staged</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Чем локальная ветка `main` отличается от `origin/main`?
->
-> **Ответ:** `main` - изменяемая локальная ветка. `origin/main` - remote-tracking branch, то есть локальное представление последнего полученного состояния ветки `main` на remote `origin`. Она обновляется при `fetch` и не обязана совпадать ни с локальной `main`, ни с текущим состоянием сервера до следующего обмена.
+`git diff` показывает unstaged-разницу между working tree и index. `git diff --staged`, также доступный как `--cached`, показывает разницу между index и `HEAD`, то есть содержимое будущего commit. Для полной проверки перед commit полезно посмотреть обе команды.
 
-> [!followup]
-> **Вопрос:** Чем `fetch` отличается от `pull`?
->
-> **Ответ:** `git fetch` получает недостающие данные истории и обновляет remote-tracking branches, не интегрируя их в текущую ветку. `git pull` сначала выполняет fetch, а затем интегрирует полученную ветку через merge или rebase в зависимости от аргументов и конфигурации. Поэтому `fetch` удобен, когда результат сначала нужно посмотреть.
+</details>
 
-> [!followup]
-> **Вопрос:** Что такое upstream branch?
->
-> **Ответ:** Это ветка, с которой локальная ветка связана для операций без явного указания источника или назначения. Например, локальная `main` часто отслеживает `origin/main`; тогда `git status` показывает, насколько она впереди или позади, а `pull` и `push` понимают целевую ветку по настройке.
+<details>
+<summary><strong>Вопрос:</strong> Что делает <code>git add</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Почему `.gitignore` не игнорирует уже отслеживаемый файл?
->
-> **Ответ:** `.gitignore` влияет на поиск неотслеживаемых файлов. Если файл уже есть в index и commits, Git продолжает видеть его изменения. Чтобы прекратить отслеживание, файл нужно удалить из index отдельной операцией, например `git rm --cached`, и зафиксировать это изменение.
+`git add` записывает текущее содержимое выбранных файлов в index. Команда не просто помечает файл галочкой: index хранит конкретную подготовленную версию. `git add -p` позволяет добавить не весь файл, а выбранные фрагменты diff, чтобы разделить изменения на логические commits.
 
-#### Где это встречается во frontend
+</details>
 
-> [!context]
+<details>
+<summary><strong>Вопрос:</strong> Что происходит при <code>git commit</code>?</summary>
+
+Git создаёт commit из снимка в index, связывает его с текущим `HEAD` как с родителем и передвигает текущую ветку на новый commit. Unstaged-изменения из working tree в него не попадут.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое detached HEAD?</summary>
+
+В этом состоянии `HEAD` указывает прямо на commit, а не на ветку. Новые commits создавать можно, но обычная ветка не будет автоматически двигаться вместе с ними. Чтобы не потерять доступ к такой линии после переключения, от нужного commit создают ветку, например `git switch -c experiment`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем локальная ветка <code>main</code> отличается от <code>origin/main</code>?</summary>
+
+`main` - изменяемая локальная ветка. `origin/main` - remote-tracking branch, то есть локальное представление последнего полученного состояния ветки `main` на remote `origin`. Она обновляется при `fetch` и не обязана совпадать ни с локальной `main`, ни с текущим состоянием сервера до следующего обмена.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>fetch</code> отличается от <code>pull</code>?</summary>
+
+`git fetch` получает недостающие данные истории и обновляет remote-tracking branches, не интегрируя их в текущую ветку. `git pull` сначала выполняет fetch, а затем интегрирует полученную ветку через merge или rebase в зависимости от аргументов и конфигурации. Поэтому `fetch` удобен, когда результат сначала нужно посмотреть.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое upstream branch?</summary>
+
+Это ветка, с которой локальная ветка связана для операций без явного указания источника или назначения. Например, локальная `main` часто отслеживает `origin/main`; тогда `git status` показывает, насколько она впереди или позади, а `pull` и `push` понимают целевую ветку по настройке.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>.gitignore</code> не игнорирует уже отслеживаемый файл?</summary>
+
+`.gitignore` влияет на поиск неотслеживаемых файлов. Если файл уже есть в index и commits, Git продолжает видеть его изменения. Чтобы прекратить отслеживание, файл нужно удалить из index отдельной операцией, например `git rm --cached`, и зафиксировать это изменение.
+
+</details>
+
+## Где это встречается во frontend
+
+> [!NOTE]
 > | Ситуация | Что важно понимать |
 > |---|---|
 > | Частичный commit | Через `git add -p` можно отделить исправление компонента от несвязанного форматирования. |
@@ -89,14 +110,14 @@ HEAD -> main -> commit C
 > | Обновление ветки | `fetch` позволяет сначала сравнить локальную ветку с `origin/main`, не меняя рабочие файлы. |
 > | Случайно добавленный `.env` | Добавление в `.gitignore` не убирает уже отслеживаемый файл и не удаляет секрет из истории. |
 
-#### Связанные темы
+## Связанные темы
 
 - [01 Что такое Git и зачем он frontend разработчику](<./01 Что такое Git и зачем он frontend разработчику.md>)
 - [04 Merge vs rebase fast-forward squash](<./04 Merge vs rebase fast-forward squash.md>)
 - [05 Cherry-pick revert reset restore stash reflog](<./05 Cherry-pick revert reset restore stash reflog.md>)
 - [01 package.json scripts dependencies devDependencies](<../Tooling/01 package.json scripts dependencies devDependencies.md>)
 
-#### Источники
+## Источники
 
 - [Git docs: git-status](https://git-scm.com/docs/git-status)
 - [Git docs: git-add](https://git-scm.com/docs/git-add)

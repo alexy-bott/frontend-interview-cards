@@ -4,11 +4,12 @@
 [← 07 Server Actions forms mutations revalidatePath revalidateTag](<./07 Server Actions forms mutations revalidatePath revalidateTag.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Dynamic routes params searchParams metadata →](<./09 Dynamic routes params searchParams metadata.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Что такое Route Handlers и Middleware в Next.js 14? Чем отличаются Edge Runtime и Node.js Runtime?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Route Handler создаёт HTTP endpoint, то есть точку входа для HTTP-запросов, внутри App Router. Файл `route.ts` размещают в каталоге `app`, а экспортированные функции `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD` и `OPTIONS` обрабатывают соответствующие HTTP-методы.
 
@@ -59,49 +60,67 @@ Node.js Runtime предоставляет обычные Node.js API и сов�
 
 В Next.js 16 `middleware.ts` переименован в `proxy.ts`, а Proxy работает в Node.js Runtime. Поэтому утверждение «Middleware всегда Edge» верно для Next.js 14, но уже не описывает текущую модель Next.js 16.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Когда нужен Route Handler, а когда Server Action?
->
-> **Ответ:** Route Handler нужен, когда требуется явный HTTP-контракт: endpoint для мобильного клиента, webhook, OAuth callback, CORS или выдача файла. Server Action удобна для изменения данных, инициированного React-формой или компонентом внутри того же приложения. Она не предназначена как публичный API для независимых клиентов.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Следует ли Server Component получать данные через собственный Route Handler?
->
-> **Ответ:** Обычно нет. Server Component уже выполняется на сервере и может напрямую вызвать repository или функцию доступа к данным. Внутренний HTTP добавляет сериализацию, задержку и отдельную обработку авторизации, а во время сборки endpoint может ещё не быть запущен. Route Handler оставляют для настоящей HTTP-границы.
+<details>
+<summary><strong>Вопрос:</strong> Когда нужен Route Handler, а когда Server Action?</summary>
 
-> [!followup]
-> **Вопрос:** Можно ли разместить `page.tsx` и `route.ts` в одном сегменте?
->
-> **Ответ:** Нет. Они претендуют на один и тот же URL, поэтому Next.js считает такую структуру конфликтом. API endpoint выносят в дочерний сегмент, например страница `/posts` и handler `/posts/export`.
+Route Handler нужен, когда требуется явный HTTP-контракт: endpoint для мобильного клиента, webhook, OAuth callback, CORS или выдача файла. Server Action удобна для изменения данных, инициированного React-формой или компонентом внутри того же приложения. Она не предназначена как публичный API для независимых клиентов.
 
-> [!followup]
-> **Вопрос:** Как обработать динамический сегмент в Route Handler?
->
-> **Ответ:** Файл размещают, например, как `app/api/posts/[id]/route.ts`. Значение `id` приходит в объекте `params` второго аргумента handler. В Next.js 14 `params` является обычным объектом, а в Next.js 15 API запроса и параметры маршрута переходят к асинхронной форме.
+</details>
 
-> [!followup]
-> **Вопрос:** Почему полноценную авторизацию нельзя оставить только в Middleware?
->
-> **Ответ:** Middleware находится далеко от конкретной операции и обычно видит лишь cookie или token. Оно может рано отклонить явно неавторизованный запрос, но не всегда знает, имеет ли пользователь доступ к конкретной записи. Проверку владельца и разрешения выполняют в Server Action, Route Handler или слое доступа к данным непосредственно перед чтением или изменением.
+<details>
+<summary><strong>Вопрос:</strong> Следует ли Server Component получать данные через собственный Route Handler?</summary>
 
-> [!followup]
-> **Вопрос:** Что чаще всего ломается при переносе кода в Edge Runtime?
->
-> **Ответ:** Ломаются зависимости от Node.js API, native modules, неподдерживаемых драйверов баз данных и packages с динамической генерацией кода. Перед переключением нужно проверить всю цепочку imports, а не только собственный файл. Если библиотека требует Node.js, маршрут следует оставить в `nodejs` runtime.
+Обычно нет. Server Component уже выполняется на сервере и может напрямую вызвать repository или функцию доступа к данным. Внутренний HTTP добавляет сериализацию, задержку и отдельную обработку авторизации, а во время сборки endpoint может ещё не быть запущен. Route Handler оставляют для настоящей HTTP-границы.
 
-> [!followup]
-> **Вопрос:** Как реализовать CORS в Route Handler?
->
-> **Ответ:** Handler возвращает `Access-Control-Allow-Origin` и другие разрешённые headers, а для preflight, то есть предварительного запроса, реализует `OPTIONS`. Origin нельзя бездумно отражать из запроса вместе с credentials: разрешённые origins сравнивают с явным списком. Для API того же origin CORS обычно не нужен.
+</details>
 
-> [!followup]
-> **Вопрос:** Как принимать webhook безопасно?
->
-> **Ответ:** Handler читает исходное тело запроса в формате, который требует провайдер, проверяет подпись и timestamp, а затем обеспечивает идемпотентность обработки. JSON нельзя преобразовывать до проверки, если подпись вычислена от исходных bytes. Медленную работу лучше передать в очередь, а провайдеру быстро вернуть успешный HTTP-статус.
+<details>
+<summary><strong>Вопрос:</strong> Можно ли разместить <code>page.tsx</code> и <code>route.ts</code> в одном сегменте?</summary>
 
-#### Где это встречается во frontend
+Нет. Они претендуют на один и тот же URL, поэтому Next.js считает такую структуру конфликтом. API endpoint выносят в дочерний сегмент, например страница `/posts` и handler `/posts/export`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как обработать динамический сегмент в Route Handler?</summary>
+
+Файл размещают, например, как `app/api/posts/[id]/route.ts`. Значение `id` приходит в объекте `params` второго аргумента handler. В Next.js 14 `params` является обычным объектом, а в Next.js 15 API запроса и параметры маршрута переходят к асинхронной форме.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему полноценную авторизацию нельзя оставить только в Middleware?</summary>
+
+Middleware находится далеко от конкретной операции и обычно видит лишь cookie или token. Оно может рано отклонить явно неавторизованный запрос, но не всегда знает, имеет ли пользователь доступ к конкретной записи. Проверку владельца и разрешения выполняют в Server Action, Route Handler или слое доступа к данным непосредственно перед чтением или изменением.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что чаще всего ломается при переносе кода в Edge Runtime?</summary>
+
+Ломаются зависимости от Node.js API, native modules, неподдерживаемых драйверов баз данных и packages с динамической генерацией кода. Перед переключением нужно проверить всю цепочку imports, а не только собственный файл. Если библиотека требует Node.js, маршрут следует оставить в `nodejs` runtime.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как реализовать CORS в Route Handler?</summary>
+
+Handler возвращает `Access-Control-Allow-Origin` и другие разрешённые headers, а для preflight, то есть предварительного запроса, реализует `OPTIONS`. Origin нельзя бездумно отражать из запроса вместе с credentials: разрешённые origins сравнивают с явным списком. Для API того же origin CORS обычно не нужен.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как принимать webhook безопасно?</summary>
+
+Handler читает исходное тело запроса в формате, который требует провайдер, проверяет подпись и timestamp, а затем обеспечивает идемпотентность обработки. JSON нельзя преобразовывать до проверки, если подпись вычислена от исходных bytes. Медленную работу лучше передать в очередь, а провайдеру быстро вернуть успешный HTTP-статус.
+
+</details>
+
+## Где это встречается во frontend
 
 | Задача | Механизм |
 | --- | --- |
@@ -112,14 +131,14 @@ Node.js Runtime предоставляет обычные Node.js API и сов�
 | Тяжёлый драйвер базы данных | Node.js Runtime |
 | Короткий handler на основе Web API | Edge Runtime, если это поддерживает платформа |
 
-#### Связанные темы
+## Связанные темы
 
 - [02 App Router pages layouts loading error route handlers](<./02 App Router pages layouts loading error route handlers.md>)
 - [07 Server Actions forms mutations revalidatePath revalidateTag](<./07 Server Actions forms mutations revalidatePath revalidateTag.md>)
 - [09 Dynamic routes params searchParams metadata](<./09 Dynamic routes params searchParams metadata.md>)
 - [05 CORS same-origin preflight credentials](<../Security/05 CORS same-origin preflight credentials.md>)
 
-#### Источники
+## Источники
 
 - [Next.js 14 docs: Route Handlers](https://nextjs.org/docs/14/app/building-your-application/routing/route-handlers)
 - [Next.js 14 docs: Middleware](https://nextjs.org/docs/14/app/building-your-application/routing/middleware)

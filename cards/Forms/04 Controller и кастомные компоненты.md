@@ -4,11 +4,12 @@
 [← 03 React Hook Form register handleSubmit formState](<./03 React Hook Form register handleSubmit formState.md>) · [↑ Forms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Валидация форм schema resolver async validation →](<./05 Валидация форм schema resolver async validation.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Зачем в React Hook Form нужен `Controller`? Почему не всегда хватает `register`?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 `register` подходит нативному неуправляемому полю, которому можно передать `ref`, `name`, `onChange` и `onBlur`. Составной `Select` (выпадающий список), `DatePicker` (выбор даты), поле с маской или `Combobox` (поле ввода со списком вариантов) может не отдавать нативный `<input>` и сообщать об изменении через собственный prop, например `onValueChange`.
 
@@ -20,41 +21,55 @@
 
 Поле внутри `Controller` уже зарегистрировано, поэтому добавлять к тому же DOM-элементу `{...register(name)}` нельзя. Это создаст двойную регистрацию. Для обычного `<input>` `Controller` без отдельной причины не нужен: `register` проще и сохраняет неуправляемую модель.
 
-#### Встречные вопросы
+</details>
 
-> [!followup] Управляемый компонент
-> **Вопрос:** Почему пользовательский Select часто требует `Controller`?
->
-> **Ответ:** Он может не иметь обычного DOM-элемента `<input>` с `ref` и `name` и отдавать значение через `onValueChange`, а не `event.target.value`. `Controller` передаёт ему текущее `field.value`, а новое значение возвращает в `field.onChange`. Если библиотека уже предоставляет нативный `<input>` и стандартные события, можно использовать обычный `register`.
+## Встречные вопросы
 
-> [!followup] field
-> **Вопрос:** Что находится в `field` внутри `Controller`?
->
-> **Ответ:** Обычно это `value`, `onChange`, `onBlur`, `name` и `ref`. Их нужно передать в компонент или адаптировать к его API. Если не передать `onBlur`, состояние посещённости `touched` может работать неверно. Если не передать `ref`, фокус на ошибку может не сработать.
+<details>
+<summary><strong>Вопрос:</strong> Почему пользовательский Select часто требует <code>Controller</code>?</summary>
 
-> [!followup] Начальное значение
-> **Вопрос:** Почему управляемый компонент без начального значения может вызвать предупреждение?
->
-> **Ответ:** Если сначала `value` равен `undefined`, React считает поле неуправляемым, а после появления строки или объекта оно становится управляемым. Начальное значение задают сразу в `defaultValues` или через prop `defaultValue` у `Controller`. Для очищения передают допустимое значение вроде `''` или `null`, но не `undefined`.
+Он может не иметь обычного DOM-элемента `<input>` с `ref` и `name` и отдавать значение через `onValueChange`, а не `event.target.value`. `Controller` передаёт ему текущее `field.value`, а новое значение возвращает в `field.onChange`. Если библиотека уже предоставляет нативный `<input>` и стандартные события, можно использовать обычный `register`.
 
-> [!followup] Radix UI
-> **Вопрос:** Как это связано с Radix UI?
->
-> **Ответ:** Многие Radix Primitives, то есть низкоуровневые UI-компоненты Radix, поддерживают пары `value`/`onValueChange` или `open`/`onOpenChange`. Для значения формы создают адаптер через `Controller` или `useController`. Если компонент поддерживает нативную форму, ему передают `name` и проверяют создаваемый скрытый `<input>`, фокус и доступность. Сам факт использования Radix не гарантирует правильную сериализацию значения.
+</details>
 
-> [!followup] Двойная регистрация
-> **Вопрос:** Почему нельзя использовать `Controller` и `register` для одного поля одновременно?
->
-> **Ответ:** `Controller` уже регистрирует поле через `control`. Дополнительный `register` добавит вторые `ref`, `onChange`, `onBlur` и `name`, из-за чего обработчики начнут конкурировать, а состояние может обновляться дважды. Нужно выбрать один способ подключения.
+<details>
+<summary><strong>Вопрос:</strong> Что находится в <code>field</code> внутри <code>Controller</code>?</summary>
 
-> [!followup] Преобразование значения
-> **Вопрос:** Где преобразовать значение DatePicker или Select?
->
-> **Ответ:** На границе адаптера из события компонента получают значение формы и передают его в `field.onChange`. Например, `DatePicker` может хранить `Date | null`, а перед вызовом API дату преобразуют в ISO-строку. Отображаемый формат, внутренний тип формы и DTO - объект данных запроса - лучше преобразовывать на явных границах, а не смешивать в одном обработчике.
+Обычно это `value`, `onChange`, `onBlur`, `name` и `ref`. Их нужно передать в компонент или адаптировать к его API. Если не передать `onBlur`, состояние посещённости `touched` может работать неверно. Если не передать `ref`, фокус на ошибку может не сработать.
 
-#### Где это встречается во frontend
+</details>
 
-> [!context] Практика
+<details>
+<summary><strong>Вопрос:</strong> Почему управляемый компонент без начального значения может вызвать предупреждение?</summary>
+
+Если сначала `value` равен `undefined`, React считает поле неуправляемым, а после появления строки или объекта оно становится управляемым. Начальное значение задают сразу в `defaultValues` или через prop `defaultValue` у `Controller`. Для очищения передают допустимое значение вроде `''` или `null`, но не `undefined`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как это связано с Radix UI?</summary>
+
+Многие Radix Primitives, то есть низкоуровневые UI-компоненты Radix, поддерживают пары `value`/`onValueChange` или `open`/`onOpenChange`. Для значения формы создают адаптер через `Controller` или `useController`. Если компонент поддерживает нативную форму, ему передают `name` и проверяют создаваемый скрытый `<input>`, фокус и доступность. Сам факт использования Radix не гарантирует правильную сериализацию значения.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему нельзя использовать <code>Controller</code> и <code>register</code> для одного поля одновременно?</summary>
+
+`Controller` уже регистрирует поле через `control`. Дополнительный `register` добавит вторые `ref`, `onChange`, `onBlur` и `name`, из-за чего обработчики начнут конкурировать, а состояние может обновляться дважды. Нужно выбрать один способ подключения.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Где преобразовать значение DatePicker или Select?</summary>
+
+На границе адаптера из события компонента получают значение формы и передают его в `field.onChange`. Например, `DatePicker` может хранить `Date | null`, а перед вызовом API дату преобразуют в ISO-строку. Отображаемый формат, внутренний тип формы и DTO - объект данных запроса - лучше преобразовывать на явных границах, а не смешивать в одном обработчике.
+
+</details>
+
+## Где это встречается во frontend
+
+> [!NOTE]
 > | Компонент | Почему нужен адаптер |
 > | --- | --- |
 > | Пользовательский `Select` | Нестандартный `onValueChange` |
@@ -63,14 +78,14 @@
 > | `Combobox` | Сложный объект выбора |
 > | Radix `Select` | API компонента не совпадает с нативным `<input>` |
 
-#### Связанные темы
+## Связанные темы
 
 - [03 React Hook Form register handleSubmit formState](<./03 React Hook Form register handleSubmit formState.md>)
 - [07 Performance watch useWatch field arrays](<./07 Performance watch useWatch field arrays.md>)
 - [10 useRef ref prop forwardRef и imperative handle](<../React/10 useRef ref prop forwardRef и imperative handle.md>)
 - [09 Shared UI design system Radix UI](<../Architecture/09 Shared UI design system Radix UI.md>)
 
-#### Источники
+## Источники
 
 - [React Hook Form docs: Controller](https://react-hook-form.com/docs/usecontroller/controller)
 - [React Hook Form README](https://github.com/react-hook-form/react-hook-form)

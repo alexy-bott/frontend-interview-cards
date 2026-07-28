@@ -4,11 +4,12 @@
 [← 02 App Router pages layouts loading error route handlers](<./02 App Router pages layouts loading error route handlers.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 SSR SSG ISR Streaming и hydration →](<./04 SSR SSG ISR Streaming и hydration.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Чем отличаются Server Components и Client Components в App Router? Что делает `"use client"`?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Server Components выполняются только на сервере во время сборки или обработки запроса. В App Router это тип компонентов по умолчанию. Они могут напрямую читать базу данных, файловую систему и секретные environment variables, то есть переменные окружения, а их реализация не попадает в клиентский бандл. В них нельзя использовать `useState`, `useEffect`, обработчики DOM-событий и API браузера.
 
@@ -24,44 +25,60 @@ Client Component не импортирует Server Component как обычн�
 
 `"use server"` не помечает Server Component. Она объявляет Server Action или модуль с серверными actions. Для защиты от случайного импорта серверного модуля в клиентский код используют пакет `server-only`.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Выполняется ли Client Component на сервере?
->
-> **Ответ:** При первом полном открытии Next.js использует его инструкции для формирования начального HTML на сервере. Но состояние, эффекты и события начинают работать только после загрузки JavaScript и гидратации в браузере. При последующей клиентской навигации его интерфейс обновляется на клиенте без нового полного HTML-документа.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Почему в Server Component нельзя использовать `useState` и `onClick`?
->
-> **Ответ:** Server Component не сохраняет интерактивный экземпляр в браузере и его код не загружается туда. `useState` требует клиентского жизненного цикла, а `onClick` требует DOM listener, то есть обработчик DOM-события. Интерактивный участок нужно вынести за границу `"use client"`.
+<details>
+<summary><strong>Вопрос:</strong> Выполняется ли Client Component на сервере?</summary>
 
-> [!followup]
-> **Вопрос:** Как `"use client"` влияет на bundle?
->
-> **Ответ:** Все статические imports из клиентского входного файла становятся кандидатами на включение в клиентские chunks, то есть части бандла. Чем выше граница и чем больше зависимостей под ней, тем больше JavaScript нужно скачать, разобрать и выполнить. Server Components, переданные через композицию, не включаются в этот граф.
+При первом полном открытии Next.js использует его инструкции для формирования начального HTML на сервере. Но состояние, эффекты и события начинают работать только после загрузки JavaScript и гидратации в браузере. При последующей клиентской навигации его интерфейс обновляется на клиенте без нового полного HTML-документа.
 
-> [!followup]
-> **Вопрос:** Почему props из Server Component должны сериализоваться?
->
-> **Ответ:** React передаёт их через сетевую границу в RSC Payload. Обычные данные можно закодировать, а замыкание, DOM-узел или подключение к базе не имеет переносимого представления для браузера. Поддерживаемые типы определяет протокол React, а Server Actions передаются как специальные ссылки.
+</details>
 
-> [!followup]
-> **Вопрос:** Можно ли передать Server Component внутрь Client Component?
->
-> **Ответ:** Да, если Server Component создаёт дерево выше и передаёт готовый React-узел через `children` или prop. Client Component получает ссылку на место в RSC Payload, а не импортирует серверную реализацию. Это позволяет сочетать интерактивную оболочку с серверным содержимым.
+<details>
+<summary><strong>Вопрос:</strong> Почему в Server Component нельзя использовать <code>useState</code> и <code>onClick</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Где размещать Context Provider?
->
-> **Ответ:** React Context не поддерживается внутри Server Components как источник клиентского состояния, поэтому Provider делают Client Component. Его оборачивают вокруг минимальной нужной части дерева. Сам Server Component может рендерить этот Provider и передавать ему server-rendered children.
+Server Component не сохраняет интерактивный экземпляр в браузере и его код не загружается туда. `useState` требует клиентского жизненного цикла, а `onClick` требует DOM listener, то есть обработчик DOM-события. Интерактивный участок нужно вынести за границу `"use client"`.
 
-> [!followup]
-> **Вопрос:** Как не допустить попадания серверного кода в клиентский бандл?
->
-> **Ответ:** Секреты и доступ к данным держат в отдельных server modules, добавляют `import "server-only"` и не импортируют их из client entry. Переменные без `NEXT_PUBLIC_` Next.js не раскрывает клиенту, но архитектурная граница всё равно должна быть явной.
+</details>
 
-#### Где это встречается во frontend
+<details>
+<summary><strong>Вопрос:</strong> Как <code>"use client"</code> влияет на bundle?</summary>
+
+Все статические imports из клиентского входного файла становятся кандидатами на включение в клиентские chunks, то есть части бандла. Чем выше граница и чем больше зависимостей под ней, тем больше JavaScript нужно скачать, разобрать и выполнить. Server Components, переданные через композицию, не включаются в этот граф.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему props из Server Component должны сериализоваться?</summary>
+
+React передаёт их через сетевую границу в RSC Payload. Обычные данные можно закодировать, а замыкание, DOM-узел или подключение к базе не имеет переносимого представления для браузера. Поддерживаемые типы определяет протокол React, а Server Actions передаются как специальные ссылки.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Можно ли передать Server Component внутрь Client Component?</summary>
+
+Да, если Server Component создаёт дерево выше и передаёт готовый React-узел через `children` или prop. Client Component получает ссылку на место в RSC Payload, а не импортирует серверную реализацию. Это позволяет сочетать интерактивную оболочку с серверным содержимым.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Где размещать Context Provider?</summary>
+
+React Context не поддерживается внутри Server Components как источник клиентского состояния, поэтому Provider делают Client Component. Его оборачивают вокруг минимальной нужной части дерева. Сам Server Component может рендерить этот Provider и передавать ему server-rendered children.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как не допустить попадания серверного кода в клиентский бандл?</summary>
+
+Секреты и доступ к данным держат в отдельных server modules, добавляют `import "server-only"` и не импортируют их из client entry. Переменные без `NEXT_PUBLIC_` Next.js не раскрывает клиенту, но архитектурная граница всё равно должна быть явной.
+
+</details>
+
+## Где это встречается во frontend
 
 | Задача | Тип компонента |
 | --- | --- |
@@ -71,14 +88,14 @@ Client Component не импортирует Server Component как обычн�
 | Подключить Theme Provider | Client Component |
 | Скрыть секрет и server SDK | Server module с `server-only` |
 
-#### Связанные темы
+## Связанные темы
 
 - [02 App Router pages layouts loading error route handlers](<./02 App Router pages layouts loading error route handlers.md>)
 - [04 SSR SSG ISR Streaming и hydration](<./04 SSR SSG ISR Streaming и hydration.md>)
 - [07 Server Actions forms mutations revalidatePath revalidateTag](<./07 Server Actions forms mutations revalidatePath revalidateTag.md>)
 - [18 Server Components и Server Actions](<../React/18 Server Components и Server Actions.md>)
 
-#### Источники
+## Источники
 
 - [Next.js 14 docs: Server Components](https://nextjs.org/docs/14/app/building-your-application/rendering/server-components)
 - [Next.js 14 docs: Client Components](https://nextjs.org/docs/14/app/building-your-application/rendering/client-components)

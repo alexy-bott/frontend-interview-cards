@@ -4,11 +4,12 @@
 [← 20 Формы события refs и DOM типы](<./20 Формы события refs и DOM типы.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [22 Template literal types и branded types →](<./22 Template literal types и branded types.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Как типизировать Redux Toolkit, хуки React Redux и RTK Query? Какие типы следует выводить, а какие задавать явно?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Типы хранилища (`store`) выводят из его реальной конфигурации. Тогда зарегистрированные редьюсеры и middleware, то есть промежуточные обработчики Redux, остаются единственным источником правды:
 
@@ -80,59 +81,81 @@ getUsers: builder.query<User[], void>({
 
 Эти параметры типов не проверяют сетевой ответ. До Redux Toolkit 2.7 проверку и преобразование обычно выполняют вручную в `transformResponse` или в обёртке над `baseQuery`. Начиная с Redux Toolkit 2.7 RTK Query поддерживает стандарт Standard Schema и свойства `responseSchema`/`rawResponseSchema`: схема может проверить данные во время выполнения и одновременно вывести их тип. Возможность нужно сверять с установленной версией пакета.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Почему `RootState` и `AppDispatch` лучше выводить, а не писать вручную?
->
-> **Ответ:** Хранилище уже содержит все редьюсеры и middleware. Ручная копия типа может не учесть новый slice или потерять thunk-возможности `dispatch`. `ReturnType<typeof store.getState>` и `typeof store.dispatch` автоматически следуют за реальной конфигурацией и уменьшают число мест, которые нужно менять.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Зачем отдельные `useAppSelector` и `useAppDispatch`?
->
-> **Ответ:** `useAppSelector` знает `RootState`, поэтому не нужно указывать тип состояния в каждом селекторе. `useAppDispatch` знает thunks и middleware конкретного хранилища. Это не новые хуки с другой логикой, а один раз настроенные стандартные хуки React Redux.
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>RootState</code> и <code>AppDispatch</code> лучше выводить, а не писать вручную?</summary>
 
-> [!followup]
-> **Вопрос:** Почему `PayloadAction<Partial<User>>` может быть плохим контрактом?
->
-> **Ответ:** Все поля становятся необязательными, поэтому допустимым становится даже пустой `payload`, а смысл операции теряется. Кроме бизнес-проблемы, объект только из необязательных полей может ухудшать вывод типа действия в некоторых обобщённых сценариях. Лучше явно описать разрешённые поля и при необходимости использовать `AtLeastOne<T>`, который требует хотя бы одно из них.
+Хранилище уже содержит все редьюсеры и middleware. Ручная копия типа может не учесть новый slice или потерять thunk-возможности `dispatch`. `ReturnType<typeof store.getState>` и `typeof store.dispatch` автоматически следуют за реальной конфигурацией и уменьшают число мест, которые нужно менять.
 
-> [!followup]
-> **Вопрос:** Как типизировать `createAsyncThunk`?
->
-> **Ответ:** Тип аргумента указывают у параметра функции `payloadCreator`, а результат обычно выводится из `return`. Если используются `getState`, `dispatch`, `extra` или ожидаемая ошибка через `rejectWithValue`, задают конфигурацию thunk. Повторяющиеся типы выносят в `createAsyncThunk.withTypes<{ state: RootState; dispatch: AppDispatch; rejectValue: ApiError }>()`.
+</details>
 
-> [!followup]
-> **Вопрос:** Зачем `rejectWithValue` и `.unwrap()`?
->
-> **Ответ:** `rejectWithValue` сохраняет ожидаемую ошибку API в `action.payload`, отдельно от неожиданной сериализованной ошибки в `action.error`. В компоненте `dispatch(thunk(arg)).unwrap()` возвращает данные успешно завершённого действия или выбрасывает значение отклонённого действия. Поэтому результат можно обработать обычным `try/catch` без ручной проверки типа action.
+<details>
+<summary><strong>Вопрос:</strong> Зачем отдельные <code>useAppSelector</code> и <code>useAppDispatch</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Достаточно ли `builder.query<User, string>` для ответа backend?
->
-> **Ответ:** Нет. Параметр типа задаёт статический контракт кэша и хука, но не читает JSON. Для стабильного внутреннего API можно опираться на сгенерированный OpenAPI-контракт. На рискованной границе используют `responseSchema`, `rawResponseSchema` вместе с `transformResponse` или ручной парсер. Неверный ответ не должен попасть в кэш как `User`.
+`useAppSelector` знает `RootState`, поэтому не нужно указывать тип состояния в каждом селекторе. `useAppDispatch` знает thunks и middleware конкретного хранилища. Это не новые хуки с другой логикой, а один раз настроенные стандартные хуки React Redux.
 
-> [!followup]
-> **Вопрос:** Чем `responseSchema` отличается от `rawResponseSchema`?
->
-> **Ответ:** `responseSchema` проверяет итоговое значение endpoint после `transformResponse`. `rawResponseSchema` проверяет исходный ответ до преобразования. Если API возвращает DTO, который затем превращается в доменную модель, `rawResponseSchema` описывает DTO, а параметр типа результата и при необходимости `responseSchema` описывают итоговую модель.
+</details>
 
-> [!followup]
-> **Вопрос:** Что делать, если обязательный аргумент запроса пока неизвестен?
->
-> **Ответ:** Не расширять тип аргумента endpoint до `string | undefined`, если серверный запрос без `id` недопустим. Выполнение хука можно пропустить через параметр `skip` или передать `skipToken`, который сохраняет строгий тип аргумента. После появления `id` запрос получит корректный ключ кэша.
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>PayloadAction&lt;Partial&lt;User&gt;&gt;</code> может быть плохим контрактом?</summary>
 
-> [!followup]
-> **Вопрос:** Как типизируется ошибка RTK Query?
->
-> **Ответ:** Тип зависит от `baseQuery`. У `fetchBaseQuery` это `FetchBaseQueryError`, объединяющий HTTP-статус и несколько видов клиентских ошибок. Свойство `error` у хука не следует сразу приводить к собственному DTO: сначала тип сужают по форме либо нормализуют через `transformErrorResponse` или собственный `baseQuery`.
+Все поля становятся необязательными, поэтому допустимым становится даже пустой `payload`, а смысл операции теряется. Кроме бизнес-проблемы, объект только из необязательных полей может ухудшать вывод типа действия в некоторых обобщённых сценариях. Лучше явно описать разрешённые поля и при необходимости использовать `AtLeastOne<T>`, который требует хотя бы одно из них.
 
-> [!followup]
-> **Вопрос:** Нужно ли вручную типизировать результат селектора?
->
-> **Ответ:** Обычно нет. Если входной `state` уже имеет тип `RootState`, TypeScript выводит результат селектора. Для мемоизированного селектора `createSelector` итог также выводится из входных селекторов и результирующей функции. Явный возвращаемый тип полезен как публичный контракт, но его не стоит дублировать без причины.
+</details>
 
-#### Мини-задача
+<details>
+<summary><strong>Вопрос:</strong> Как типизировать <code>createAsyncThunk</code>?</summary>
+
+Тип аргумента указывают у параметра функции `payloadCreator`, а результат обычно выводится из `return`. Если используются `getState`, `dispatch`, `extra` или ожидаемая ошибка через `rejectWithValue`, задают конфигурацию thunk. Повторяющиеся типы выносят в `createAsyncThunk.withTypes<{ state: RootState; dispatch: AppDispatch; rejectValue: ApiError }>()`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Зачем <code>rejectWithValue</code> и <code>.unwrap()</code>?</summary>
+
+`rejectWithValue` сохраняет ожидаемую ошибку API в `action.payload`, отдельно от неожиданной сериализованной ошибки в `action.error`. В компоненте `dispatch(thunk(arg)).unwrap()` возвращает данные успешно завершённого действия или выбрасывает значение отклонённого действия. Поэтому результат можно обработать обычным `try/catch` без ручной проверки типа action.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Достаточно ли <code>builder.query&lt;User, string&gt;</code> для ответа backend?</summary>
+
+Нет. Параметр типа задаёт статический контракт кэша и хука, но не читает JSON. Для стабильного внутреннего API можно опираться на сгенерированный OpenAPI-контракт. На рискованной границе используют `responseSchema`, `rawResponseSchema` вместе с `transformResponse` или ручной парсер. Неверный ответ не должен попасть в кэш как `User`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>responseSchema</code> отличается от <code>rawResponseSchema</code>?</summary>
+
+`responseSchema` проверяет итоговое значение endpoint после `transformResponse`. `rawResponseSchema` проверяет исходный ответ до преобразования. Если API возвращает DTO, который затем превращается в доменную модель, `rawResponseSchema` описывает DTO, а параметр типа результата и при необходимости `responseSchema` описывают итоговую модель.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что делать, если обязательный аргумент запроса пока неизвестен?</summary>
+
+Не расширять тип аргумента endpoint до `string | undefined`, если серверный запрос без `id` недопустим. Выполнение хука можно пропустить через параметр `skip` или передать `skipToken`, который сохраняет строгий тип аргумента. После появления `id` запрос получит корректный ключ кэша.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как типизируется ошибка RTK Query?</summary>
+
+Тип зависит от `baseQuery`. У `fetchBaseQuery` это `FetchBaseQueryError`, объединяющий HTTP-статус и несколько видов клиентских ошибок. Свойство `error` у хука не следует сразу приводить к собственному DTO: сначала тип сужают по форме либо нормализуют через `transformErrorResponse` или собственный `baseQuery`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Нужно ли вручную типизировать результат селектора?</summary>
+
+Обычно нет. Если входной `state` уже имеет тип `RootState`, TypeScript выводит результат селектора. Для мемоизированного селектора `createSelector` итог также выводится из входных селекторов и результирующей функции. Явный возвращаемый тип полезен как публичный контракт, но его не стоит дублировать без причины.
+
+</details>
+
+## Мини-задача
 
 ```ts
 export type RootState = ReturnType<typeof store.getState>;
@@ -142,12 +165,14 @@ export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
 ```
 
-> [!followup]
-> **Вопрос:** Почему файл с хуками не должен импортироваться обратно в `store.ts`?
->
-> **Ответ:** Хуки являются исполняемыми функциями и импортируют типы хранилища. Обратный импорт из `store.ts` создаст цикл и может обратиться к модулю до завершения его инициализации. Конфигурация хранилища остаётся нижним уровнем, а `hooks.ts` зависит от неё только через импорты типов и React Redux.
+<details>
+<summary><strong>Вопрос:</strong> Почему файл с хуками не должен импортироваться обратно в <code>store.ts</code>?</summary>
 
-#### Где это встречается во frontend
+Хуки являются исполняемыми функциями и импортируют типы хранилища. Обратный импорт из `store.ts` создаст цикл и может обратиться к модулю до завершения его инициализации. Конфигурация хранилища остаётся нижним уровнем, а `hooks.ts` зависит от неё только через импорты типов и React Redux.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | Тип или механизм |
 | --- | --- |
@@ -159,14 +184,14 @@ export const useAppSelector = useSelector.withTypes<RootState>();
 | Ответ API | Схема в RTK 2.7+ или парсер в `transformResponse` |
 | Условный запрос | `skip` или `skipToken` |
 
-#### Связанные темы
+## Связанные темы
 
 - [09 Mapped types и Utility Types](<./09 Mapped types и Utility Types.md>)
 - [18 Проверка данных с backend](<./18 Проверка данных с backend.md>)
 - [19 React TypeScript типизация](<./19 React TypeScript типизация.md>)
 - [24 Async Promise Awaited и catch unknown](<./24 Async Promise Awaited и catch unknown.md>)
 
-#### Источники
+## Источники
 
 - [Redux Toolkit: Usage with TypeScript](https://redux-toolkit.js.org/usage/usage-with-typescript)
 - [React Redux: Usage with TypeScript](https://react-redux.js.org/using-react-redux/usage-with-typescript)

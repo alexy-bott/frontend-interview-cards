@@ -4,11 +4,12 @@
 [← 06 Конфликты и code review](<./06 Конфликты и code review.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 Commit history squash fixup conventional commits →](<./08 Commit history squash fixup conventional commits.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Что такое merge request в GitLab? Зачем нужны protected branches, approvals и pipeline перед merge?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Merge request, или MR, - запрос на интеграцию source branch, то есть ветки с изменениями, в target branch, куда эти изменения должны попасть. Это не объект самого Git, а командный процесс поверх него. В MR собраны итоговый diff, commits, обсуждения, approvals, результаты CI/CD pipeline и связь с задачей. После успешной проверки GitLab интегрирует изменения выбранным merge method.
 
@@ -18,66 +19,90 @@ Approval - подтверждение от reviewer, что изменение �
 
 Важно проверять не только source branch. Она может проходить тесты отдельно, но конфликтовать по смыслу с актуальной target branch. Merged results pipeline тестирует временный commit, объединяющий source и target. Если несколько готовых MR ожидают merge, merge train последовательно проверяет предполагаемый результат каждого MR с учётом изменений, стоящих перед ним в очереди.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Чем merge request отличается от commit и branch?
->
-> **Ответ:** Commit - снимок и точка графа Git, branch - перемещаемая ссылка на commit. Merge request - сущность GitLab, которая связывает source branch, target branch, diff, review и автоматические проверки в один процесс интеграции. Один MR обычно содержит несколько commits и завершается merge, squash или закрытием без интеграции.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Что должен содержать хороший MR?
->
-> **Ответ:** Логически цельное изменение, понятное описание проблемы и решения, связь с задачей, способ проверки и ограничения. Для UI полезны скриншоты или preview, если они помогают увидеть изменение. Сам diff не должен содержать случайное форматирование, generated-файлы без причины и несвязанные рефакторинги.
+<details>
+<summary><strong>Вопрос:</strong> Чем merge request отличается от commit и branch?</summary>
 
-> [!followup]
-> **Вопрос:** Что проверяет pipeline в frontend MR?
->
-> **Ответ:** Типичный pipeline устанавливает зависимости из lock-файла, запускает lint, typecheck, unit/integration tests и production build. Дополнительно возможны E2E, visual regression, анализ bundle size, dependency/security scans и review app. Набор проверок выбирают по риску проекта; все jobs должны быть воспроизводимыми в CI.
+Commit - снимок и точка графа Git, branch - перемещаемая ссылка на commit. Merge request - сущность GitLab, которая связывает source branch, target branch, diff, review и автоматические проверки в один процесс интеграции. Один MR обычно содержит несколько commits и завершается merge, squash или закрытием без интеграции.
 
-> [!followup]
-> **Вопрос:** Чем branch pipeline отличается от merged results pipeline?
->
-> **Ответ:** Branch pipeline проверяет source branch в её собственном состоянии. Merged results pipeline создаёт временный merge commit из source и актуальной target branch и проверяет предполагаемый результат интеграции. Он лучше обнаруживает несовместимость двух веток, но требует корректной конфигурации rules и понимания, какой тип pipeline запущен.
+</details>
 
-> [!followup]
-> **Вопрос:** Что такое merge train?
->
-> **Ответ:** Это очередь готовых MR. Для каждого элемента GitLab строит pipeline на предполагаемом состоянии target branch с учётом MR перед ним. Если ранний MR выпадает из очереди или завершается ошибкой, следующие результаты пересчитываются. Merge train уменьшает ситуацию, когда несколько MR по отдельности зелёные, но последовательный merge ломает `main`.
+<details>
+<summary><strong>Вопрос:</strong> Что должен содержать хороший MR?</summary>
 
-> [!followup]
-> **Вопрос:** Какие merge methods доступны и как они влияют на историю?
->
-> **Ответ:** Merge commit сохраняет source commits и добавляет commit с двумя родителями. Semi-linear merge также создаёт merge commit, но требует сначала сделать source branch совместимой с актуальной target, поэтому основная линия остаётся последовательной. Fast-forward merge передвигает target на source без merge commit и требует линейной истории. Squash можно дополнительно использовать для объединения source commits в один.
+Логически цельное изменение, понятное описание проблемы и решения, связь с задачей, способ проверки и ограничения. Для UI полезны скриншоты или preview, если они помогают увидеть изменение. Сам diff не должен содержать случайное форматирование, generated-файлы без причины и несвязанные рефакторинги.
 
-> [!followup]
-> **Вопрос:** Что дают protected branches кроме запрета прямого push?
->
-> **Ответ:** Они позволяют отдельно настроить, кто может push, merge и выполнять некоторые операции с важной веткой. В сочетании с approval rules и настройкой merge only when pipeline succeeds это заставляет изменения проходить единый процесс. Права нужно проверять явно: слишком широкая роль всё ещё может разрешать обход ожидаемого workflow.
+</details>
 
-> [!followup]
-> **Вопрос:** Что такое `CODEOWNERS`?
->
-> **Ответ:** Это файл с правилами, которые сопоставляют пути репозитория владельцам кода. GitLab может назначать таких людей reviewers и требовать их approval для protected branches. Например, изменения design system или CI-конфигурации проверяет команда, отвечающая за эту область. Файл помогает маршрутизировать review, но владельцы всё равно должны реально понять diff.
+<details>
+<summary><strong>Вопрос:</strong> Что проверяет pipeline в frontend MR?</summary>
 
-> [!followup]
-> **Вопрос:** Что делать с устаревшим approval после новых правок?
->
-> **Ответ:** Изменения после review могут сделать прежнее подтверждение неактуальным. В GitLab можно настроить сброс approvals при добавлении commits и запретить автору подтверждать собственный MR. Независимо от настройки reviewer должен посмотреть новый diff, а pipeline - проверить новое состояние.
+Типичный pipeline устанавливает зависимости из lock-файла, запускает lint, typecheck, unit/integration tests и production build. Дополнительно возможны E2E, visual regression, анализ bundle size, dependency/security scans и review app. Набор проверок выбирают по риску проекта; все jobs должны быть воспроизводимыми в CI.
 
-> [!followup]
-> **Вопрос:** Что такое draft MR?
->
-> **Ответ:** Draft показывает, что изменение ещё не готово к merge. Такой MR полезен для ранней обратной связи, запуска CI и выявления архитектурных проблем до завершения работы. После перевода в готовое состояние MR должен пройти обычные проверки.
+</details>
 
-> [!followup]
-> **Вопрос:** Зачем связывать MR с Jira issue?
->
-> **Ответ:** Связь сохраняет происхождение изменения: бизнес-контекст, acceptance criteria, обсуждения, diff, результаты pipeline и deployment. Это помогает при review и расследовании, но ссылка на задачу не заменяет понятное описание MR, особенно если доступ к Jira ограничен.
+<details>
+<summary><strong>Вопрос:</strong> Чем branch pipeline отличается от merged results pipeline?</summary>
 
-#### Где это встречается во frontend
+Branch pipeline проверяет source branch в её собственном состоянии. Merged results pipeline создаёт временный merge commit из source и актуальной target branch и проверяет предполагаемый результат интеграции. Он лучше обнаруживает несовместимость двух веток, но требует корректной конфигурации rules и понимания, какой тип pipeline запущен.
 
-> [!context]
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое merge train?</summary>
+
+Это очередь готовых MR. Для каждого элемента GitLab строит pipeline на предполагаемом состоянии target branch с учётом MR перед ним. Если ранний MR выпадает из очереди или завершается ошибкой, следующие результаты пересчитываются. Merge train уменьшает ситуацию, когда несколько MR по отдельности зелёные, но последовательный merge ломает `main`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Какие merge methods доступны и как они влияют на историю?</summary>
+
+Merge commit сохраняет source commits и добавляет commit с двумя родителями. Semi-linear merge также создаёт merge commit, но требует сначала сделать source branch совместимой с актуальной target, поэтому основная линия остаётся последовательной. Fast-forward merge передвигает target на source без merge commit и требует линейной истории. Squash можно дополнительно использовать для объединения source commits в один.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что дают protected branches кроме запрета прямого push?</summary>
+
+Они позволяют отдельно настроить, кто может push, merge и выполнять некоторые операции с важной веткой. В сочетании с approval rules и настройкой merge only when pipeline succeeds это заставляет изменения проходить единый процесс. Права нужно проверять явно: слишком широкая роль всё ещё может разрешать обход ожидаемого workflow.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое <code>CODEOWNERS</code>?</summary>
+
+Это файл с правилами, которые сопоставляют пути репозитория владельцам кода. GitLab может назначать таких людей reviewers и требовать их approval для protected branches. Например, изменения design system или CI-конфигурации проверяет команда, отвечающая за эту область. Файл помогает маршрутизировать review, но владельцы всё равно должны реально понять diff.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что делать с устаревшим approval после новых правок?</summary>
+
+Изменения после review могут сделать прежнее подтверждение неактуальным. В GitLab можно настроить сброс approvals при добавлении commits и запретить автору подтверждать собственный MR. Независимо от настройки reviewer должен посмотреть новый diff, а pipeline - проверить новое состояние.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Что такое draft MR?</summary>
+
+Draft показывает, что изменение ещё не готово к merge. Такой MR полезен для ранней обратной связи, запуска CI и выявления архитектурных проблем до завершения работы. После перевода в готовое состояние MR должен пройти обычные проверки.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Зачем связывать MR с Jira issue?</summary>
+
+Связь сохраняет происхождение изменения: бизнес-контекст, acceptance criteria, обсуждения, diff, результаты pipeline и deployment. Это помогает при review и расследовании, но ссылка на задачу не заменяет понятное описание MR, особенно если доступ к Jira ограничен.
+
+</details>
+
+## Где это встречается во frontend
+
+> [!NOTE]
 > | Ситуация | Механизм GitLab |
 > |---|---|
 > | Изменяется общий design system | `CODEOWNERS` направляет MR владельцам библиотеки компонентов |
@@ -85,7 +110,7 @@ Approval - подтверждение от reviewer, что изменение �
 > | Feature branch зелёная, но `main` изменилась | Merged results pipeline тестирует совместный результат |
 > | Изменение затрагивает bundle | Pipeline собирает production build и проверяет ограничение размера |
 
-#### Связанные темы
+## Связанные темы
 
 - [06 Конфликты и code review](<./06 Конфликты и code review.md>)
 - [08 Commit history squash fixup conventional commits](<./08 Commit history squash fixup conventional commits.md>)
@@ -93,7 +118,7 @@ Approval - подтверждение от reviewer, что изменение �
 - [03 GitLab CI для frontend](<../DevOps/03 GitLab CI для frontend.md>)
 - [03 Jira backlog issue story task acceptance criteria](<../Workflow/03 Jira backlog issue story task acceptance criteria.md>)
 
-#### Источники
+## Источники
 
 - [GitLab Docs: Merge requests](https://docs.gitlab.com/user/project/merge_requests/)
 - [GitLab Docs: Protected branches](https://docs.gitlab.com/user/project/repository/branches/protected/)

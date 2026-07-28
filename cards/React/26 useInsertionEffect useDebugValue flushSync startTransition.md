@@ -4,11 +4,12 @@
 [← 25 Advanced hooks useId useSyncExternalStore useOptimistic use](<./25 Advanced hooks useId useSyncExternalStore useOptimistic use.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [27 React DOM form hooks useFormStatus useActionState →](<./27 React DOM form hooks useFormStatus useActionState.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Для чего нужны `useInsertionEffect`, `useDebugValue`, `flushSync` и отдельная функция `startTransition`?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Это четыре независимых специальных API. `useInsertionEffect` нужен авторам CSS-in-JS библиотек, которые создают стили во время выполнения, `useDebugValue` улучшает отображение пользовательского хука в DevTools, `flushSync` принудительно завершает DOM-обновление, а `startTransition` помечает обновления React как несрочные без предоставления `isPending`.
 
@@ -60,44 +61,60 @@ startTransition(() => {
 
 Transition не переносит код в другой поток. Он позволяет React прервать и повторить рендер с меньшим приоритетом. Длинная синхронная функция внутри Action всё равно блокирует главный поток.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Почему `useInsertionEffect` редко нужен приложению?
->
-> **Ответ:** Его задача заключается во вставке CSS, создаваемого во время выполнения, до измерения расположения элементов. Прикладной компонент обычно использует готовые стили, `useEffect` для внешней синхронизации или `useLayoutEffect` для измерения. `useInsertionEffect` работает в слишком ранней фазе для обычной DOM-логики и имеет жёсткие ограничения.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Чем `useInsertionEffect` отличается от `useLayoutEffect`?
->
-> **Ответ:** `useInsertionEffect` предназначен для внедрения CSS, чтобы последующие layout-эффекты увидели правильное расположение элементов. `useLayoutEffect` уже может читать DOM и синхронно исправлять визуальное положение до отрисовки браузером. Перенос обычного измерения в `useInsertionEffect` неверен, потому что `ref` ещё могут отсутствовать.
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>useInsertionEffect</code> редко нужен приложению?</summary>
 
-> [!followup]
-> **Вопрос:** Для чего нужна функция форматирования в `useDebugValue`?
->
-> **Ответ:** Она преобразует внутреннее значение в удобную подпись только при просмотре хука в DevTools. Это позволяет не выполнять дорогое форматирование на каждом рендере, когда DevTools не запрашивает значение. Для простого логического значения достаточно передать готовую строку.
+Его задача заключается во вставке CSS, создаваемого во время выполнения, до измерения расположения элементов. Прикладной компонент обычно использует готовые стили, `useEffect` для внешней синхронизации или `useLayoutEffect` для измерения. `useInsertionEffect` работает в слишком ранней фазе для обычной DOM-логики и имеет жёсткие ограничения.
 
-> [!followup]
-> **Вопрос:** Почему `flushSync` опасен?
->
-> **Ответ:** Он блокирует обычное объединение и приоритизацию обновлений, может выполнить дополнительную ожидающую работу и показать `fallback` Suspense. Частое применение ухудшает отзывчивость интерфейса. Сначала проверяют, можно ли выполнить действие после commit через `ref` или эффект либо использовать API библиотеки без синхронного чтения DOM.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем отдельная функция `startTransition` отличается от `useTransition`?
->
-> **Ответ:** Оба помечают обновление как transition. Хук дополнительно возвращает `isPending` и привязан к компоненту. Отдельную функцию можно вызвать во внешнем хранилище или интеграции маршрутизатора, но состояние ожидания она не предоставляет.
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>useInsertionEffect</code> отличается от <code>useLayoutEffect</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Почему обновление внутри `setTimeout` не становится transition автоматически?
->
-> **Ответ:** `startTransition` отмечает setter-функции, вызванные синхронно во время выполнения Action. Функция таймера выполняется позже, когда этот контекст уже завершён. Внутри таймера нужен отдельный `startTransition`, если обновление действительно несрочное.
+`useInsertionEffect` предназначен для внедрения CSS, чтобы последующие layout-эффекты увидели правильное расположение элементов. `useLayoutEffect` уже может читать DOM и синхронно исправлять визуальное положение до отрисовки браузером. Перенос обычного измерения в `useInsertionEffect` неверен, потому что `ref` ещё могут отсутствовать.
 
-> [!followup]
-> **Вопрос:** Переносит ли transition вычисление в Worker?
->
-> **Ответ:** Нет. React только меняет приоритет и может освобождать поток между частями рендера. Произвольный тяжёлый цикл остаётся на главном потоке. Для настоящего параллельного расчёта используется Web Worker и передача сериализуемых данных.
+</details>
 
-#### Мини-задача
+<details>
+<summary><strong>Вопрос:</strong> Для чего нужна функция форматирования в <code>useDebugValue</code>?</summary>
+
+Она преобразует внутреннее значение в удобную подпись только при просмотре хука в DevTools. Это позволяет не выполнять дорогое форматирование на каждом рендере, когда DevTools не запрашивает значение. Для простого логического значения достаточно передать готовую строку.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>flushSync</code> опасен?</summary>
+
+Он блокирует обычное объединение и приоритизацию обновлений, может выполнить дополнительную ожидающую работу и показать `fallback` Suspense. Частое применение ухудшает отзывчивость интерфейса. Сначала проверяют, можно ли выполнить действие после commit через `ref` или эффект либо использовать API библиотеки без синхронного чтения DOM.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем отдельная функция <code>startTransition</code> отличается от <code>useTransition</code>?</summary>
+
+Оба помечают обновление как transition. Хук дополнительно возвращает `isPending` и привязан к компоненту. Отдельную функцию можно вызвать во внешнем хранилище или интеграции маршрутизатора, но состояние ожидания она не предоставляет.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Почему обновление внутри <code>setTimeout</code> не становится transition автоматически?</summary>
+
+`startTransition` отмечает setter-функции, вызванные синхронно во время выполнения Action. Функция таймера выполняется позже, когда этот контекст уже завершён. Внутри таймера нужен отдельный `startTransition`, если обновление действительно несрочное.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Переносит ли transition вычисление в Worker?</summary>
+
+Нет. React только меняет приоритет и может освобождать поток между частями рендера. Произвольный тяжёлый цикл остаётся на главном потоке. Для настоящего параллельного расчёта используется Web Worker и передача сериализуемых данных.
+
+</details>
+
+## Мини-задача
 
 ```tsx
 function handleChange(value: string) {
@@ -108,12 +125,14 @@ function handleChange(value: string) {
 }
 ```
 
-> [!followup]
-> **Вопрос:** Какое обновление нельзя помещать в transition?
->
-> **Ответ:** `setInput(value)` управляет управляемым полем и должно выполниться срочно. Его выносят перед `startTransition`. Несрочным оставляют `setQuery(value)`, если он запускает тяжёлый рендер результатов.
+<details>
+<summary><strong>Вопрос:</strong> Какое обновление нельзя помещать в transition?</summary>
 
-#### Где это встречается во frontend
+`setInput(value)` управляет управляемым полем и должно выполниться срочно. Его выносят перед `startTransition`. Несрочным оставляют `setQuery(value)`, если он запускает тяжёлый рендер результатов.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | API |
 | --- | --- |
@@ -124,7 +143,7 @@ function handleChange(value: string) {
 | Компонент показывает состояние ожидания | `useTransition` вместо отдельной функции |
 | Тяжёлая обработка на CPU | Web Worker, а не transition |
 
-#### Связанные темы
+## Связанные темы
 
 - [07 useEffect useLayoutEffect и cleanup](<./07 useEffect useLayoutEffect и cleanup.md>)
 - [16 useTransition и useDeferredValue](<./16 useTransition и useDeferredValue.md>)
@@ -132,7 +151,7 @@ function handleChange(value: string) {
 - [38 Web Workers postMessage structured clone](<../JavaScript/38 Web Workers postMessage structured clone.md>)
 - [14 Debugging CSS DevTools common issues](<../CSS/14 Debugging CSS DevTools common issues.md>)
 
-#### Источники
+## Источники
 
 - [React: `useInsertionEffect`](https://react.dev/reference/react/useInsertionEffect)
 - [React: `useDebugValue`](https://react.dev/reference/react/useDebugValue)

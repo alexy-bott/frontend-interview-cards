@@ -4,11 +4,12 @@
 [← 31 DOM events](<./31 DOM events.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [33 requestAnimationFrame и requestIdleCallback →](<./33 requestAnimationFrame и requestIdleCallback.md>)
 <!-- CARD-NAV-TOP:END -->
 
-#### Вопрос
+## Вопрос
 
 Чем отличаются `MutationObserver`, `IntersectionObserver` и `ResizeObserver`? Когда использовать каждый из них?
 
-#### Ответ
+<details>
+<summary><strong>Показать ответ</strong></summary>
 
 Observer APIs сообщают об изменениях, за которыми иначе пришлось бы следить вручную. Браузер собирает наблюдения и вызывает callback асинхронно пачкой. Callback всё равно выполняется на main thread, поэтому observer уменьшает лишние проверки, но не делает обработку бесплатной.
 
@@ -26,59 +27,81 @@ Observer APIs сообщают об изменениях, за которыми 
 
 Для остановки одного target используют `unobserve(target)`, для всех используют `disconnect()`. `takeRecords()` возвращает накопленные, но ещё не доставленные records там, где API его поддерживает.
 
-#### Встречные вопросы
+</details>
 
-> [!followup]
-> **Вопрос:** Почему `MutationObserver` связан с microtasks?
->
-> **Ответ:** DOM-операция не вызывает observer синхронно. Браузер ставит доставку накопленных records на microtask checkpoint. Callback видит пачку мутаций после завершения текущего кода, но до следующей task и потенциального paint. Если callback сам меняет наблюдаемый DOM, он может создать новые records и цикл.
+## Встречные вопросы
 
-> [!followup]
-> **Вопрос:** Может ли `MutationObserver` следить за React state или JavaScript-объектом?
->
-> **Ответ:** Нет, он наблюдает только DOM. React state нужно отслеживать средствами React, а объект через явный state manager, setters или Proxy-механику. MutationObserver применяют, когда DOM меняет сторонний script, browser extension, contenteditable editor или другая система вне обычного data flow.
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>MutationObserver</code> связан с microtasks?</summary>
 
-> [!followup]
-> **Вопрос:** Какие options нужны `MutationObserver`?
->
-> **Ответ:** Хотя бы один из `childList`, `attributes` или `characterData` должен быть включён. `subtree: true` распространяет наблюдение на потомков. `attributeFilter` ограничивает имена attributes и уменьшает лишние records. `attributeOldValue` и `characterDataOldValue` добавляют прошлое значение, если оно действительно нужно.
+DOM-операция не вызывает observer синхронно. Браузер ставит доставку накопленных records на microtask checkpoint. Callback видит пачку мутаций после завершения текущего кода, но до следующей task и потенциального paint. Если callback сам меняет наблюдаемый DOM, он может создать новые records и цикл.
 
-> [!followup]
-> **Вопрос:** Почему `IntersectionObserver` обычно лучше scroll listener для lazy loading?
->
-> **Ответ:** Код не читает `getBoundingClientRect` на каждое scroll event и не реализует собственный throttle. Браузер сам отслеживает пересечения и вызывает callback только при начальном наблюдении и пересечении threshold. Для обычных изображений сначала стоит проверить нативный `loading="lazy"`; observer нужен для кастомной загрузки и сложной логики.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем отличаются `rootMargin` и `threshold`?
->
-> **Ответ:** `rootMargin` изменяет прямоугольник root, относительно которого считается пересечение. `threshold` задаёт долю target от `0` до `1`, при пересечении которой нужен callback. Для предзагрузки используют увеличенный root через margin, а для аналитики «видно не менее 50%» используют threshold `0.5`.
+<details>
+<summary><strong>Вопрос:</strong> Может ли <code>MutationObserver</code> следить за React state или JavaScript-объектом?</summary>
 
-> [!followup]
-> **Вопрос:** Означает ли `isIntersecting`, что пользователь действительно видит элемент?
->
-> **Ответ:** Базовый режим подтверждает геометрическое пересечение с root и clipping ancestors, но не является полной гарантией внимания или отсутствия перекрытия другим элементом. Опция `trackVisibility` пытается учитывать compromised visibility, но дороже и имеет ограничения поддержки. Для аналитики дополнительно учитывают время видимости, состояние вкладки и продуктовые критерии.
+Нет, он наблюдает только DOM. React state нужно отслеживать средствами React, а объект через явный state manager, setters или Proxy-механику. MutationObserver применяют, когда DOM меняет сторонний script, browser extension, contenteditable editor или другая система вне обычного data flow.
 
-> [!followup]
-> **Вопрос:** Как избежать повторной загрузки в infinite scroll?
->
-> **Ответ:** Проверять `entry.isIntersecting`, состояние `isLoading`, наличие следующей страницы и identity текущего запроса. На время запроса sentinel можно `unobserve`, а после добавления данных снова наблюдать актуальный элемент. Запрос также должен иметь защиту от дублей и отмену при смене списка.
+</details>
 
-> [!followup]
-> **Вопрос:** Чем `ResizeObserver` отличается от `window.resize` и container queries?
->
-> **Ответ:** `window.resize` говорит только об изменении viewport. `ResizeObserver` реагирует на размер конкретного элемента и позволяет запустить JavaScript. CSS container query предпочтительнее, если задача только изменить стили по размеру контейнера: она не требует callback и ручного state. Observer нужен для вычислений, например изменения canvas buffer или масштаба графика.
+<details>
+<summary><strong>Вопрос:</strong> Какие options нужны <code>MutationObserver</code>?</summary>
 
-> [!followup]
-> **Вопрос:** Откуда берётся `ResizeObserver loop completed with undelivered notifications`?
->
-> **Ответ:** Callback меняет размер наблюдаемого элемента, это создаёт новое уведомление, которое снова меняет размер. Браузер ограничивает доставку в текущем кадре и переносит часть records, чтобы не зависнуть, но логическую петлю не исправляет. Нужно прекратить циклическое изменение, сравнивать новый размер с применённым или вынести запись в rAF, если она действительно относится к следующему кадру.
+Хотя бы один из `childList`, `attributes` или `characterData` должен быть включён. `subtree: true` распространяет наблюдение на потомков. `attributeFilter` ограничивает имена attributes и уменьшает лишние records. `attributeOldValue` и `characterDataOldValue` добавляют прошлое значение, если оно действительно нужно.
 
-> [!followup]
-> **Вопрос:** Нужно ли всегда вызывать `disconnect`?
->
-> **Ответ:** Когда observer больше не нужен, да. Это прекращает callbacks и освобождает связи с targets. Если один observer обслуживает много элементов, `unobserve` снимает конкретный target, не затрагивая остальные. В React очистка выполняется в cleanup того effect, где создан observer.
+</details>
 
-#### Мини-задача
+<details>
+<summary><strong>Вопрос:</strong> Почему <code>IntersectionObserver</code> обычно лучше scroll listener для lazy loading?</summary>
+
+Код не читает `getBoundingClientRect` на каждое scroll event и не реализует собственный throttle. Браузер сам отслеживает пересечения и вызывает callback только при начальном наблюдении и пересечении threshold. Для обычных изображений сначала стоит проверить нативный `loading="lazy"`; observer нужен для кастомной загрузки и сложной логики.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем отличаются <code>rootMargin</code> и <code>threshold</code>?</summary>
+
+`rootMargin` изменяет прямоугольник root, относительно которого считается пересечение. `threshold` задаёт долю target от `0` до `1`, при пересечении которой нужен callback. Для предзагрузки используют увеличенный root через margin, а для аналитики «видно не менее 50%» используют threshold `0.5`.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Означает ли <code>isIntersecting</code>, что пользователь действительно видит элемент?</summary>
+
+Базовый режим подтверждает геометрическое пересечение с root и clipping ancestors, но не является полной гарантией внимания или отсутствия перекрытия другим элементом. Опция `trackVisibility` пытается учитывать compromised visibility, но дороже и имеет ограничения поддержки. Для аналитики дополнительно учитывают время видимости, состояние вкладки и продуктовые критерии.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Как избежать повторной загрузки в infinite scroll?</summary>
+
+Проверять `entry.isIntersecting`, состояние `isLoading`, наличие следующей страницы и identity текущего запроса. На время запроса sentinel можно `unobserve`, а после добавления данных снова наблюдать актуальный элемент. Запрос также должен иметь защиту от дублей и отмену при смене списка.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Чем <code>ResizeObserver</code> отличается от <code>window.resize</code> и container queries?</summary>
+
+`window.resize` говорит только об изменении viewport. `ResizeObserver` реагирует на размер конкретного элемента и позволяет запустить JavaScript. CSS container query предпочтительнее, если задача только изменить стили по размеру контейнера: она не требует callback и ручного state. Observer нужен для вычислений, например изменения canvas buffer или масштаба графика.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Откуда берётся <code>ResizeObserver loop completed with undelivered notifications</code>?</summary>
+
+Callback меняет размер наблюдаемого элемента, это создаёт новое уведомление, которое снова меняет размер. Браузер ограничивает доставку в текущем кадре и переносит часть records, чтобы не зависнуть, но логическую петлю не исправляет. Нужно прекратить циклическое изменение, сравнивать новый размер с применённым или вынести запись в rAF, если она действительно относится к следующему кадру.
+
+</details>
+
+<details>
+<summary><strong>Вопрос:</strong> Нужно ли всегда вызывать <code>disconnect</code>?</summary>
+
+Когда observer больше не нужен, да. Это прекращает callbacks и освобождает связи с targets. Если один observer обслуживает много элементов, `unobserve` снимает конкретный target, не затрагивая остальные. В React очистка выполняется в cleanup того effect, где создан observer.
+
+</details>
+
+## Мини-задача
 
 ```js
 const sentinel = document.querySelector("#sentinel");
@@ -98,12 +121,14 @@ const observer = new IntersectionObserver(async ([entry]) => {
 observer.observe(sentinel);
 ```
 
-> [!followup]
-> **Вопрос:** Зачем здесь `rootMargin` и флаг `loading`?
->
-> **Ответ:** Нижняя граница root расширена на 300 пикселей, поэтому загрузка может начаться до появления sentinel в viewport. `loading` не позволяет повторным callbacks запустить одновременно несколько одинаковых запросов. Для завершённого списка observer также нужно отключить.
+<details>
+<summary><strong>Вопрос:</strong> Зачем здесь <code>rootMargin</code> и флаг <code>loading</code>?</summary>
 
-#### Где это встречается во frontend
+Нижняя граница root расширена на 300 пикселей, поэтому загрузка может начаться до появления sentinel в viewport. `loading` не позволяет повторным callbacks запустить одновременно несколько одинаковых запросов. Для завершённого списка observer также нужно отключить.
+
+</details>
+
+## Где это встречается во frontend
 
 | Ситуация | API | Главный нюанс |
 | --- | --- | --- |
@@ -114,7 +139,7 @@ observer.observe(sentinel);
 | Только адаптивные стили | CSS container query | JavaScript observer может быть не нужен |
 | React lifecycle | Любой observer | `unobserve` или `disconnect` в cleanup |
 
-#### Связанные темы
+## Связанные темы
 
 - [24 Event Loop](<./24 Event Loop.md>)
 - [33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>)
@@ -122,7 +147,7 @@ observer.observe(sentinel);
 - [02 Rendering pipeline reflow repaint composite](<../Browser Internals/02 Rendering pipeline reflow repaint composite.md>)
 - [05 Images fonts resource priority preload lazy loading](<../Performance/05 Images fonts resource priority preload lazy loading.md>)
 
-#### Источники
+## Источники
 
 - [MDN: `MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)
 - [MDN: Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
