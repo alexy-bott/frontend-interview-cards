@@ -418,12 +418,27 @@ def format_pilot_card(content: str) -> str:
         lambda match: (
             f"{match.group(1)}"
             f"<summary><strong>{match.group('question')}</strong></summary>\n\n"
-            "<br>\n\n"
         ),
         content,
     )
     content = content.replace("<br>\n\n<strong>Ответ</strong>\n\n", "<br>\n\n")
-    content = re.sub(r"(?<!<br>\n\n)</details>", "<br>\n\n</details>", content)
+
+    followup_answer = re.compile(
+        r"(?ms)(<details>\n<summary><strong>.*?</strong></summary>)\n\n"
+        r"(?:<br>\n\n)?"
+        r"(?P<answer>.*?)"
+        r"(?:\n\n<br>)?\n\n"
+        r"</details>"
+    )
+
+    def quote_followup_answer(match: re.Match[str]) -> str:
+        answer = re.sub(r"\A<br>\s*|\s*<br>\Z", "", match.group("answer").strip())
+        lines = answer.splitlines()
+        if not all(line.startswith(">") for line in lines if line.strip()):
+            answer = "\n".join(f"> {line}" if line else ">" for line in lines)
+        return f"{match.group(1)}\n\n{answer}\n\n</details>"
+
+    content = followup_answer.sub(quote_followup_answer, content)
     content = content.replace("\n## Встречные вопросы\n", "\n## Дополнительные вопросы\n")
     return content
 
@@ -589,8 +604,11 @@ def validate() -> list[str]:
                 if len(re.findall(r"(?m)^## Дополнительные вопросы\s*$", content_without_code)) != 1:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
-                if content_without_code.count("<br>") != 1 + 2 * followup_count:
+                if content_without_code.count("<br>") != 1:
                     issues.append(f"{card.relative_to(ROOT)}: pilot vertical spacing is inconsistent")
+                quoted_followups = len(re.findall(r"</summary>\n\n>", content_without_code))
+                if quoted_followups != followup_count:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer style is inconsistent")
                 if "<strong>Ответ</strong>" in content_without_code:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up has a redundant answer label")
                 if "<summary><strong>Вопрос:</strong>" in content_without_code:
