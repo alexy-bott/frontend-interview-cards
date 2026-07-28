@@ -402,6 +402,13 @@ def format_pilot_card(content: str) -> str:
         content,
         count=1,
     )
+    content = re.sub(r"(?m)^## Ответ[ \t]*$", "<br>", content, count=1)
+    content = re.sub(
+        r"(?m)(^> \*\*.+\*\*\n\n)<br>[ \t]*\n(?!\n)",
+        r"\1<br>\n\n",
+        content,
+        count=1,
+    )
 
     followup = re.compile(
         r"(<details>\n)"
@@ -416,6 +423,7 @@ def format_pilot_card(content: str) -> str:
         content,
     )
     content = content.replace("<br>\n\n<strong>Ответ</strong>\n\n", "<br>\n\n")
+    content = re.sub(r"(?<!<br>\n\n)</details>", "<br>\n\n</details>", content)
     content = content.replace("\n## Встречные вопросы\n", "\n## Дополнительные вопросы\n")
     return content
 
@@ -468,41 +476,41 @@ def generate_root_readme(topics: list[Path]) -> None:
     if uncategorized:
         groups.append(("Другие разделы", uncategorized))
 
-    group_tables: list[str] = []
-    for group_title, topic_names in groups:
-        rows: list[str] = []
+    group_icons = ("🌐", "🧩", "🛠️", "📚")
+    columns: list[tuple[str, list[str]]] = []
+    for group_index, (group_title, topic_names) in enumerate(groups):
+        links: list[str] = []
         for topic_name in topic_names:
             topic = topics_by_name.get(topic_name)
             if topic is None:
                 continue
             section_link = markdown_destination(ROOT / "README.md", topic / "README.md")
-            rows.append(
-                f"| [{markdown_label(topic.name)}]({section_link}) | {len(card_files(topic))} |"
+            links.append(f"[{markdown_label(topic.name)}]({section_link})")
+        if links:
+            columns.append((f"{group_icons[group_index]} {group_title}", links))
+
+    dashboard_rows = [
+        "| " + " | ".join(title for title, _ in columns) + " |",
+        "| " + " | ".join("---" for _ in columns) + " |",
+    ]
+    for row_index in range(max(len(links) for _, links in columns)):
+        dashboard_rows.append(
+            "| "
+            + " | ".join(
+                links[row_index] if row_index < len(links) else ""
+                for _, links in columns
             )
-        if rows:
-            group_tables.append(
-                f"### {group_title}\n\n"
-                "| Раздел | Карточки |\n"
-                "| --- | ---: |\n"
-                + "\n".join(rows)
-            )
-    section_tables = "\n\n".join(group_tables)
+            + " |"
+        )
+    section_dashboard = "\n".join(dashboard_rows)
 
     content = f"""# Карточки для frontend-собеседований
 
 База из **{total} карточек** для мок-собеседований по frontend-разработке и самостоятельной подготовки.
 
-## Как пользоваться
-
-1. Выберите раздел и откройте нужную карточку из его оглавления.
-2. Изучите основной ответ и раскрывайте дополнительные вопросы по необходимости.
-3. Перемещайтесь кнопками **←**, **↑** и **→** в начале или конце карточки.
-
-[Поиск по всей базе →](https://github.com/search?q=repo%3Aalexy-bott%2Ffrontend-interview-cards&type=code)
-
 ## Разделы
 
-{section_tables}
+{section_dashboard}
 """
     write_text(ROOT / "README.md", content)
 
@@ -572,8 +580,8 @@ def validate() -> list[str]:
             if is_pilot:
                 if content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 0:
                     issues.append(f"{card.relative_to(ROOT)}: pilot main answer is still collapsed")
-                if len(re.findall(r"(?m)^## Ответ\s*$", content_without_code)) != 1:
-                    issues.append(f"{card.relative_to(ROOT)}: visible pilot answer is missing or duplicated")
+                if re.search(r"(?m)^## Ответ\s*$", content_without_code):
+                    issues.append(f"{card.relative_to(ROOT)}: pilot has a redundant answer heading")
                 if not re.search(r"(?m)^> \*\*.+\*\*$", content_without_code):
                     issues.append(f"{card.relative_to(ROOT)}: pilot question is not emphasized")
                 if not content.startswith(f"# {PILOT_CARD_TITLES[relative_card]}\n"):
@@ -581,8 +589,8 @@ def validate() -> list[str]:
                 if len(re.findall(r"(?m)^## Дополнительные вопросы\s*$", content_without_code)) != 1:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
-                if content_without_code.count("<br>") != followup_count:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up spacing is inconsistent")
+                if content_without_code.count("<br>") != 1 + 2 * followup_count:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot vertical spacing is inconsistent")
                 if "<strong>Ответ</strong>" in content_without_code:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up has a redundant answer label")
                 if "<summary><strong>Вопрос:</strong>" in content_without_code:
