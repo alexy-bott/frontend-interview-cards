@@ -15,6 +15,9 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 CARDS_DIR = ROOT / "cards"
 LEGACY_CARDS_DIR = ROOT / "Мок-собесы для ведущего"
+PILOT_VISIBLE_ANSWER_CARDS = {
+    "CSS/15 CSS selectors pseudo-classes pseudo-elements.md",
+}
 WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\((<[^>]+>|[^)]+)\)")
 GENERATED_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(<([^>]+)>\)")
@@ -330,6 +333,46 @@ def format_card_for_github(content: str) -> str:
     return content
 
 
+def format_pilot_card(content: str) -> str:
+    main_answer = re.compile(
+        r"(?ms)^<details>\n"
+        r"<summary><strong>Показать ответ</strong></summary>\n\n"
+        r"(?P<answer>.*?)\n\n"
+        r"</details>(?=\n\n^## )"
+    )
+    content = main_answer.sub(
+        lambda match: f"## Ответ\n\n{match.group('answer').strip()}",
+        content,
+        count=1,
+    )
+
+    question = re.compile(
+        r"(?ms)(^## Вопрос\s*\n\n)(?!> \*\*)(?P<question>.*?)(\n\n^## Ответ\s*$)"
+    )
+    content = question.sub(
+        lambda match: (
+            f"{match.group(1)}> **{match.group('question').strip()}**{match.group(3)}"
+        ),
+        content,
+        count=1,
+    )
+
+    followup = re.compile(
+        r"(<details>\n)"
+        r"<summary><strong>Вопрос:</strong> (?P<question>.*?)</summary>\n\n"
+    )
+    content = followup.sub(
+        lambda match: (
+            f"{match.group(1)}"
+            f"<summary><strong>{match.group('question')}</strong></summary>\n\n"
+            "<br>\n\n"
+            "<strong>Ответ</strong>\n\n"
+        ),
+        content,
+    )
+    return content
+
+
 def generate_card(path: Path, topic: Path, previous: Path | None, following: Path | None) -> None:
     content = read_text(path)
     content = TOP_NAV_RE.sub("\n", content)
@@ -338,6 +381,9 @@ def generate_card(path: Path, topic: Path, previous: Path | None, following: Pat
     content = convert_wikilinks(path, content).strip()
     content = repair_generated_links(path, content)
     content = format_card_for_github(content)
+    relative_card = path.relative_to(CARDS_DIR).as_posix()
+    if relative_card in PILOT_VISIBLE_ANSWER_CARDS:
+        content = format_pilot_card(content)
 
     if not re.match(r"^#\s+", content):
         content = f"# {card_title(path)}\n\n{content}"
@@ -475,6 +521,8 @@ def validate() -> list[str]:
         for card in card_files(topic):
             content = read_text(card)
             content_without_code = without_code(content)
+            relative_card = card.relative_to(CARDS_DIR).as_posix()
+            is_pilot = relative_card in PILOT_VISIBLE_ANSWER_CARDS
             if not content.startswith("# "):
                 issues.append(f"{card.relative_to(ROOT)}: H1 title is missing")
             if content.count("<!-- CARD-NAV-TOP:START -->") != 1:
@@ -483,7 +531,19 @@ def validate() -> list[str]:
                 issues.append(f"{card.relative_to(ROOT)}: bottom navigation is missing or duplicated")
             if len(re.findall(r"(?m)^## Вопрос\s*$", content_without_code)) != 1:
                 issues.append(f"{card.relative_to(ROOT)}: H2 question heading is missing or duplicated")
-            if content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 1:
+            if is_pilot:
+                if content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 0:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot main answer is still collapsed")
+                if len(re.findall(r"(?m)^## Ответ\s*$", content_without_code)) != 1:
+                    issues.append(f"{card.relative_to(ROOT)}: visible pilot answer is missing or duplicated")
+                if not re.search(r"(?m)^> \*\*.+\*\*$", content_without_code):
+                    issues.append(f"{card.relative_to(ROOT)}: pilot question is not emphasized")
+                followup_count = content_without_code.count("<details>")
+                if content_without_code.count("<br>\n\n<strong>Ответ</strong>") != followup_count:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up spacing is inconsistent")
+                if "<summary><strong>Вопрос:</strong>" in content_without_code:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up still has a redundant label")
+            elif content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 1:
                 issues.append(f"{card.relative_to(ROOT)}: collapsible main answer is missing or duplicated")
             if re.search(r"(?m)^#{4,6}\s+", content_without_code):
                 issues.append(f"{card.relative_to(ROOT)}: heading hierarchy still skips levels")
