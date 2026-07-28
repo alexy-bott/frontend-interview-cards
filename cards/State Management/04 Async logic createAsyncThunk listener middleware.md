@@ -1,4 +1,4 @@
-# 04 Async logic createAsyncThunk listener middleware
+# Async logic createAsyncThunk listener middleware
 
 <!-- CARD-NAV-TOP:START -->
 [← 03 Redux Toolkit configureStore createSlice Immer](<./03 Redux Toolkit configureStore createSlice Immer.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Selectors normalization и createEntityAdapter →](<./05 Selectors normalization и createEntityAdapter.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как в Redux Toolkit организуют асинхронную логику? Когда нужен `createAsyncThunk`, listener middleware или RTK Query?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как в Redux Toolkit организуют асинхронную логику? Когда нужен `createAsyncThunk`, listener middleware или RTK Query?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Reducer в Redux только вычисляет следующее состояние и не выполняет побочные эффекты. HTTP-запросы, таймеры, запись в хранилище и аналитика выполняются до или после reducer в thunk, listener middleware, RTK Query или другом middleware.
 
@@ -27,63 +32,130 @@ Listener middleware реагирует на actions или изменения с
 
 Сетевой клиент, преобразование объектов передачи данных (DTO), добавление заголовков авторизации и нормализацию ошибок лучше держать в API-слое. Redux управляет состоянием процесса, но не должен становиться местом, где смешана вся работа с backend.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Какие actions создаёт <code>createAsyncThunk</code>?</summary>
+<summary><strong>Какие actions создаёт <code>createAsyncThunk</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `pending` отправляется перед запуском `payloadCreator`, `fulfilled` содержит успешный результат в `action.payload`, а `rejected` описывает ошибку или отмену. Все три actions содержат в `meta` исходный аргумент и `requestId`, поэтому reducer может связать ответ с конкретным запуском.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>rejectWithValue</code> отличается от <code>throw</code>?</summary>
+<summary><strong>Чем <code>rejectWithValue</code> отличается от <code>throw</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `rejectWithValue` передаёт ожидаемые данные отказа в `action.payload`, например `{ fieldErrors }` или код бизнес-ошибки. `throw` и непредвиденные исключения попадают в сериализованное `action.error`. Такое разделение позволяет отличить штатный ответ API от сбоя сети или ошибки программы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен <code>.unwrap()</code>?</summary>
+<summary><strong>Для чего нужен <code>.unwrap()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 По правилам Redux Promise от `dispatch(thunk())` всегда разрешается итоговым action, чтобы не создавать необработанный отказ Promise (rejection). `.unwrap()` преобразует его в привычное поведение: возвращает payload при успехе и выбрасывает ошибку при отказе. Это удобно, когда компонент после сохранения должен закрыть форму или показать локальное сообщение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как отменить <code>createAsyncThunk</code>?</summary>
+<summary><strong>Как отменить <code>createAsyncThunk</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 До запуска его можно остановить через параметр `condition`, например если такие данные уже загружаются. После `dispatch` у возвращённого Promise есть метод `abort()`. Внутри `payloadCreator` доступен `thunkAPI.signal`, который передают в `fetch` или другой API с поддержкой `AbortSignal`. Reducer при этом должен корректно обработать `rejected` с признаком отмены.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Защищает ли <code>createAsyncThunk</code> от состояния гонки (race condition) автоматически?</summary>
+<summary><strong>Защищает ли <code>createAsyncThunk</code> от состояния гонки (race condition) автоматически?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Если два запуска завершились в другом порядке, старый ответ может перезаписать новый. Можно отменять предыдущий запрос, хранить текущий `requestId` и принимать результат только для него либо проверять актуальные параметры перед записью. Выбор зависит от правила процесса: учитывать последний запущенный запрос, первый завершившийся запрос или все результаты.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда <code>createAsyncThunk</code> хуже RTK Query?</summary>
+<summary><strong>Когда <code>createAsyncThunk</code> хуже RTK Query?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда нужны кэш серверных данных, устранение одинаковых запросов, повторная загрузка при фокусе, обновление кэша после mutation, polling или общий результат для нескольких компонентов. С thunk эти механизмы пришлось бы проектировать отдельно. Thunk лучше оставить для процесса, который не является обычным серверным кэшем.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем listener middleware отличается от thunk?</summary>
+<summary><strong>Чем listener middleware отличается от thunk?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Thunk обычно явно запускают через `dispatch(someThunk(arg))`. Listener подписывается на action или условие и реагирует независимо от места, где событие возникло. Поэтому listener удобен для сквозных реакций и координации, но обычную последовательность одной операции часто понятнее оставить в thunk или сервисе.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как listener middleware реализует отмену и debounce?</summary>
+<summary><strong>Как listener middleware реализует отмену и debounce?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Listener может отменить ранее запущенные экземпляры той же задачи и использовать API задержки, связанное с `AbortSignal`. Для debounce новый action отменяет предыдущий listener, затем ждёт заданное время и продолжает работу только при отсутствии нового события. При отмене должны прекращаться и вложенные операции, которые принимают signal.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

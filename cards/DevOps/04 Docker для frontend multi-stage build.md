@@ -1,4 +1,4 @@
-# 04 Docker для frontend multi-stage build
+# Docker для frontend multi-stage build
 
 <!-- CARD-NAV-TOP:START -->
 [← 03 GitLab CI для frontend](<./03 GitLab CI для frontend.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Nginx static serving SPA fallback cache headers →](<./05 Nginx static serving SPA fallback cache headers.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Зачем Docker во frontend и как устроен multi-stage Dockerfile для SPA?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Зачем Docker во frontend и как устроен multi-stage Dockerfile для SPA?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Docker image, или образ, - неизменяемый шаблон файловой системы и настроек процесса. Container, или контейнер, - запущенный экземпляр образа. Во frontend Docker фиксирует среду сборки и упаковывает готовое приложение вместе со способом запуска. Для статической SPA Node.js нужен во время build, а в production готовые файлы может отдавать Nginx. Для Next.js с SSR во время выполнения (`runtime`) остаётся Node.js-процесс.
 
@@ -50,97 +55,179 @@ Build-time переменная действует во время `npm run buil
 
 Финальный образ должен содержать только необходимое, запускаться предсказуемо и быть проверен в CI. Для production его сканируют на уязвимости, связывают с commit и публикуют под уникальными tag и digest. По возможности процесс работает без root; для Nginx это требует образа и конфигурации, поддерживающих непривилегированный порт и доступ к временным каталогам, а не простого добавления `USER` в случайное место.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Docker image отличается от container?</summary>
+<summary><strong>Чем Docker image отличается от container?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Образ - сохранённый шаблон со слоями, файлами и настройками запуска. Контейнер - процесс, запущенный из образа, с собственным изменяемым верхним слоем, сетью и ограничениями ресурсов. Один образ может одновременно запускаться в нескольких контейнерах.
 
 Изменение файлов внутри контейнера не создаёт новую версию приложения и обычно теряется при замене. Production-поставку изменяют новой сборкой образа, а постоянные данные хранят вне эфемерного контейнера.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему не оставить Node.js image в production SPA?</summary>
+<summary><strong>Почему не оставить Node.js image в production SPA?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузерная SPA после build состоит из статических файлов и не выполняет Node.js на сервере. Runtime image с Nginx или другим статическим сервером меньше и содержит меньше пакетов и инструментов. Build stage остаётся отдельно и предоставляет только `dist`.
 
 Multi-stage не является защитой сам по себе: если секрет попал в `dist`, он будет скопирован. Также кэш сборки может сохранить неосторожно созданные файлы, поэтому учётные данные передают через временно подключаемые secrets.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему сначала копируют <code>package.json</code> и lock-файл, а потом исходники?</summary>
+<summary><strong>Почему сначала копируют <code>package.json</code> и lock-файл, а потом исходники?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Слой `npm ci` зависит только от файлов зависимостей. Пока они не изменились, Docker переиспользует установку из cache, даже если поменялся компонент. Если выполнить `COPY . .` до установки, любое изменение исходника инвалидирует слой и заставляет скачивать пакеты заново.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужен <code>.dockerignore</code>, если лишнее не копируется явно?</summary>
+<summary><strong>Зачем нужен <code>.dockerignore</code>, если лишнее не копируется явно?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Docker сначала формирует и отправляет build context builder-у. Большой `node_modules` или `.git` замедляет этот шаг и участвует в расчёте cache для широкого `COPY`. Кроме того, будущая правка Dockerfile может случайно скопировать локальный `.env` или токен. `.dockerignore` сокращает доступный набор заранее.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>ARG</code> отличается от <code>ENV</code>?</summary>
+<summary><strong>Чем <code>ARG</code> отличается от <code>ENV</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `ARG` доступен инструкциям во время build и не становится обычной переменной запущенного контейнера. `ENV` сохраняется в образе и доступен процессу во время выполнения. Оба механизма не подходят для секретов: значения могут раскрыться через метаданные, кэш, логи или приложение.
 
 Во frontend важен ещё один уровень: сборщик может заменить `import.meta.env.VITE_API_URL` текстом внутри JavaScript. После этого значение находится не в Docker environment, а в публичном файле bundle.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как установить приватные npm-пакеты и не сохранить токен в image?</summary>
+<summary><strong>Как установить приватные npm-пакеты и не сохранить токен в image?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 CI передаёт временный `.npmrc` или token через `docker build --secret`, а Dockerfile использует `RUN --mount=type=secret`. Secret существует только во время этой инструкции и не попадает в созданный слой. После установки проверяют, что `.npmrc` не был скопирован другим `COPY` и токен не напечатан в log.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему изменение <code>docker run -e VITE_API_URL=...</code> не меняет адрес API у готовой SPA?</summary>
+<summary><strong>Почему изменение <code>docker run -e VITE_API_URL=...</code> не меняет адрес API у готовой SPA?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Vite заменил `import.meta.env.VITE_API_URL` во время `npm run build`, и в `dist` уже лежит строка. Nginx только отдаёт файл и не выполняет этот код на сервере. Для runtime-настройки entrypoint создаёт отдельный публичный config до старта Nginx или приложение загружает config endpoint до инициализации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда frontend image должен содержать Node.js runtime?</summary>
+<summary><strong>Когда frontend image должен содержать Node.js runtime?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда JavaScript выполняется на сервере после запуска: Next.js SSR, Route Handlers, Server Actions или собственный Node.js backend. Тогда runtime stage копирует автономный сервер (`standalone`), production-зависимости и статические файлы, а контейнер запускает Node.js-процесс. Для полностью статического export или Vite SPA достаточно статического сервера.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему одного tag <code>latest</code> недостаточно для deploy и rollback?</summary>
+<summary><strong>Почему одного tag <code>latest</code> недостаточно для deploy и rollback?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Tag является изменяемой ссылкой и завтра может указывать на другой image. Digest однозначно идентифицирует содержимое. Pipeline публикует image с commit SHA, сохраняет digest в release metadata и развёртывает эту точную версию. Тогда rollback не зависит от текущего значения `latest`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему container желательно запускать без root и почему недостаточно написать <code>USER 1000</code>?</summary>
+<summary><strong>Почему container желательно запускать без root и почему недостаточно написать <code>USER 1000</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Непривилегированный процесс ограничивает последствия уязвимости внутри container. Но процессу нужны права на порт, cache, PID и временные каталоги. Случайный `USER 1000` может сломать запуск Nginx или оставить часть каталогов недоступной. Используют подготовленный unprivileged image либо явно меняют порт, владельцев и пути и проверяют это в runtime.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Задача | Решение |
-> | --- | --- |
-> | Vite SPA | Node.js build stage и Nginx runtime stage |
-> | Next.js SSR | Multi-stage build и Node.js runtime |
-> | Быстрая пересборка | Manifest до исходников и BuildKit cache mount |
-> | Приватный npm registry | BuildKit secret, а не `ARG TOKEN` |
-> | Несколько окружений | Один image и отдельная публичная runtime-конфигурация |
-> | Точный rollback | Commit tag и сохранённый image digest |
+| Задача | Решение |
+| --- | --- |
+| Vite SPA | Node.js build stage и Nginx runtime stage |
+| Next.js SSR | Multi-stage build и Node.js runtime |
+| Быстрая пересборка | Manifest до исходников и BuildKit cache mount |
+| Приватный npm registry | BuildKit secret, а не `ARG TOKEN` |
+| Несколько окружений | Один image и отдельная публичная runtime-конфигурация |
+| Точный rollback | Commit tag и сохранённый image digest |
 
 ## Связанные темы
 

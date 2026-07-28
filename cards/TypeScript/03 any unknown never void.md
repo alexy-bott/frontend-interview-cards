@@ -1,4 +1,4 @@
-# 03 any unknown never void
+# any unknown never void
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 Типы данных и inference](<./02 Типы данных и inference.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 type vs interface →](<./04 type vs interface.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `any`, `unknown`, `never` и `void`? Где каждый тип применяется?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `any`, `unknown`, `never` и `void`? Где каждый тип применяется?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Эти типы описывают разные ситуации и не являются взаимозаменяемыми:
 
@@ -63,56 +68,115 @@ numbers.forEach((number) => collected.push(number));
 
 `void` не равен `never`. Функция `(): void` нормально завершается, а `(): never` не достигает точки возврата. `void` также не означает обязательный `undefined` во всех позициях типов: это контракт об игнорировании результата функции.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>unknown</code> безопаснее <code>any</code>?</summary>
+<summary><strong>Почему <code>unknown</code> безопаснее <code>any</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `unknown` сохраняет проверку типов: до сужения нельзя прочитать поле, вызвать метод или передать значение функции, ожидающей конкретный тип. `any` разрешает эти действия и может распространиться по коду. На границе доверия `unknown` заставляет явно доказать форму значения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли присвоить <code>unknown</code> любому типу?</summary>
+<summary><strong>Можно ли присвоить <code>unknown</code> любому типу?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Любое значение можно присвоить переменной `unknown`, но из `unknown` без проверки можно перейти только в `unknown` или `any`. Чтобы получить `string`, нужно выполнить `typeof value === "string"`; для объекта требуется type guard или схема, проверяемая во время выполнения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что значит, что <code>any</code> распространяется?</summary>
+<summary><strong>Что значит, что <code>any</code> распространяется?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Операция над `any` часто снова возвращает `any`, а вывод generic-типа может распространить `any` на связанный результат. Например, результат `JSON.parse()` имеет `any`, поэтому цепочка обращений к полям не проверяется. Безопаснее сразу сохранить результат в `unknown` и проверить его.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>never</code> проверяет полноту <code>switch</code>?</summary>
+<summary><strong>Как <code>never</code> проверяет полноту <code>switch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 После обработки всех вариантов discriminated union значение в `default` должно иметь тип `never`. Если в union добавили новый вариант и забыли новый `case`, остаток перестанет быть `never`, и TypeScript покажет ошибку в функции `assertNever` или присваивании.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>void</code> отличается от <code>undefined</code>?</summary>
+<summary><strong>Чем <code>void</code> отличается от <code>undefined</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `undefined` является конкретным JavaScript-значением и типом этого значения. `void` в типе функции сообщает, что результат вызова не используется. Функция, переданная в параметр обратного вызова с типом `() => void`, может вернуть значение, но вызывающая сторона обязана его проигнорировать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>catch</code> имеет тип <code>unknown</code>?</summary>
+<summary><strong>Почему <code>catch</code> имеет тип <code>unknown</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В JavaScript можно бросить строку, число, объект или `Error`. При `useUnknownInCatchVariables` переменная `catch` получает `unknown`, поэтому код обязан проверить `error instanceof Error` или иначе безопасно получить сообщение. Это соответствует реальному поведению языка лучше, чем безусловный `Error`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Где допустим <code>any</code>?</summary>
+<summary><strong>Где допустим <code>any</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Как временный мост при миграции, локальный обход неверной декларации библиотеки или реализация низкоуровневого API, где безопасная поверхность проверяется отдельно. Причина должна быть понятна, область мала, а значение не должно выходить в доменный код как `any`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -146,9 +210,17 @@ function renderState(state: RequestState): string {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что произойдёт, если добавить состояние <code>empty</code>, но не изменить <code>switch</code>?</summary>
+<summary><strong>Что произойдёт, если добавить состояние <code>empty</code>, но не изменить <code>switch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В ветке `default` значение `state` больше не будет `never`: там останется вариант `empty`. Вызов `assertNever(state)` вызовет ошибку TypeScript и укажет, что новый вариант не обработан.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

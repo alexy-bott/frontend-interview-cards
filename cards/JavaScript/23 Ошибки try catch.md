@@ -1,4 +1,4 @@
-# 23 Ошибки try catch
+# Ошибки try catch
 
 <!-- CARD-NAV-TOP:START -->
 [← 22 async defer и загрузка скриптов](<./22 async defer и загрузка скриптов.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [24 Event Loop →](<./24 Event Loop.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как распространяются и обрабатываются ошибки в синхронном и асинхронном JavaScript?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как распространяются и обрабатываются ошибки в синхронном и асинхронном JavaScript?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `throw` немедленно прерывает текущее выполнение и передаёт выброшенное значение вверх по call stack, то есть по цепочке активных вызовов функций. Ближайший подходящий `catch` перехватывает его. Технически выбросить можно любое значение, но следует использовать `Error` или его подкласс, чтобы сохранить тип, сообщение, stack trace и исходную причину.
 
@@ -42,19 +47,34 @@ try {
 }
 ```
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему внешний <code>try/catch</code> не ловит ошибку внутри <code>setTimeout</code>?</summary>
+<summary><strong>Почему внешний <code>try/catch</code> не ловит ошибку внутри <code>setTimeout</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Callback таймера выполняется позже как отдельная task, когда исходный call stack уже завершён и блок `try` покинут. Между этими выполнениями нет общей синхронной цепочки вызовов. Обработчик помещают внутрь callback или представляют операцию как Promise и обрабатывают rejection.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Поймает ли <code>try/catch</code> ошибку Promise без <code>await</code>?</summary>
+<summary><strong>Поймает ли <code>try/catch</code> ошибку Promise без <code>await</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, если Promise только создан и не ожидается. В момент выхода из `try` синхронной ошибки ещё нет, а будущий rejection принадлежит Promise. Нужно написать `await operation()` внутри `try` или вернуть и обработать цепочку через `.catch()`.
 
@@ -66,75 +86,159 @@ try {
 }
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как ошибка проходит по Promise-цепочке?</summary>
+<summary><strong>Как ошибка проходит по Promise-цепочке?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если callback `.then` выбросил ошибку или вернул rejected Promise, Promise, возвращённый этим `.then`, становится rejected. Обработчики успеха пропускаются до ближайшего `catch`. Если `catch` вернул обычное значение, цепочка восстановилась и следующий `.then` получит это значение. Чтобы сохранить ошибочное состояние, `catch` должен снова выполнить `throw` или вернуть rejected Promise.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что произойдёт при <code>return</code> в <code>finally</code>?</summary>
+<summary><strong>Что произойдёт при <code>return</code> в <code>finally</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он заменит результат `try` или `catch`, включая выброшенную ошибку. Например, функция с `throw` в `try` и `return` в `finally` завершится успешно возвращённым значением, а ошибка потеряется. Поэтому `finally` используют для очистки без управления основным результатом.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие встроенные типы ошибок важно знать?</summary>
+<summary><strong>Какие встроенные типы ошибок важно знать?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `ReferenceError` возникает при обращении к недоступному имени, `TypeError` при операции над значением неподходящего типа, `SyntaxError` при некорректном синтаксисе или JSON, `RangeError` при значении вне допустимого диапазона. В браузерных API также встречаются `DOMException`, например с именем `AbortError`. Тип помогает классифицировать причину, но прикладные ошибки API часто требуют собственного кода или класса.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны пользовательские классы ошибок и <code>cause</code>?</summary>
+<summary><strong>Зачем нужны пользовательские классы ошибок и <code>cause</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Класс вроде `ApiError` может хранить `status`, стабильный машинный `code` и безопасные `details`. UI различает ошибки по этим полям, а не по тексту `message`, который предназначен для диагностики и может меняться. Опция `{ cause }` сохраняет исходную ошибку при добавлении контекста, поэтому мониторинг видит всю причинную цепочку.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>fetch</code> не попадает в <code>catch</code> при ответе <code>404</code> или <code>500</code>?</summary>
+<summary><strong>Почему <code>fetch</code> не попадает в <code>catch</code> при ответе <code>404</code> или <code>500</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для `fetch` HTTP-ошибка всё равно является успешно полученным HTTP-ответом. Promise отклоняется при сетевой ошибке, отмене и некоторых ошибках запроса, но не только из-за status code. После `await fetch(...)` нужно проверить `response.ok` или `response.status` и самостоятельно создать прикладную ошибку.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое unhandled Promise rejection?</summary>
+<summary><strong>Что такое unhandled Promise rejection?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это rejected Promise, для которого к моменту проверки среды не появился обработчик. В браузере возникает событие `unhandledrejection`; если обработчик добавлен позже, возможно `rejectionhandled`. Глобальный listener полезен для мониторинга, но не является нормальным способом восстановить локальный пользовательский сценарий, потому что контекст операции уже потерян.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что ловят <code>window.onerror</code> и событие <code>error</code>?</summary>
+<summary><strong>Что ловят <code>window.onerror</code> и событие <code>error</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они дают последний уровень наблюдения за необработанными синхронными ошибками script и частью ошибок загрузки ресурсов. Для cross-origin scripts подробности могут быть скрыты без корректного CORS. Такие обработчики отправляют диагностику, но приложение не должно продолжать сценарий так, будто состояние гарантированно корректно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Ловит ли React Error Boundary все ошибки интерфейса?</summary>
+<summary><strong>Ловит ли React Error Boundary все ошибки интерфейса?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Error Boundary ловит ошибки во время render дочернего дерева и некоторых React lifecycle-переходов. Он не перехватывает ошибки обычных event handlers, таймеров, произвольных Promise callbacks и server-side rendering. Асинхронный код обрабатывает ошибку в месте операции и отражает её через state или механизм data fetching.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя оставлять пустой <code>catch</code>?</summary>
+<summary><strong>Почему нельзя оставлять пустой <code>catch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он превращает сбой в внешне успешное выполнение и скрывает причину. Если ошибка ожидаема, обработчик должен выполнить осмысленное восстановление. Если уровень не умеет восстановиться, он добавляет контекст, логирует в подходящей границе или перебрасывает ошибку выше. При этом отмена запроса может быть ожидаемым отдельным исходом и не всегда требует показа ошибки пользователю.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как безопасно работать с переменной <code>error</code> в TypeScript?</summary>
+<summary><strong>Как безопасно работать с переменной <code>error</code> в TypeScript?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В strict-конфигурации значение в `catch` имеет тип `unknown`, потому что JavaScript позволяет выбросить что угодно. Сначала выполняют narrowing, то есть сужение типа: `error instanceof Error`, проверку `DOMException`, собственного класса или структуры ответа. Приведение `error as Error` без проверки только скрывает неопределённость.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -150,9 +254,17 @@ Promise.resolve()
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и почему цепочка снова стала fulfilled?</summary>
+<summary><strong>Что будет выведено и почему цепочка снова стала fulfilled?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Будет выведено `42`. Первый `.then` вернул rejected Promise из-за `throw`. `catch` обработал ошибку и вернул обычное значение, поэтому Promise после него стал fulfilled со значением `42`, которое получил следующий `.then`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

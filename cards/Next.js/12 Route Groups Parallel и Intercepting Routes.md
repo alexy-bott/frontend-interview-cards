@@ -1,4 +1,4 @@
-# 12 Route Groups Parallel и Intercepting Routes
+# Route Groups Parallel и Intercepting Routes
 
 <!-- CARD-NAV-TOP:START -->
 [← 11 Pages Router getServerSideProps getStaticProps getStaticPaths](<./11 Pages Router getServerSideProps getStaticProps getStaticPaths.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Image Font Link Script и оптимизация →](<./13 Image Font Link Script и оптимизация.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Для чего в App Router нужны Route Groups, Parallel Routes и Intercepting Routes? Как с их помощью сделать модальное окно с отдельным URL?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Для чего в App Router нужны Route Groups, Parallel Routes и Intercepting Routes? Как с их помощью сделать модальное окно с отдельным URL?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Route Groups, Parallel Routes и Intercepting Routes управляют структурой интерфейса, не добавляя обычные видимые части URL. Они решают разные задачи и часто используются вместе в сложной навигации.
 
@@ -47,56 +52,115 @@ Intercepting Route, то есть перехватывающий маршрут,
 
 Закрытие такого модального окна обычно вызывает `router.back()`: история возвращает пользователя к исходной галерее. Дополнительно slot должен иметь маршрут, который возвращает `null`, чтобы модальное окно исчезало при навигации, не связанной с историей открытия.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Route Group отличается от обычного каталога?</summary>
+<summary><strong>Чем Route Group отличается от обычного каталога?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычный каталог создаёт сегмент URL, а имя группы в круглых скобках из URL удаляется. Группа влияет только на организацию файлов и наследование layouts. Это позволяет иметь `(marketing)/pricing` и получать `/pricing`, но итоговые URL во всех группах всё равно должны быть уникальными.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое slot в Parallel Routes?</summary>
+<summary><strong>Что такое slot в Parallel Routes?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Slot является именованной областью layout, созданной каталогом `@name`. Next.js передаёт её как React prop рядом с `children`. Slot позволяет независимо выбирать маршрут и состояния loading/error для части экрана, но его имя не отображается в адресной строке.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем slot нужен <code>default.tsx</code>?</summary>
+<summary><strong>Зачем slot нужен <code>default.tsx</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При клиентской навигации Next.js помнит предыдущее состояние несовпавшего slot. После полной перезагрузки этой памяти нет, и по одному URL фреймворк не всегда может определить содержимое всех slots. `default.tsx` задаёт безопасный fallback вместо ошибки 404 для всей страницы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Parallel Routes отличаются от обычных React-компонентов в layout?</summary>
+<summary><strong>Чем Parallel Routes отличаются от обычных React-компонентов в layout?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычные компоненты не имеют собственной маршрутизации. Slot может содержать собственные pages, loading, error и состояние навигации, которые Next.js выбирает по URL. Parallel Routes оправданы, когда область действительно должна жить как независимое маршрутное поддерево, а не просто когда layout содержит несколько блоков.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно перехватывает Intercepting Route?</summary>
+<summary><strong>Что именно перехватывает Intercepting Route?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он перехватывает навигацию к другому маршруту и отображает его содержимое внутри текущего layout при мягком переходе через router Next.js. Прямое открытие или перезагрузка обходят этот вариант и показывают каноническую страницу целевого URL. Поэтому один ресурс получает контекстное и самостоятельное представление.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему обозначение <code>(..)</code> считает сегменты маршрута, а не каталоги?</summary>
+<summary><strong>Почему обозначение <code>(..)</code> считает сегменты маршрута, а не каталоги?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Каталоги `@slot` и `(group)` не добавляют сегменты URL. Если считать физические уровни, путь зависел бы от технической организации файлов. Next.js считает только сегменты маршрута, поэтому рефакторинг групп и slots не должен менять смысл перехвата.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что нужно учесть при реализации модального окна через маршрутизацию?</summary>
+<summary><strong>Что нужно учесть при реализации модального окна через маршрутизацию?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нужно управлять focus, закрытием по Escape, возвратом focus к элементу открытия и блокировкой фонового взаимодействия. Модальное окно должно корректно закрываться при back/forward и при переходе на другую страницу. Для этого обычно используют доступный Dialog из Radix UI и отдельный маршрут, который возвращает `null` для slot.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

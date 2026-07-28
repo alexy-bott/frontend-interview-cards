@@ -1,4 +1,4 @@
-# 02 App Router pages layouts loading error route handlers
+# App Router pages layouts loading error route handlers
 
 <!-- CARD-NAV-TOP:START -->
 [← 01 Что такое Next.js и зачем он нужен](<./01 Что такое Next.js и зачем он нужен.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Server Components Client Components и use client →](<./03 Server Components Client Components и use client.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как устроен App Router? Что делают `page.tsx`, `layout.tsx`, `template.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx` и `route.ts`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как устроен App Router? Что делают `page.tsx`, `layout.tsx`, `template.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx` и `route.ts`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 App Router строит маршруты из папок внутри `app`. Каждая папка является route segment, то есть сегментом маршрута. Папка становится публичной страницей только при наличии `page.tsx`; остальные файлы могут задавать оболочку и состояние сегмента, не создавая отдельный URL.
 
@@ -27,56 +32,115 @@ App Router строит маршруты из папок внутри `app`. К�
 
 Layout намеренно не получает `searchParams`: при клиентской навигации он сохраняется и мог бы видеть устаревшее значение. Актуальные параметры читают в `page.tsx` или через `useSearchParams` в Client Component.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое route segment?</summary>
+<summary><strong>Что такое route segment?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это часть маршрута, соответствующая папке в `app`. Файл `app/dashboard/settings/page.tsx` создаёт URL `/dashboard/settings` из сегментов `dashboard` и `settings`. Route groups и slots могут участвовать в структуре файлов, но не обязаны добавлять часть URL.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>layout.tsx</code> отличается от <code>template.tsx</code>?</summary>
+<summary><strong>Чем <code>layout.tsx</code> отличается от <code>template.tsx</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Layout сохраняет экземпляр и состояние между переходами внутри сегмента. Template получает уникальный `key`, поэтому его дочернее дерево монтируется заново. Template выбирают, когда при каждой навигации нужно сбросить локальное состояние, повторить эффект или заново показать fallback.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему layout не получает <code>searchParams</code>?</summary>
+<summary><strong>Почему layout не получает <code>searchParams</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Общий layout не выполняется заново при каждой клиентской навигации. Если бы он получил параметры запроса, они могли бы устареть после изменения URL. Page выполняется для нового маршрута, а Client Component с `useSearchParams` подписан на актуальный URL.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>loading.tsx</code> связан с Suspense?</summary>
+<summary><strong>Как <code>loading.tsx</code> связан с Suspense?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Next.js автоматически использует его как fallback ближайшей границы Suspense для сегмента. При переходе fallback можно показать немедленно, а готовый общий интерфейс сохранить. Для более точной загрузки отдельного блока Suspense добавляют вручную ближе к медленной операции.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие ошибки ловит <code>error.tsx</code>?</summary>
+<summary><strong>Какие ошибки ловит <code>error.tsx</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он ловит необработанные ошибки страницы и вложенных сегментов внутри своей границы. Ошибки layout или template того же уровня всплывают к родителю. Ожидаемые ошибки, например неверные данные формы, обычно возвращают как состояние, а не превращают в исключение для Error Boundary.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужна функция <code>reset</code> в <code>error.tsx</code>?</summary>
+<summary><strong>Для чего нужна функция <code>reset</code> в <code>error.tsx</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Она пытается повторно отрисовать содержимое границы без полной перезагрузки страницы. Это полезно для временного сбоя запроса. Если причина не устранена, ошибка возникнет снова, поэтому её также нужно записать в журнал и показать пользователю понятное состояние.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>notFound()</code> отличается от обычного возврата текста «не найдено»?</summary>
+<summary><strong>Чем <code>notFound()</code> отличается от обычного возврата текста «не найдено»?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `notFound()` прерывает рендеринг сегмента, показывает ближайший `not-found.tsx` и позволяет Next.js сформировать корректный ответ 404. Обычный JSX с сообщением сам по себе не меняет HTTP-статус и семантику маршрута.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

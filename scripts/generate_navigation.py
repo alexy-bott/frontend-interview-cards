@@ -15,7 +15,7 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 CARDS_DIR = ROOT / "cards"
 LEGACY_CARDS_DIR = ROOT / "Мок-собесы для ведущего"
-STYLED_CARD_TOPICS = {"CSS"}
+STYLE_ALL_CARDS = True
 STYLED_CARD_TITLES = {
     "CSS/15 CSS selectors pseudo-classes pseudo-elements.md": (
         "CSS-селекторы, псевдоклассы и псевдоэлементы"
@@ -542,7 +542,7 @@ def generate_card(path: Path, topic: Path, previous: Path | None, following: Pat
     content = repair_generated_links(path, content)
     content = format_card_for_github(content)
     relative_card = path.relative_to(CARDS_DIR).as_posix()
-    if topic.name in STYLED_CARD_TOPICS:
+    if STYLE_ALL_CARDS:
         content = format_styled_card(content)
         styled_title = STYLED_CARD_TITLES.get(
             relative_card,
@@ -677,7 +677,7 @@ def validate() -> list[str]:
             content = read_text(card)
             content_without_code = without_code(content)
             relative_card = card.relative_to(CARDS_DIR).as_posix()
-            is_styled = card.parent.name in STYLED_CARD_TOPICS
+            is_styled = STYLE_ALL_CARDS
             if not content.startswith("# "):
                 issues.append(f"{card.relative_to(ROOT)}: H1 title is missing")
             if content.count("<!-- CARD-NAV-TOP:START -->") != 1:

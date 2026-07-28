@@ -1,4 +1,4 @@
-# 06 Env variables secrets build-time runtime
+# Env variables secrets build-time runtime
 
 <!-- CARD-NAV-TOP:START -->
 [← 05 Nginx static serving SPA fallback cache headers](<./05 Nginx static serving SPA fallback cache headers.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Production troubleshooting logs rollback smoke tests →](<./07 Production troubleshooting logs rollback smoke tests.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работать с environment variables и secrets во frontend pipeline?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работать с environment variables и secrets во frontend pipeline?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Environment variable, или переменная окружения, передаёт процессу конфигурацию вне исходного кода. Во frontend нужно сразу разделить публичную конфигурацию браузера и секреты. Адрес публичного API, имя окружения или публичный Sentry DSN можно отдать клиенту. Пароль базы, приватный ключ API, ключ подписи и токен развёртывания должны использоваться только сервером или CI и никогда не попадать в JavaScript, HTML, карту исходного кода (`source map`) или сетевой ответ браузеру.
 
@@ -29,96 +34,178 @@ Runtime-переменная читается запущенным сервер�
 
 Публичная runtime-конфигурация тоже требует контроля. Изменённый `API_BASE_URL` может направить приложение на чужой сервер, поэтому URL ограничивают ожидаемыми origin, CSP `connect-src` и настройками backend CORS. В логи записывают наличие и версию config, но не полные токены и персональные значения.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Как определить, можно ли передать значение во frontend?</summary>
+<summary><strong>Как определить, можно ли передать значение во frontend?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нужно предположить, что пользователь прочитает весь загруженный код, HTML, вкладку Network и browser storage. Если знание значения даёт доступ или позволяет подписать доверенный запрос, оно должно остаться на сервере. Публичный идентификатор проекта или DSN допустим, если безопасность строится на серверной проверке прав, origin и ограничении частоты запросов (`rate limit`), а не на его скрытности.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что означает префикс <code>VITE_</code>?</summary>
+<summary><strong>Что означает префикс <code>VITE_</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Vite предоставляет переменную клиентскому коду через `import.meta.env` и статически подставляет её значение во время build. Любой `VITE_*` нужно считать публичным. Переменная без префикса не попадает в клиент автоматически, но может раскрыться, если plugin или собственный config явно передаст её в bundle.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как проверить, на каком этапе используется переменная?</summary>
+<summary><strong>Как проверить, на каком этапе используется переменная?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нужно найти процесс, который её читает. Если это Vite, Webpack `DefinePlugin` или `NEXT_PUBLIC_*` при `npm run build`, значение build-time и остаётся в artifact. Если `process.env` читает запущенный Node.js server при обработке запроса, это runtime. Если entrypoint создаёт `config.json`, environment читается при старте container, а браузер получает уже публичный результат.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как использовать один Docker image в staging и production?</summary>
+<summary><strong>Как использовать один Docker image в staging и production?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Образ содержит одинаковые файлы с хешем. При старте контейнера из разрешённых переменных окружения создаётся публичный `config.json`, либо его предоставляет отдельный сервис конфигурации. Приложение загружает файл до запуска (`bootstrap`) и получает разные API URL и публичные feature flags без новой сборки.
 
 Config не должен кэшироваться как immutable asset и не должен содержать secret. Версию config полезно показывать в диагностике и связывать с release.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Все ли переменные Next.js можно менять после build?</summary>
+<summary><strong>Все ли переменные Next.js можно менять после build?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. `NEXT_PUBLIC_*` встраиваются в browser bundle во время `next build` и после этого зафиксированы. Server-only `process.env` может читаться в runtime server code, но статическая генерация выполняет часть кода во время build. Нужно знать режим конкретного route и не считать любое обращение на сервере автоматически динамическим.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем валидировать environment variables?</summary>
+<summary><strong>Зачем валидировать environment variables?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Без проверки отсутствующий URL превращается в запрос к `undefined`, строка `false` может ошибочно считаться истинной, а опечатка окружения проявится белым экраном. Схема преобразует строки в нужные типы, проверяет обязательность и формат и завершает build или запуск сообщением с именем переменной, но без её секретного значения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что дают protected, masked и hidden variables в GitLab?</summary>
+<summary><strong>Что дают protected, masked и hidden variables в GitLab?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Protected ограничивает доступ pipeline из protected branches и tags. Masked пытается заменить значение в job log, а hidden не показывает его повторно в интерфейсе после сохранения. Environment scope ограничивает, например, только production job.
 
 Эти свойства снижают случайное раскрытие, но доверенный script всё ещё может прочитать переменную. Изменение `.gitlab-ci.yml`, которое отправляет секрет во внешний запрос, требует такого же внимательного review, как изменение production-кода.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Безопасно ли хранить secret в <code>.env</code>, если файл находится в <code>.gitignore</code>?</summary>
+<summary><strong>Безопасно ли хранить secret в <code>.env</code>, если файл находится в <code>.gitignore</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это защищает только от обычного commit. Файл остаётся на диске, может попасть в Docker context, backup, artifact или log. Для локальной разработки это допустимый способ загрузки временных credentials, но production secret должен приходить из управляемого хранилища, иметь ограниченные права и возможность ротации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делать, если secret попал в repository или client bundle?</summary>
+<summary><strong>Что делать, если secret попал в repository или client bundle?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сразу отозвать или заменить credential и проверить журналы использования. Простого удаления из последнего commit недостаточно: значение могло попасть в Git history, CI artifacts, Docker cache, CDN и браузеры. Затем очищают доступные копии по процедуре команды и добавляют проверку, предотвращающую повтор.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Следует ли хранить feature flags в environment variables?</summary>
+<summary><strong>Следует ли хранить feature flags в environment variables?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Статичный build-time flag подходит для исключения кода или постоянной настройки конкретной сборки. Для постепенного включения по пользователям, быстрого отключения и изменения без deploy нужен runtime flag service или серверная конфигурация. Клиентский flag управляет интерфейсом, но сервер всё равно проверяет права и доступ к функции.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Значение | Правильная граница |
-> | --- | --- |
-> | `VITE_API_URL` | Публичное build-time значение |
-> | `NEXT_PUBLIC_ANALYTICS_ID` | Публичное значение browser bundle |
-> | Database password | Только server runtime или secret manager |
-> | Приватный npm-токен | Доверенная задача CI и BuildKit secret |
-> | Один SPA image для окружений | Публичный runtime `config.json` |
-> | Постепенное включение функции | Runtime feature flag service |
-> | Неверный или отсутствующий config | Schema validation и явная остановка |
+| Значение | Правильная граница |
+| --- | --- |
+| `VITE_API_URL` | Публичное build-time значение |
+| `NEXT_PUBLIC_ANALYTICS_ID` | Публичное значение browser bundle |
+| Database password | Только server runtime или secret manager |
+| Приватный npm-токен | Доверенная задача CI и BuildKit secret |
+| Один SPA image для окружений | Публичный runtime `config.json` |
+| Постепенное включение функции | Runtime feature flag service |
+| Неверный или отсутствующий config | Schema validation и явная остановка |
 
 ## Связанные темы
 

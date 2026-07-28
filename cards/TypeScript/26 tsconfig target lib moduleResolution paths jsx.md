@@ -1,4 +1,4 @@
-# 26 tsconfig target lib moduleResolution paths jsx
+# tsconfig target lib moduleResolution paths jsx
 
 <!-- CARD-NAV-TOP:START -->
 [← 25 React advanced types ComponentProps forwardRef polymorphic as](<./25 React advanced types ComponentProps forwardRef polymorphic as.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [27 readonly optional properties и immutability →](<./27 readonly optional properties и immutability.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что означают `target`, `lib`, `module`, `moduleResolution`, `paths`, `types` и `jsx` в `tsconfig`? Как выбирать их для frontend-проекта?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что означают `target`, `lib`, `module`, `moduleResolution`, `paths`, `types` и `jsx` в `tsconfig`? Как выбирать их для frontend-проекта?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Эти настройки описывают разные части окружения. Их нельзя выбирать независимо только по принципу «самая новая версия»: конфигурация TypeScript должна совпадать со сборщиком, средой выполнения и инструментом запуска тестов (`test runner`).
 
@@ -83,63 +88,130 @@
 
 Файл с JSX должен иметь расширение `.tsx`. Для альтернативной JSX-библиотеки существует `jsxImportSource`. Настройку берут из шаблона и документации конкретного фреймворка, а не меняют изолированно.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Достаточно ли снизить <code>target</code>, чтобы поддержать старый браузер?</summary>
+<summary><strong>Достаточно ли снизить <code>target</code>, чтобы поддержать старый браузер?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Преобразование синтаксиса может заменить стрелочные функции и классы, но не создаёт `fetch`, `Promise` или новый метод массива. Политика поддержки браузеров включает Browserslist или настройку целевых браузеров сборщика, преобразование зависимостей, необходимые полифилы и реальные тесты в поддерживаемых браузерах.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>target</code> отличается от <code>lib</code>?</summary>
+<summary><strong>Чем <code>target</code> отличается от <code>lib</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `target` отвечает в первую очередь за версию создаваемого синтаксиса и набор ES-типов по умолчанию. `lib` сообщает компилятору, какие API считаются существующими во время выполнения. Можно проверить код с типами нового API и собрать старый синтаксис, но без polyfill приложение всё равно упадёт в старой среде.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>module</code> отличается от <code>moduleResolution</code>?</summary>
+<summary><strong>Чем <code>module</code> отличается от <code>moduleResolution</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `module` задаёт модель и форму модулей, а `moduleResolution` алгоритм поиска импортируемого пакета или файла. Они связаны: `nodenext` анализирует ESM и CommonJS по правилам Node, а `bundler` предполагает последующую обработку сборщиком. Несогласованная пара может дать ошибку только при проверке типов или, наоборот, только во время выполнения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему псевдоним пути работает в IDE, но не находится в Jest или production-сборке?</summary>
+<summary><strong>Почему псевдоним пути работает в IDE, но не находится в Jest или production-сборке?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 IDE использует `tsconfig.paths`, а инструмент запуска имеет собственный механизм поиска модулей (`resolver`). Нужно либо настроить одинаковый псевдоним в каждом инструменте, либо использовать их официальную интеграцию с `tsconfig`. Проверка должна включать реальную сборку и тесты, а не только отсутствие TypeScript-ошибок.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем ограничивать <code>types</code>?</summary>
+<summary><strong>Зачем ограничивать <code>types</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Несколько пакетов способны объявить одинаковые глобальные имена, например `describe`, `expect`, `process` или DOM-типы. Явный список не даёт тестовым globals незаметно попасть в production source и уменьшает случайные конфликты. Типы обычного импортируемого пакета по-прежнему доступны через его import.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужен отдельный <code>tsconfig</code> для Node-файлов?</summary>
+<summary><strong>Когда нужен отдельный <code>tsconfig</code> для Node-файлов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда конфигурация Vite, служебные скрипты, генератор кода или конфигурация тестов выполняются в Node, а приложение работает в браузере. У них разные `lib`, `types`, иногда `moduleResolution` и `include`. Одна общая конфигурация может по ошибке разрешить `window` в Node-скрипте или `process` в браузерном компоненте.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что меняет <code>verbatimModuleSyntax</code> рядом с <code>module</code>?</summary>
+<summary><strong>Что меняет <code>verbatimModuleSyntax</code> рядом с <code>module</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Импорты только типов с модификатором `type` удаляются, а обычный `import` или `export` сохраняется как написан. TypeScript не переписывает ESM-синтаксис в `require`; если выбранный режим модулей считает файл CommonJS, компилятор сообщит о несовместимости. Это делает ошибку конфигурации явной.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>nodenext</code> может требовать расширение <code>.js</code> в TypeScript-импорте?</summary>
+<summary><strong>Почему <code>nodenext</code> может требовать расширение <code>.js</code> в TypeScript-импорте?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 ESM в Node разрешает относительный путь к будущему исполняемому файлу и требует полное расширение. В исходном `.ts` пишут импорт `./module.js`, а TypeScript сопоставляет его с `module.ts`. Режим `bundler` обычно не требует расширения, потому что эту задачу берёт на себя сборщик.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -160,9 +232,17 @@ ESM в Node разрешает относительный путь к будущ
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Для какого проекта подходит эта идея и чего в ней ещё нет?</summary>
+<summary><strong>Для какого проекта подходит эта идея и чего в ней ещё нет?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это основа браузерного приложения, где Vite или другой сборщик создаёт JavaScript, а `tsc` только проверяет типы. Она не задаёт целевые браузеры сборщика, псевдонимы путей, глобальные имена тестов, строгие флаги и `include`. Конкретный шаблон Vite может выбрать `module: "ESNext"`, а другой современный сборщик `module: "preserve"`; решение проверяют по его документации.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

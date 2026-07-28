@@ -1,4 +1,4 @@
-# 05 Data fetching fetch cache no-store revalidate
+# Data fetching fetch cache no-store revalidate
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 SSR SSG ISR Streaming и hydration](<./04 SSR SSG ISR Streaming и hydration.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Кэширование Data Cache Full Route Cache Router Cache →](<./06 Кэширование Data Cache Full Route Cache Router Cache.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как в Next.js 14 загружают данные через `fetch`? Что делают `force-cache`, `no-store`, `revalidate` и как обновлять кэш по меткам и путям?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как в Next.js 14 загружают данные через `fetch`? Что делают `force-cache`, `no-store`, `revalidate` и как обновлять кэш по меткам и путям?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 В App Router Server Component может быть `async` и получать данные непосредственно перед рендерингом. Next.js 14 расширяет серверный `fetch`: кроме обычного HTTP-запроса он управляет Data Cache, то есть серверным кэшем данных, и позволяет задать срок и способ обновления результата.
 
@@ -37,63 +42,130 @@ Server Component не нужно заставлять обращаться к с
 
 Начиная с Next.js 15 серверный `fetch` больше не кэшируется по умолчанию. Поэтому ответ о значениях по умолчанию должен начинаться с версии: для Next.js 14 базовая модель кэширует, для 15/16 кэш включают явно или используют новую модель соответствующей версии.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>force-cache</code> отличается от <code>no-store</code>?</summary>
+<summary><strong>Чем <code>force-cache</code> отличается от <code>no-store</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `force-cache` сначала ищет ответ в серверном Data Cache и сохраняет результат при отсутствии записи. `no-store` всегда обращается к источнику и не записывает ответ в этот кэш. Это не те же настройки, что HTTP-кэш браузера: в серверном `fetch` Next.js они управляют Data Cache.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>revalidate: 60</code> отличается от <code>no-store</code>?</summary>
+<summary><strong>Чем <code>revalidate: 60</code> отличается от <code>no-store</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `revalidate: 60` переиспользует кэш и допускает устаревание до заданного интервала, после чего обновляет его в фоне. `no-store` выполняет запрос при каждом рендеринге. Первый вариант уменьшает нагрузку и задержку, второй нужен для строго персональных или постоянно меняющихся данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>revalidateTag</code> отличается от <code>revalidatePath</code>?</summary>
+<summary><strong>Чем <code>revalidateTag</code> отличается от <code>revalidatePath</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Tag связывается с данными и может обновить их во всех маршрутах, которые использовали эту метку. Path адресует конкретную страницу или layout. После изменения поста tag `posts` удобен для списка, главной страницы и боковой панели, а path подходит для обновления одного известного маршрута.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Являются ли Data Cache и мемоизация запросов (Request Memoization) одним механизмом?</summary>
+<summary><strong>Являются ли Data Cache и мемоизация запросов (Request Memoization) одним механизмом?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Data Cache находится на серверной стороне Next.js и может переживать много запросов и развёртываний, если это поддерживает платформа. Request Memoization принадлежит React, действует только во время рендеринга одного дерева и затем очищается. Один вызов `fetch` может одновременно получить значение из Data Cache и быть мемоизирован внутри текущего рендеринга.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему два одинаковых запроса иногда всё равно выполняются дважды?</summary>
+<summary><strong>Почему два одинаковых запроса иногда всё равно выполняются дважды?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Мемоизация учитывает URL и настройки, относится только к GET и работает внутри React-дерева компонентов. Разные headers, body или настройки дают другой запрос. Route Handler не входит в React-дерево, а переданный `AbortSignal` отключает автоматическую мемоизацию такого `fetch`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Делает ли <code>cookies()</code> все данные некэшируемыми?</summary>
+<summary><strong>Делает ли <code>cookies()</code> все данные некэшируемыми?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он делает маршрут динамическим, потому что рендеринг зависит от конкретного запроса. Но это не запрещает явно кэшировать общие данные в Data Cache. Например, персональный header может зависеть от cookie, а общий каталог использовать отдельный `fetch` с `force-cache`. Нельзя помещать пользовательский ответ под общий ключ кэша.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужно ли проверять <code>response.ok</code>?</summary>
+<summary><strong>Нужно ли проверять <code>response.ok</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. `fetch` отклоняет Promise при сетевой ошибке, но ответ 404 или 500 сам по себе является успешным завершением HTTP-запроса. Код должен проверить status или `ok`, преобразовать ожидаемую ошибку либо выбросить исключение, которое обработает ближайший `error.tsx`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что изменилось в Next.js 15?</summary>
+<summary><strong>Что изменилось в Next.js 15?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `fetch` перестал кэшироваться по умолчанию. Для отдельного запроса указывают `cache: "force-cache"`, а значение по умолчанию для сегмента можно изменить через `fetchCache = "default-cache"`. Поэтому перенос кода с 14 на 15 может увеличить число запросов, если прежний кэш подразумевался неявно.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 10 Conditional types и infer
+# Conditional types и infer
 
 <!-- CARD-NAV-TOP:START -->
 [← 09 Mapped types и Utility Types](<./09 Mapped types и Utility Types.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [11 Structural typing и excess property checks →](<./11 Structural typing и excess property checks.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое conditional types и `infer` в TypeScript? Как они работают с union?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое conditional types и `infer` в TypeScript? Как они работают с union?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Conditional type, или условный тип, выбирает один из двух типов по условию:
 
@@ -70,56 +75,115 @@ type Result = IsEntirelyString<string | number>;
 
 Conditional types полезны для общих библиотечных контрактов, извлечения данных из обёрток и преобразования union. В прикладном коде длинная цепочка условий часто хуже нескольких явных типов: она усложняет ошибки компилятора и повышает стоимость проверки типов.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему conditional type распределяется по union?</summary>
+<summary><strong>Почему conditional type распределяется по union?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Распределение включается, когда слева от `extends` находится непосредственно параметр типа, например `T extends U`. TypeScript подставляет каждый вариант union отдельно и объединяет результаты. Благодаря этому `Exclude<"a" | "b", "a">` может удалить только `"a"`, а не проверять весь union одним значением.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как отключить распределение?</summary>
+<summary><strong>Как отключить распределение?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обернуть обе стороны проверки в одноэлементные tuple: `[T] extends [U] ? X : Y`. Теперь условие сравнивает `T` как единый тип. Обёртка не создаёт значение и существует только для изменения поведения системы типов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что означает <code>infer</code> и где его можно использовать?</summary>
+<summary><strong>Что означает <code>infer</code> и где его можно использовать?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `infer Name` создаёт выводимый параметр внутри ветки `extends`. Его можно извлечь из результата функции, аргументов, элемента массива, содержимого `Promise` или части шаблонной строки. Имя доступно только там, где TypeScript уже доказал соответствие указанной форме.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>never</code> участвует в фильтрации union?</summary>
+<summary><strong>Как <code>never</code> участвует в фильтрации union?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `never` означает невозможное значение и исчезает при объединении: `string | never` упрощается до `string`. Распределяемый conditional type возвращает `never` для исключаемых вариантов и тем самым отфильтровывает их. На этом принципе построены `Exclude` и `Extract`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как conditional types связаны с асинхронным кодом?</summary>
+<summary><strong>Как conditional types связаны с асинхронным кодом?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Встроенный `Awaited<T>` моделирует результат `await`: рекурсивно раскрывает `Promise` и совместимые с ним thenable-объекты. Например, `Awaited<Promise<User>>` даёт `User`, а `Awaited<boolean | Promise<number>>` даёт `boolean | number`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что вернёт <code>ReturnType</code> для перегруженной функции?</summary>
+<summary><strong>Что вернёт <code>ReturnType</code> для перегруженной функции?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Вывод выполняется по последней сигнатуре перегрузки. Обычно это наиболее общая сигнатура, поэтому `ReturnType` не выбирает ветку по конкретным аргументам. Conditional type не выполняет разрешение перегрузок так, как реальный вызов функции.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда conditional type становится проблемой?</summary>
+<summary><strong>Когда conditional type становится проблемой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда он рекурсивный, распределяется по большому union или содержит много вложенных веток. Это ухудшает читаемость ошибок и может замедлить компилятор. Если набор вариантов известен и невелик, явная карта типов или discriminated union часто понятнее.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -137,9 +201,17 @@ type User = UnwrapApi<ApiResponse<{ id: string }>>;
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Как вычисляется <code>User</code>?</summary>
+<summary><strong>Как вычисляется <code>User</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Тип `ApiResponse<{ id: string }>` соответствует форме `Promise<{ data: ... }>`. `infer Data` получает содержимое поля `data`, поэтому результатом становится `{ id: string }`. Если передать тип другой формы, условие вернёт `never`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

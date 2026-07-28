@@ -1,4 +1,4 @@
-# 06 Кэширование Data Cache Full Route Cache Router Cache
+# Кэширование Data Cache Full Route Cache Router Cache
 
 <!-- CARD-NAV-TOP:START -->
 [← 05 Data fetching fetch cache no-store revalidate](<./05 Data fetching fetch cache no-store revalidate.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Server Actions forms mutations revalidatePath revalidateTag →](<./07 Server Actions forms mutations revalidatePath revalidateTag.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Какие уровни кэширования есть в Next.js 14 App Router и как они связаны?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Какие уровни кэширования есть в Next.js 14 App Router и как они связаны?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 В Next.js 14 нужно различать четыре механизма. Они хранят разные результаты, живут в разных местах и обновляются разными API.
 
@@ -34,63 +39,130 @@ Router Cache находится в браузере и разбит по сег�
 
 Кэш Next.js не заменяет HTTP-кэш браузера, CDN-кэш и клиентский кэш серверного состояния RTK Query. Каждому уровню нужны собственные правила. Частая ошибка состоит в вызове `router.refresh()` при устаревшем Data Cache или в хранении персональных данных под общим ключом кэша.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Data Cache отличается от Full Route Cache?</summary>
+<summary><strong>Чем Data Cache отличается от Full Route Cache?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Data Cache хранит результат получения данных. Full Route Cache хранит уже сформированные HTML и RSC Payload статического маршрута. Динамический маршрут может использовать Data Cache без Full Route Cache. Обновление данных вызывает повторный серверный рендеринг и тем самым обновляет результат зависимого маршрута.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Request Memoization отличается от Data Cache?</summary>
+<summary><strong>Чем Request Memoization отличается от Data Cache?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Memoization устраняет одинаковую работу только внутри текущего рендеринга и затем исчезает. Data Cache переиспользуется разными серверными запросами. Memoization не требует revalidation, а Data Cache должен иметь правило срока жизни или событийного обновления.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что хранит Router Cache?</summary>
+<summary><strong>Что хранит Router Cache?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он хранит RSC Payload посещённых и предварительно загруженных сегментов маршрута в памяти браузера. Это позволяет менять только изменившиеся части дерева, сохранять layouts и не выполнять полную загрузку документа. Он не является исходным хранилищем backend-данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>router.refresh()</code> может не показать новые данные?</summary>
+<summary><strong>Почему <code>router.refresh()</code> может не показать новые данные?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он запрашивает новый результат серверного рендеринга, но не очищает Data Cache. Если `fetch` всё ещё возвращает сохранённое значение, новый RSC Payload будет содержать те же данные. Сначала нужно корректно выполнить `revalidateTag`, `revalidatePath` или не кэшировать источник.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Делает ли динамический route все его <code>fetch</code> динамическими?</summary>
+<summary><strong>Делает ли динамический route все его <code>fetch</code> динамическими?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Маршрут не хранится в Full Route Cache и выполняется на каждый запрос, но отдельный `fetch` с `force-cache` может продолжать использовать Data Cache. Это позволяет сочетать персональную оболочку и общие кэшируемые данные.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит с кэшем после deployment?</summary>
+<summary><strong>Что происходит с кэшем после deployment?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Full Route Cache очищается, потому что он относится к конкретной сборке. Data Cache по модели Next.js 14 может переживать развёртывание, если платформа это поддерживает. При self-hosting, то есть самостоятельном размещении, поведение зависит от хранилища и числа экземпляров, поэтому общий cache handler настраивают отдельно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли отключить Router Cache?</summary>
+<summary><strong>Можно ли отключить Router Cache?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Next.js 14 полностью отключить его нельзя. Можно отказаться от автоматического prefetch у `Link`, но посещённые сегменты всё равно временно сохраняются для клиентской навигации. Для текущего маршрута доступен `router.refresh()`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем кэш Next.js отличается от RTK Query?</summary>
+<summary><strong>Чем кэш Next.js отличается от RTK Query?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Next.js кэширует серверные данные и результат рендеринга до или во время отдачи страницы. RTK Query хранит серверное состояние в клиентском Redux store после загрузки JavaScript и управляет подписками компонентов. Один и тот же ресурс не нужно бессистемно копировать во все уровни без правил инвалидации, то есть признания данных устаревшими.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

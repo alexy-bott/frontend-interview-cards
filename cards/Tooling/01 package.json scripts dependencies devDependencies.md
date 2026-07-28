@@ -1,4 +1,4 @@
-# 01 package.json scripts dependencies devDependencies
+# package.json scripts dependencies devDependencies
 
 <!-- CARD-NAV-TOP:START -->
 [↑ Tooling](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 lock files npm ci и воспроизводимая установка →](<./02 lock files npm ci и воспроизводимая установка.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Зачем нужен `package.json`? Чем отличаются `dependencies`, `devDependencies` и `peerDependencies`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Зачем нужен `package.json`? Чем отличаются `dependencies`, `devDependencies` и `peerDependencies`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `package.json` является манифестом Node.js-проекта: он описывает пакет, команды, зависимости, поддерживаемое окружение и настройки инструментов. По этому файлу разработчик и CI понимают, как установить, запустить, проверить и собрать проект.
 
@@ -58,63 +63,130 @@
 
 Для публикуемого пакета дополнительно важны `exports`, `types`, `files`, `sideEffects` и иногда `main`/`module`. Они определяют публичные точки импорта, декларации TypeScript, содержимое npm-архива и возможность tree shaking, то есть удаления неиспользуемого кода при сборке. В обычном закрытом SPA эти поля часто не нужны.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему scripts запускают через менеджер пакетов, а не глобальную команду?</summary>
+<summary><strong>Почему scripts запускают через менеджер пакетов, а не глобальную команду?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Менеджер пакетов подставляет локальные исполняемые файлы из `node_modules/.bin`, поэтому команда использует версию, зафиксированную проектом и lock-файлом. Глобальная установка может отличаться у разработчиков и в CI, из-за чего одинаковая команда даст разный результат.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли пакет из <code>devDependencies</code> попасть в production-бандл?</summary>
+<summary><strong>Может ли пакет из <code>devDependencies</code> попасть в production-бандл?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да, если клиентский код его импортирует. Раздел `devDependencies` описывает роль пакета в проекте, а не правило сборщика. Например, случайный импорт тестовой утилиты из рабочего модуля способен включить её код в бандл или сломать сборку.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему Vite обычно находится в <code>devDependencies</code>?</summary>
+<summary><strong>Почему Vite обычно находится в <code>devDependencies</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он нужен для сервера разработки и формирования production-файлов, но не выполняется в браузере как часть приложения. После сборки статического SPA хостинг раздаёт готовые HTML, CSS и JavaScript. Для приложения с серверным рендерингом зависимости, необходимые серверу во время выполнения, оценивают отдельно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>peerDependencies</code> отличаются от <code>dependencies</code>?</summary>
+<summary><strong>Чем <code>peerDependencies</code> отличаются от <code>dependencies</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычную зависимость пакет устанавливает как собственную. Peer dependency должна быть доступна в приложении-потребителе в совместимой версии. Благодаря этому плагин или UI-библиотека работает с тем же экземпляром React, ESLint или Webpack, который использует основной проект.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает поле <code>type</code>?</summary>
+<summary><strong>Что делает поле <code>type</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Node.js значение `"module"` интерпретирует `.js` как ESM, а отсутствие поля или `"commonjs"` как CommonJS. Это влияет на файлы конфигурации, Node.js-скрипты и серверный код. Расширения `.mjs` и `.cjs` позволяют указать формат явно независимо от поля.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем одновременно нужны <code>packageManager</code> и <code>engines</code>?</summary>
+<summary><strong>Зачем одновременно нужны <code>packageManager</code> и <code>engines</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `packageManager`, например `pnpm@10.0.0`, фиксирует ожидаемый инструмент и версию для Corepack или другой проверки. `engines.node` описывает допустимый диапазон Node.js. Вместе они уменьшают расхождение установки и сборки, но CI всё равно должен явно выбрать нужные версии.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем ставить <code>private: true</code>?</summary>
+<summary><strong>Зачем ставить <code>private: true</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Поле запрещает публикацию пакета в registry, то есть реестр пакетов, обычной командой и защищает закрытое приложение от случайного `npm publish`. Для корня monorepo оно также показывает, что корневой пакет служит рабочим пространством, а не самостоятельной библиотекой.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны <code>overrides</code> или <code>resolutions</code>?</summary>
+<summary><strong>Зачем нужны <code>overrides</code> или <code>resolutions</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они принудительно выбирают версию вложенной зависимости, которую нельзя обновить прямой записью. Это бывает нужно для временного исправления уязвимости или конфликта, но может нарушить ожидания родительского пакета. Причину фиксируют в PR, а правило удаляют после обычного обновления зависимости.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

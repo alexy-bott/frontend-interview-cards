@@ -1,4 +1,4 @@
-# 09 Dynamic routes params searchParams metadata
+# Dynamic routes params searchParams metadata
 
 <!-- CARD-NAV-TOP:START -->
 [← 08 Route Handlers Middleware Edge и Node runtime](<./08 Route Handlers Middleware Edge и Node runtime.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Next.js 14 15 16 версии Turbopack Cache Components PPR →](<./10 Next.js 14 15 16 версии Turbopack Cache Components PPR.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как в App Router работают динамические маршруты, `params`, `searchParams`, `generateStaticParams` и метаданные?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как в App Router работают динамические маршруты, `params`, `searchParams`, `generateStaticParams` и метаданные?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Динамический маршрут содержит часть URL, значение которой заранее неизвестно. В App Router такой сегмент обозначают квадратными скобками: файл `app/products/[id]/page.tsx` обрабатывает `/products/42`, а `params.id` содержит строку `"42"`.
 
@@ -58,63 +63,130 @@ Metadata наследуется от корневого layout к дочерни
 
 В Next.js 15 `params`, `searchParams`, `cookies()` и другие API, зависящие от запроса, стали асинхронными. Поэтому свежий пример с `await params` не описывает Next.js 14: для собеседования сначала следует назвать версию.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>params</code> отличаются от <code>searchParams</code>?</summary>
+<summary><strong>Чем <code>params</code> отличаются от <code>searchParams</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `params` являются частью структуры пути и обычно идентифицируют страницу или ресурс: `/users/42`. `searchParams` идут после `?` и описывают вариант представления: `/users?role=admin&page=2`. Удаление `params` обычно приводит к другому маршруту, а удаление `searchParams` оставляет тот же тип страницы с настройками по умолчанию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда состояние интерфейса стоит хранить в <code>searchParams</code>?</summary>
+<summary><strong>Когда состояние интерфейса стоит хранить в <code>searchParams</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда его полезно сохранить в истории браузера, передать ссылкой или восстановить после перезагрузки: поисковый запрос, фильтр, сортировка, номер страницы. Временное состояние открытого выпадающего списка или текст ещё не отправленной формы обычно остаётся локальным, чтобы не засорять URL и историю.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему layout не получает <code>searchParams</code>?</summary>
+<summary><strong>Почему layout не получает <code>searchParams</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Layout переиспользуется при клиентских переходах и не выполняется заново при каждом изменении строки параметров запроса. Переданное один раз значение стало бы устаревшим. Page получает актуальные параметры для серверного рендеринга, а клиентский компонент может подписаться на URL через `useSearchParams`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>useSearchParams</code> может потребовать <code>Suspense</code>?</summary>
+<summary><strong>Почему <code>useSearchParams</code> может потребовать <code>Suspense</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 На статически сформированной странице участок с `useSearchParams` должен быть дорендерен на клиенте, потому что актуальная строка запроса известна во время навигации. Граница `Suspense` позволяет оставить внешнюю часть страницы статической. В production-сборке отсутствие такой границы для статического маршрута может привести к ошибке.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>[...slug]</code> отличается от <code>[[...slug]]</code>?</summary>
+<summary><strong>Чем <code>[...slug]</code> отличается от <code>[[...slug]]</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Catch-all, то есть маршрут, захватывающий все оставшиеся сегменты, `[...slug]` требует хотя бы один сегмент: `/docs/react` подходит, а `/docs` нет. Optional catch-all `[[...slug]]` делает эту часть необязательной и допускает корневой путь `/docs`; в этом случае `slug` отсутствует. В обоих вариантах несколько сегментов приходят массивом строк.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>generateStaticParams</code> и заменяет ли он <code>getStaticPaths</code>?</summary>
+<summary><strong>Что делает <code>generateStaticParams</code> и заменяет ли он <code>getStaticPaths</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он перечисляет динамические параметры для предварительной генерации страниц App Router. По назначению это ближайший аналог `getStaticPaths`, но работает в модели Server Components и сегментов маршрута. Поведение для неуказанных значений дополнительно регулирует `dynamicParams`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда использовать <code>metadata</code>, а когда <code>generateMetadata</code>?</summary>
+<summary><strong>Когда использовать <code>metadata</code>, а когда <code>generateMetadata</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Статический `metadata` подходит для постоянных значений раздела. `generateMetadata` нужен, если `title`, `description` или изображение для социальных сетей зависят от URL и загруженных данных. Оба варианта являются серверными API и не экспортируются из файла с `"use client"`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как обработать несуществующий <code>id</code> или <code>slug</code>?</summary>
+<summary><strong>Как обработать несуществующий <code>id</code> или <code>slug</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 После получения данных page вызывает `notFound()`, если ресурс отсутствует. Next.js показывает ближайший `not-found.tsx` и возвращает ответ 404. Это отличается от временной ошибки backend: её следует выбросить и передать ближайшему `error.tsx`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

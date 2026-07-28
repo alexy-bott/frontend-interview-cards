@@ -1,4 +1,4 @@
-# 24 Event Loop
+# Event Loop
 
 <!-- CARD-NAV-TOP:START -->
 [← 23 Ошибки try catch](<./23 Ошибки try catch.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [25 Timers setTimeout setInterval →](<./25 Timers setTimeout setInterval.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое event loop в браузере? Чем tasks отличаются от microtasks и когда браузер может обновить страницу?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое event loop в браузере? Чем tasks отличаются от microtasks и когда браузер может обновить страницу?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Event loop является механизмом браузера, который координирует выполнение JavaScript на main thread, готовые асинхронные callbacks, пользовательские события и обновление страницы. Сам язык JavaScript не предоставляет таймеры, DOM или сеть: эти возможности и правила браузерного цикла задаёт host environment, то есть среда выполнения вокруг JavaScript-движка.
 
@@ -30,84 +35,175 @@ JavaScript-движок выполняет текущий код через call
 
 Поэтому callback уже завершённого `Promise` обычно выполняется раньше `setTimeout(..., 0)`: первый становится microtask после текущего кода, второй может стать отдельной task не раньше достижения задержки.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Event loop является частью JavaScript-движка или браузера?</summary>
+<summary><strong>Event loop является частью JavaScript-движка или браузера?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Выполнение JavaScript и Promise jobs описывает ECMAScript, а браузерный event loop, tasks, timers, DOM events и rendering описывает HTML Standard и другие Web API. На практике движок и браузер взаимодействуют, но это разные уровни. Поэтому Node.js тоже имеет event loop, однако его фазы и API отличаются, а DOM и browser rendering отсутствуют.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Асинхронный callback выполняется в отдельном потоке?</summary>
+<summary><strong>Асинхронный callback выполняется в отдельном потоке?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Не обязательно. Браузер может использовать другие потоки или системные механизмы для сети, таймеров и ввода, но обычный callback события, Promise или таймера снова выполняется как JavaScript на main thread. Фоновая подготовка результата не делает сам callback параллельным UI-коду. Для выполнения JavaScript в отдельном потоке нужен, например, Web Worker.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему microtask имеет приоритет перед следующей task?</summary>
+<summary><strong>Почему microtask имеет приоритет перед следующей task?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 После завершения текущей task среда обязана провести microtask checkpoint до выбора следующей task. Это позволяет Promise-цепочкам и внутренним обновлениям стабилизировать состояние между внешними событиями. Такой приоритет не означает отдельный поток: microtask выполняется на том же main thread и тоже может его занять.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>queueMicrotask</code> отличается от <code>Promise.resolve().then()</code>?</summary>
+<summary><strong>Чем <code>queueMicrotask</code> отличается от <code>Promise.resolve().then()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Оба способа ставят callback в очередь microtasks с похожим порядком. `queueMicrotask` прямо выражает планирование микрозадачи и не создаёт искусственную Promise-цепочку. Если его callback выбросит ошибку, она проходит как обычная необработанная ошибка. Ошибка в `.then()` превращает возвращённый Promise в rejected и наблюдается через механизмы Promise rejection.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>MutationObserver</code> упоминают рядом с microtasks?</summary>
+<summary><strong>Почему <code>MutationObserver</code> упоминают рядом с microtasks?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Изменения DOM не вызывают callback observer синхронно для каждой операции. Браузер накапливает `MutationRecord` и доставляет пачку observer-у во время microtask checkpoint. Это уменьшает число немедленных вызовов, но callback всё равно работает на main thread и при тяжёлой обработке задерживает кадр.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> <code>requestAnimationFrame</code> является task или microtask?</summary>
+<summary><strong><code>requestAnimationFrame</code> является task или microtask?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Его не следует относить к этим очередям. Callback `requestAnimationFrame` вызывается на этапе обновления rendering перед предполагаемым кадром. Сначала завершается текущая task и microtasks, затем при rendering opportunity браузер вызывает rAF callbacks и продолжает подготовку кадра. Занятый main thread или бесконечные microtasks задержат rAF.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое microtask starvation?</summary>
+<summary><strong>Что такое microtask starvation?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если microtask постоянно добавляет новую microtask, checkpoint долго не заканчивается. Браузер не переходит к следующей task, обработке нового ввода и rendering opportunity. Интерфейс может выглядеть зависшим, хотя движок продолжает выполнять очередь. Большую работу нужно ограничивать или дробить с уступкой управления следующей task.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>await</code> влияет на порядок выполнения?</summary>
+<summary><strong>Как <code>await</code> влияет на порядок выполнения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Код `async`-функции выполняется синхронно до первого `await`. Затем функция возвращает Promise вызывающему коду, а продолжение после `await` планируется как Promise job, то есть microtask. Даже `await` уже готового значения не продолжает функцию в том же call stack.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Web Worker помогает main thread?</summary>
+<summary><strong>Чем Web Worker помогает main thread?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Worker имеет отдельный поток, call stack и event loop и может выполнять CPU-heavy вычисление параллельно. Он не имеет прямого доступа к DOM, поэтому обменивается данными через сообщения. Если main thread уже занят, результат worker подождёт: применить его к UI можно только после освобождения main thread.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как event loop связан с React?</summary>
+<summary><strong>Как event loop связан с React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обработчики событий, вычисление React tree, commit DOM-изменений и большая часть эффектов выполняются на main thread. React может объединять updates и планировать interruptible render work, но не может обработать ввод или commit, пока чужая синхронная task удерживает поток. `useTransition` меняет приоритет React-обновления, но не переносит тяжёлое вычисление в другой поток.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем браузерный event loop отличается от Node.js?</summary>
+<summary><strong>Чем браузерный event loop отличается от Node.js?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Node.js цикл реализован вокруг libuv и имеет фазы timers, poll, check и другие. Также существует отдельная очередь `process.nextTick`, которая обрабатывается раньше обычных Promise microtasks в соответствующих точках. Поэтому переносить точный порядок Node.js в браузер нельзя, хотя общие идеи call stack и отложенных callbacks похожи.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -129,9 +225,17 @@ console.log("F");
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> В каком порядке появятся строки?</summary>
+<summary><strong>В каком порядке появятся строки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `A`, `F`, `C`, `E`, `D`, `B`. Сначала выполняется синхронный script. Затем microtasks идут в порядке добавления: Promise reaction `C`, потом `E`. Во время `C` в конец той же очереди добавляется `D`. Только после полного опустошения microtasks браузер может выполнить task таймера `B`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 05 Dependency Inversion API adapters hooks
+# Dependency Inversion API adapters hooks
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 Liskov и Interface Segregation в компонентах и типах](<./04 Liskov и Interface Segregation в компонентах и типах.md>) · [↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 DRY KISS YAGNI во frontend →](<./06 DRY KISS YAGNI во frontend.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое Dependency Inversion Principle? Как он применяется во frontend без классов и DI-контейнера?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое Dependency Inversion Principle? Как он применяется во frontend без классов и DI-контейнера?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Dependency Inversion Principle (DIP), или принцип инверсии зависимостей, говорит: высокоуровневая логика не должна напрямую зависеть от конкретной инфраструктурной детали. Высокоуровневый и низкоуровневый модули зависят от abstraction, то есть от контракта, сформулированного на языке задачи приложения.
 
@@ -41,97 +46,187 @@ function createSubmitProfile(updateProfile: UpdateProfile, track: Track) {
 
 Дополнительный интерфейс полезен, когда он изолирует нестабильную деталь, несколько реализаций или важную архитектурную границу. Обёртка `http.get`, которая только повторяет `fetch` и не меняет контракт, сама по себе DIP не обеспечивает.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Dependency inversion и dependency injection - одно и то же?</summary>
+<summary><strong>Dependency inversion и dependency injection - одно и то же?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. DIP определяет направление зависимости: высокоуровневая логика работает через свой контракт, а инфраструктура к нему адаптируется. Dependency injection (DI), или передача зависимости снаружи, является одной из техник связывания контракта с реализацией.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выглядит dependency injection во frontend?</summary>
+<summary><strong>Как выглядит dependency injection во frontend?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Реализацию можно передать аргументом функции, через prop или React Context либо создать в composition root. Например, Provider передаёт `ProfileApi`, фабрика собирает пользовательский сценарий с HTTP Adapter, а unit-тест передаёт контролируемую функцию. Классический DI-контейнер является только одним возможным инструментом и часто не нужен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Кто должен определять abstraction, то есть абстракцию?</summary>
+<summary><strong>Кто должен определять abstraction, то есть абстракцию?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Контракт должен отражать потребность высокоуровневого потребителя, а не копировать детали внешнего API. Функциональному модулю нужна операция `loadProfile(): Profile`, а не общий метод `request<T>(url, options)`. Низкоуровневый Adapter переводит конкретный способ обмена данными в этот контракт.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Является ли custom hook абстракцией?</summary>
+<summary><strong>Является ли custom hook абстракцией?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Может быть. `useProfile()` скрывает источник данных и предоставляет понятные состояния функционального модуля. Но если React-хук возвращает необработанный объект RTK Query или повторяет параметры внешней библиотеки, UI всё ещё зависит от этой детали. Имя hook само по себе направление зависимости не меняет.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как Adapter связан с DIP?</summary>
+<summary><strong>Как Adapter связан с DIP?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Adapter реализует контракт приложения поверх несовместимого внешнего API. Он преобразует параметры, DTO, ошибки и жизненный цикл операции. DIP объясняет, почему внутренний код должен зависеть от этого контракта, а не от SDK; Adapter является практическим способом развернуть зависимость.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужен ли TypeScript <code>interface</code> для каждой зависимости?</summary>
+<summary><strong>Нужен ли TypeScript <code>interface</code> для каждой зависимости?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Контрактом может быть тип функции, объектный тип или публичный тип библиотеки. Если зависимость используется в одном месте и стабильна, отдельное имя может не дать пользы. Важно, чтобы потребитель не знал лишних деталей, а не количество объявленных `interface`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как DIP помогает тестам?</summary>
+<summary><strong>Как DIP помогает тестам?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Тест подставляет контролируемую реализацию внешней границы и проверяет высокоуровневое правило без реальной сети. Fake, или упрощённая тестовая реализация, должна соблюдать контракт, а не повторять внутренности HTTP-клиента. Отдельные интеграционные тесты проверяют реальный Adapter с mock server, то есть сервером-заглушкой, или с тестовым окружением.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли большое количество mocks, то есть тестовых подмен, быть признаком плохого DIP?</summary>
+<summary><strong>Может ли большое количество mocks, то есть тестовых подмен, быть признаком плохого DIP?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. Если тест подменяет десятки внутренних функций, он связан со структурой реализации, а не с внешним контрактом. Обычно достаточно контролировать несколько дорогих или недетерминированных границ: сеть, время и хранилище. Внутренние чистые функции лучше проверять напрямую.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как применить DIP с RTK Query?</summary>
+<summary><strong>Как применить DIP с RTK Query?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Endpoint и сгенерированный hook уже могут быть публичной границей функционального модуля. `transformResponse` скрывает DTO, а UI получает предметные данные и ошибки. Если компоненты повсеместно знают `baseQuery`, сериализованную структуру ошибки и способ вызова `unwrap`, детали RTK Query протекают наружу; более узкий React-хук функционального модуля или Adapter может быть оправдан.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда абстракция над API лишняя?</summary>
+<summary><strong>Когда абстракция над API лишняя?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда endpoint прост, используется один раз, его DTO уже является моделью приложения и дополнительный слой только переименовывает метод. Начать можно напрямую через публичный hook получения данных. Граница выделяется, когда появляются преобразование DTO, единая обработка ошибок, несколько способов обмена данными или необходимость заменить реализацию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как DIP связан с правилом импортов FSD?</summary>
+<summary><strong>Как DIP связан с правилом импортов FSD?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Функциональный модуль импортирует публичный API более низкого слоя, а не его внутренние файлы. Логика обмена данными не должна заставлять его знать приватные interceptors, порядок обновления токена и структуру HTTP-клиента. Правило импортов технически поддерживает выбранное направление зависимостей.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Высокоуровневая потребность | Низкоуровневая реализация |
-> |---|---|
-> | `updateProfile(input)` | Mutation RTK Query или адаптер над Fetch API |
-> | `track(event)` | SDK аналитики конкретного поставщика |
-> | `loadPreferences()` | `localStorage`, IndexedDB или API сервера |
-> | `now()` | `Date.now` в production и фиксированное время в тесте |
-> | `isEnabled(flag)` | Поставщик значений feature flags |
+| Высокоуровневая потребность | Низкоуровневая реализация |
+|---|---|
+| `updateProfile(input)` | Mutation RTK Query или адаптер над Fetch API |
+| `track(event)` | SDK аналитики конкретного поставщика |
+| `loadPreferences()` | `localStorage`, IndexedDB или API сервера |
+| `now()` | `Date.now` в production и фиксированное время в тесте |
+| `isEnabled(flag)` | Поставщик значений feature flags |
 
 ## Связанные темы
 

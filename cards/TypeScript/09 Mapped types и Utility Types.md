@@ -1,4 +1,4 @@
-# 09 Mapped types и Utility Types
+# Mapped types и Utility Types
 
 <!-- CARD-NAV-TOP:START -->
 [← 08 keyof typeof indexed access](<./08 keyof typeof indexed access.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Conditional types и infer →](<./10 Conditional types и infer.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое mapped types и utility types в TypeScript? Когда их стоит использовать?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое mapped types и utility types в TypeScript? Когда их стоит использовать?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Mapped type, или сопоставляемый тип, создаёт новый объектный тип, перебирая ключи другого типа. Он нужен, когда одно и то же преобразование должно применяться к каждому свойству: сделать поля необязательными, доступными только для чтения или заменить тип их значений.
 
@@ -69,56 +74,115 @@ type UpdateUserPayload = Partial<Pick<User, "name" | "email">>;
 
 Большинство стандартных преобразований поверхностные. `Readonly<User>` запрещает заменить свойство верхнего уровня, но не делает автоматически неизменяемыми вложенные массивы и объекты. Для глубокой модели нужен отдельный рекурсивный тип, а реальную защиту объекта во время выполнения обеспечивает другой механизм, например `Object.freeze`, который тоже имеет собственные ограничения.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем mapped type отличается от обычного index signature?</summary>
+<summary><strong>Чем mapped type отличается от обычного index signature?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Index signature описывает неизвестное заранее множество ключей одного вида, например `{ [key: string]: number }`. Mapped type перебирает конкретный union ключей и может сохранить связь каждого ключа с его исходным значением. Поэтому `Record<Status, Label>` проверяет все варианты `Status`, а словарь со строковой index signature не знает конечного списка статусов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>Partial&lt;T&gt;</code> может быть опасен?</summary>
+<summary><strong>Почему <code>Partial&lt;T&gt;</code> может быть опасен?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он механически делает необязательным каждое поле, не учитывая смысл операции. Для локального черновика формы это может быть приемлемо. Для DTO обновления он способен разрешить пустой объект, изменение серверных полей или недопустимые сочетания. Контракт API лучше строить из разрешённых полей и отдельно выражать обязательные правила.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда выбирать <code>Pick</code>, а когда <code>Omit</code>?</summary>
+<summary><strong>Когда выбирать <code>Pick</code>, а когда <code>Omit</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Pick` явно перечисляет небольшое множество нужных полей и устойчивее к добавлению новых свойств в исходный тип. `Omit` удобен, когда требуется почти весь исходный контракт кроме нескольких полей. Если список исключений велик или новый тип имеет самостоятельный бизнес-смысл, отдельное явное описание обычно понятнее обоих вариантов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем отличаются <code>Record&lt;Status, T&gt;</code> и <code>Record&lt;string, T&gt;</code>?</summary>
+<summary><strong>Чем отличаются <code>Record&lt;Status, T&gt;</code> и <code>Record&lt;string, T&gt;</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Первый вариант требует значение для каждого элемента конечного union `Status` и запрещает неизвестные ключи в объектном литерале. Второй заявляет, что значение существует для произвольной строки. В реальном объекте неизвестного ключа может не быть, поэтому для открытого словаря полезен `noUncheckedIndexedAccess`: тогда результат обращения получает `T | undefined`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>Exclude</code> отличается от <code>Omit</code>?</summary>
+<summary><strong>Чем <code>Exclude</code> отличается от <code>Omit</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Exclude` фильтрует варианты union, например `Exclude<Status, "idle">`. `Omit` удаляет свойства объектного типа, например `Omit<User, "passwordHash">`. Названия похожи, но один работает со значениями union, а другой с ключами объекта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>Readonly&lt;T&gt;</code> не гарантирует неизменяемость данных?</summary>
+<summary><strong>Почему <code>Readonly&lt;T&gt;</code> не гарантирует неизменяемость данных?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это только ограничение на этапе компиляции для операций через данный тип. Оно стирается после компиляции, остаётся поверхностным и не мешает изменить тот же объект через другую изменяемую ссылку. Для надёжной модели важны `readonly` на всех нужных уровнях, отсутствие других изменяемых ссылок и при необходимости защита во время выполнения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны <code>ReturnType</code> и <code>Parameters</code>?</summary>
+<summary><strong>Зачем нужны <code>ReturnType</code> и <code>Parameters</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они получают типы из функции, которая уже является источником контракта. Это удобно для обёрток, фабрик и адаптеров: после изменения сигнатуры производные типы обновятся автоматически. Для самостоятельной доменной модели явное имя типа может быть понятнее, чем зависимость от реализации функции.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -136,9 +200,17 @@ const labels: Record<Status, string> = {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что произойдёт после добавления <code>"cancelled"</code> в <code>Status</code>?</summary>
+<summary><strong>Что произойдёт после добавления <code>"cancelled"</code> в <code>Status</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 TypeScript потребует добавить ключ `cancelled` в `labels`. В этом и состоит польза конечного `Record`: отображение проверяется на полноту при изменении union.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

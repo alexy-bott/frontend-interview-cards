@@ -1,4 +1,4 @@
-# 27 readonly optional properties и immutability
+# readonly optional properties и immutability
 
 <!-- CARD-NAV-TOP:START -->
 [← 26 tsconfig target lib moduleResolution paths jsx](<./26 tsconfig target lib moduleResolution paths jsx.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [28 abstract classes implements decorators →](<./28 abstract classes implements decorators.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `const`, `readonly`, `Readonly<T>`, необязательные свойства и неизменяемость во время выполнения?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `const`, `readonly`, `Readonly<T>`, необязательные свойства и неизменяемость во время выполнения?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `const` запрещает присвоить переменной другую ссылку, но не запрещает менять объект по этой ссылке:
 
@@ -58,63 +63,130 @@ type Patch = {
 
 Отсутствие, `undefined` и `null` могут иметь разный смысл во время выполнения. Оператор `"name" in patch` отличает отсутствующий ключ от существующего со значением `undefined`; `JSON.stringify` обычно пропускает свойства с `undefined`, но сохраняет `null`. Для `PATCH`-запроса эта разница должна совпадать с контрактом backend.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>readonly</code> отличается от <code>const</code>?</summary>
+<summary><strong>Чем <code>readonly</code> отличается от <code>const</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `const` относится к привязке переменной: нельзя выполнить `user = otherUser`. `readonly` относится к доступу к свойству или элементу через тип: нельзя выполнить `user.id = ...`. Объект в `const` остаётся изменяемым, а объект с типом только для чтения можно хранить и в `let`, если саму ссылку требуется переназначать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>Readonly&lt;T&gt;</code> не делает объект глубоко неизменяемым?</summary>
+<summary><strong>Почему <code>Readonly&lt;T&gt;</code> не делает объект глубоко неизменяемым?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Его определение перебирает только непосредственные ключи `T` и не применяет себя рекурсивно к их значениям. Универсальный `DeepReadonly` должен отдельно обрабатывать массивы, кортежи, функции, `Map`, `Set`, `Date` и рекурсивные типы. В прикладном коде часто яснее поставить `readonly` на конкретные границы данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Защищает ли <code>readonly</code> от изменения объекта через другую ссылку?</summary>
+<summary><strong>Защищает ли <code>readonly</code> от изменения объекта через другую ссылку?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Наличие нескольких ссылок на один объект называется aliasing. Если одна ссылка имеет тип только для чтения, а другая остаётся изменяемой, изменение через вторую будет видно и через первую. `readonly` ограничивает операции конкретного потребителя, но не устанавливает единоличное владение объектом.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему входной массив функции полезно объявлять <code>readonly</code>?</summary>
+<summary><strong>Почему входной массив функции полезно объявлять <code>readonly</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сигнатура документирует отсутствие мутации и принимает больше безопасных аргументов: обычный `User[]` совместим с `readonly User[]`, а обратное присваивание запрещено. Если внутри нужна сортировка, создают копию через `toSorted()` или spread, а не требуют изменяемый массив без причины.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>foo?: string</code> отличается от <code>foo: string | undefined</code>?</summary>
+<summary><strong>Чем <code>foo?: string</code> отличается от <code>foo: string | undefined</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В первом случае объект может вообще не иметь ключ `foo`. Во втором ключ обязан присутствовать, хотя значение может быть `undefined`. Флаг `exactOptionalPropertyTypes` запрещает стирать эту разницу при записи. При чтении оба варианта всё равно дают `string | undefined`, поэтому для проверки наличия нужен оператор `in`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем необязательное свойство отличается от значения с <code>null</code>?</summary>
+<summary><strong>Чем необязательное свойство отличается от значения с <code>null</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Необязательность описывает наличие ключа, а `null` является явным значением. В API отсутствие поля может означать «не менять», а `null` «очистить значение». Тип `name?: string | null` разрешает оба сценария и требует, чтобы backend трактовал их так же.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Делает ли <code>as const</code> значение неизменяемым во время выполнения?</summary>
+<summary><strong>Делает ли <code>as const</code> значение неизменяемым во время выполнения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Оно сохраняет литеральные типы и создаёт представление литеральной структуры только для чтения, но не замораживает объект во время выполнения. Уже существующая изменяемая ссылка внутри также сохраняет возможность изменения. Это средство вывода типов, а не механизм защиты объекта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему React и Redux важны новые ссылки при обновлении?</summary>
+<summary><strong>Почему React и Redux важны новые ссылки при обновлении?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сравнение ссылок помогает определить, какая часть состояния изменилась. Изменение существующего объекта может оставить прежнюю ссылку и скрыть обновление от мемоизированного селектора или сравнения свойств компонента. `readonly` помогает запретить случайную мутацию, но новую структуру создаёт сам код, spread-синтаксис, вспомогательная функция неизменяемого обновления или Immer.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -139,9 +211,17 @@ function describe(patch: UpdateProfile): string {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Какие три состояния описывает тип и зачем нужен <code>exactOptionalPropertyTypes</code>?</summary>
+<summary><strong>Какие три состояния описывает тип и зачем нужен <code>exactOptionalPropertyTypes</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Отсутствующий ключ означает «не менять», `null` означает «очистить», строка задаёт новое значение. Флаг не позволяет случайно передать `displayName: undefined`, которое могло бы неявно создать четвёртый неоговорённый сценарий.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

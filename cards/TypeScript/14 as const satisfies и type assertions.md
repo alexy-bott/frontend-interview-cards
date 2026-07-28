@@ -1,4 +1,4 @@
-# 14 as const satisfies и type assertions
+# as const satisfies и type assertions
 
 <!-- CARD-NAV-TOP:START -->
 [← 13 Function overloads](<./13 Function overloads.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [15 enum const enum и literal unions →](<./15 enum const enum и literal unions.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются утверждение типа (`type assertion`), `as const` и `satisfies`? Когда каждый из них безопасен?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются утверждение типа (`type assertion`), `as const` и `satisfies`? Когда каждый из них безопасен?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Утверждение типа (`type assertion`) записывается как `value as Type`. Оно просит компилятор считать значение более конкретным или более общим типом, но не проверяет и не преобразует его во время выполнения.
 
@@ -56,26 +61,49 @@ const routes = {
 
 Главное различие: `as` меняет представление компилятора без доказательства, `as const` сужает тип литерального выражения, а `satisfies` проверяет выражение относительно контракта.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>data as User</code> после <code>fetch</code> небезопасно?</summary>
+<summary><strong>Почему <code>data as User</code> после <code>fetch</code> небезопасно?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Утверждение типа не читает JSON и не проверяет поля. Оно только подавляет ошибку типов в текущем месте. Backend может вернуть `null`, другой объект или устаревшую версию DTO, а следующий код будет обращаться с ним как с `User`. Безопасная граница принимает `unknown`, проверяет его функцией проверки типа или схемой и только после успеха возвращает `User`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Ограничивает ли TypeScript произвольный <code>as</code>?</summary>
+<summary><strong>Ограничивает ли TypeScript произвольный <code>as</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычное утверждение разрешено, когда исходный и целевой типы достаточно пересекаются. Для совсем несовместимых типов TypeScript просит сначала перейти к `unknown`, например `value as unknown as User`. Двойное утверждение обходит почти всю защиту и допустимо только как редкий адаптер хорошо проверенного несовпадения типов, а не как способ заставить ошибочный код собраться.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Делает ли <code>as const</code> объект глубоко неизменяемым?</summary>
+<summary><strong>Делает ли <code>as const</code> объект глубоко неизменяемым?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Оно создаёт `readonly` представление литеральной структуры, но не замораживает объект во время выполнения. Кроме того, уже существующая изменяемая ссылка внутри литерала сохраняет собственную изменяемость:
 
@@ -88,33 +116,69 @@ config.items.push(3); // допустимо
 
 Нельзя переназначить `config.items`, но исходный массив остаётся изменяемым.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>satisfies</code> отличается от явной аннотации переменной?</summary>
+<summary><strong>Чем <code>satisfies</code> отличается от явной аннотации переменной?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Аннотация `const routes: Record<RouteName, Route>` задаёт переменной общий тип контракта. `satisfies` сначала проверяет контракт, но оставляет выражению его выведенную структуру. Поэтому он особенно полезен для конфигураций, где нужны и проверка полноты, и точные собственные ключи.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем писать <code>as const satisfies</code> вместе?</summary>
+<summary><strong>Зачем писать <code>as const satisfies</code> вместе?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `as const` сохраняет литеральные значения и добавляет `readonly` к литеральной структуре, а `satisfies` проверяет её по более широкому публичному контракту. Связка подходит для таблиц маршрутов, имён событий, design tokens, или токенов дизайн-системы, и других статических конфигураций.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает утверждение о ненулевом значении <code>!</code> (<code>non-null assertion</code>)?</summary>
+<summary><strong>Что делает утверждение о ненулевом значении <code>!</code> (<code>non-null assertion</code>)?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Постфиксный `!` удаляет `null` и `undefined` из типа без проверки во время выполнения: `element!.focus()`. Если значения действительно нет, код упадёт. В React он иногда используется для ref, существование которого гарантирует жизненный цикл, но явная проверка `if (element)` обычно надёжнее и лучше документирует условие.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли писать утверждение типа как <code>&lt;User&gt;value</code>?</summary>
+<summary><strong>Можно ли писать утверждение типа как <code>&lt;User&gt;value</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В `.ts` существует угловой синтаксис `<User>value`, но в `.tsx` он конфликтует с JSX. Синтаксис `value as User` работает в обоих случаях и является стандартным для React-проектов.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -133,9 +197,17 @@ type ColorValue = (typeof palette)[ColorName];
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что проверяют <code>as const</code> и <code>satisfies</code>, и какие типы получатся?</summary>
+<summary><strong>Что проверяют <code>as const</code> и <code>satisfies</code>, и какие типы получатся?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `satisfies` требует оба ключа `Palette` и строковые значения. `as const` сохраняет конкретные цвета и `readonly`-свойства. `ColorName` будет `"primary" | "danger"`, а `ColorValue` объединит `"#0057b8" | "#c62828"`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

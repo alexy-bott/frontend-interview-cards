@@ -1,4 +1,4 @@
-# 19 React TypeScript типизация
+# React TypeScript типизация
 
 <!-- CARD-NAV-TOP:START -->
 [← 18 Проверка данных с backend](<./18 Проверка данных с backend.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [20 Формы события refs и DOM типы →](<./20 Формы события refs и DOM типы.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как типизировать React-компоненты, их свойства (`props`), `children` и состояние (`state`)? Какие различия React 18 и 19 важно учитывать?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как типизировать React-компоненты, их свойства (`props`), `children` и состояние (`state`)? Какие различия React 18 и 19 важно учитывать?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 React-компонент обычно объявляют обычной функцией, а его входные свойства (`props`) описывают отдельным объектным типом:
 
@@ -102,63 +107,130 @@ type ButtonProps = {
 
 Код должен соответствовать установленным версиям `react` и `@types/react`. Пример для React 19 с типами React 18 даст ошибку даже при правильной идее.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Нужно ли использовать <code>React.FC</code>?</summary>
+<summary><strong>Нужно ли использовать <code>React.FC</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет обязательной причины. В современных типах React `React.FC<Props>` не добавляет `children` автоматически, поэтому его всё равно объявляют явно. Обычная функция с параметром `Props` проще показывает входной контракт и хорошо выводит результат. `React.FC` можно сохранить как согласованный стиль проекта, но он не делает компонент функциональнее.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>ReactNode</code>, <code>ReactElement</code> и <code>React.JSX.Element</code> отличаются?</summary>
+<summary><strong>Чем <code>ReactNode</code>, <code>ReactElement</code> и <code>React.JSX.Element</code> отличаются?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `ReactNode` описывает любое допустимое содержимое рендера, поэтому подходит для обычного `children` и render prop. `ReactElement` описывает уже созданный React-элемент и является более узким типом. `React.JSX.Element` представляет результат JSX в актуальных типах React и по смыслу близок к `ReactElement`; вручную аннотировать результат большинства компонентов не требуется.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>useState([])</code> может вывести <code>never[]</code>?</summary>
+<summary><strong>Почему <code>useState([])</code> может вывести <code>never[]</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Пустой массив не содержит элемента, по которому можно определить `T`. В контексте обобщённого типа самым узким подходящим элементом может стать `never`. `useState<User[]>([])` явно задаёт будущий контракт. Для уже заполненного массива TypeScript обычно выводит тип элементов сам.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как типизируется функция обновления состояния?</summary>
+<summary><strong>Как типизируется функция обновления состояния?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Функция `setState` принимает либо новое состояние `S`, либо функцию обновления `(previous: S) => S`; вместе это описано типом `React.SetStateAction<S>`. Функциональная форма нужна, когда новое значение зависит от предыдущего, потому что React передаёт ей актуальное состояние из очереди обновлений.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем использовать дискриминированное объединение для состояния загрузки?</summary>
+<summary><strong>Зачем использовать дискриминированное объединение для состояния загрузки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Отдельные `isLoading`, `data` и `error` допускают невозможные комбинации, например одновременно успешные данные и ошибку. Объединение связывает доступные поля со `status`: `data` существует только в `success`, `error` только в `error`. Проверка `status` автоматически сужает тип в JSX.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как типизировать компонент с разными наборами свойств?</summary>
+<summary><strong>Как типизировать компонент с разными наборами свойств?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Добавить общее поле-дискриминант, например `kind`, и описать отдельный объект для каждого режима. Поля, запрещённые в другом режиме, можно пометить `never`. Тогда TypeScript проверяет не только каждое свойство отдельно, но и их допустимые сочетания.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны <code>ComponentPropsWithoutRef&lt;"button"&gt;</code> и <code>ComponentPropsWithRef&lt;"button"&gt;</code>?</summary>
+<summary><strong>Зачем нужны <code>ComponentPropsWithoutRef&lt;"button"&gt;</code> и <code>ComponentPropsWithRef&lt;"button"&gt;</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Оба получают актуальные React-типы свойств нативной кнопки. Вариант `WithoutRef` исключает `ref`, если компонент-обёртка его не поддерживает. `WithRef` включает правильный тип `ref` и нужен компоненту, который действительно передаёт ссылку дальше. В React 18 передачу реализуют через `forwardRef`, а в React 19 `ref` можно принять как обычное свойство.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Получает ли компонент <code>key</code> внутри props?</summary>
+<summary><strong>Получает ли компонент <code>key</code> внутри props?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. `key` используется React при сопоставлении элементов списка и не передаётся компоненту как обычное свойство. Если идентификатор нужен внутри, его передают отдельно, например как `userId`. В React 19 функциональный компонент может получать `ref` как свойство, но `key` остаётся специальным атрибутом.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -187,9 +259,17 @@ function Notice(props: NoticeProps) {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Какие неправильные комбинации запрещает этот тип?</summary>
+<summary><strong>Какие неправильные комбинации запрещает этот тип?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В режиме `text` обязателен `children` и запрещён `render`. В режиме `render` всё наоборот. Поле `kind` сужает props внутри компонента, поэтому вызов функции разрешён только в ветке, где она существует.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

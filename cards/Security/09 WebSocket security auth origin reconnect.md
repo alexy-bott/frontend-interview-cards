@@ -1,4 +1,4 @@
-# 09 WebSocket security auth origin reconnect
+# WebSocket security auth origin reconnect
 
 <!-- CARD-NAV-TOP:START -->
 [← 08 Supply chain npm dependencies secrets third-party scripts](<./08 Supply chain npm dependencies secrets third-party scripts.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 JWT sessions OAuth authorization basics →](<./10 JWT sessions OAuth authorization basics.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Какие security-риски есть у WebSocket и как организовать аутентификацию, авторизацию, проверку сообщений и reconnect?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Какие security-риски есть у WebSocket и как организовать аутентификацию, авторизацию, проверку сообщений и reconnect?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 WebSocket начинает работу с HTTP handshake, или рукопожатия, после которого соединение переключается на двусторонний протокол и остается открытым. Это не отменяет обычные требования безопасности, но меняет момент их применения: пользователя проверяют при подключении, права - при каждой подписке и команде, а срок сессии - в течение долгой жизни соединения.
 
@@ -34,105 +39,220 @@ WebSocket начинает работу с HTTP handshake, или рукопож
 
 WebSocket не проходит CORS-проверку так же, как `fetch`. Браузер добавляет `Origin` к handshake, но сервер самостоятельно решает, разрешен ли источник. Если он принимает cookie-сессию от любого origin, вредоносная страница может открыть socket с cookies жертвы. Такая атака называется **Cross-Site WebSocket Hijacking (CSWSH)**.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Как происходит WebSocket handshake?</summary>
+<summary><strong>Как происходит WebSocket handshake?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Клиент отправляет HTTP-запрос с `Upgrade: websocket`, `Connection: Upgrade`, случайным `Sec-WebSocket-Key` и версией протокола. При согласии сервер отвечает `101 Switching Protocols` и подтверждает ключ через `Sec-WebSocket-Accept`. После переключения стороны обмениваются кадрами WebSocket (frames), а не последовательностью обычных HTTP responses.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему для WebSocket нужен <code>wss://</code>?</summary>
+<summary><strong>Почему для WebSocket нужен <code>wss://</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `wss` передает handshake и frames внутри TLS, как HTTPS защищает HTTP. Без TLS участник сети может читать tokens и сообщения или подменять данные. Страница, загруженная по HTTPS, также обычно не может открыть небезопасный `ws://` из-за политики смешанного содержимого (mixed content).
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли передать <code>Authorization</code> header из browser WebSocket API?</summary>
+<summary><strong>Можно ли передать <code>Authorization</code> header из browser WebSocket API?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, встроенный конструктор не предоставляет параметр для произвольных HTTP headers. Такая возможность бывает у Node.js clients или библиотек вне браузера, из-за чего серверные примеры нельзя переносить во frontend без проверки. В браузере используют cookie, одноразовый ticket, согласованный subprotocol или первое прикладное сообщение для аутентификации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какой способ аутентификации предпочтительнее в браузере?</summary>
+<summary><strong>Какой способ аутентификации предпочтительнее в браузере?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Зависит от общей auth-архитектуры. Для приложения с server session естественна защищенная cookie вместе с точной проверкой `Origin`. Для bearer-token API удобен короткоживущий одноразовый ticket, полученный по обычному авторизованному HTTPS-запросу. Он уменьшает последствия утечки URL и отделяет долгоживущий access token от handshake.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое Cross-Site WebSocket Hijacking?</summary>
+<summary><strong>Что такое Cross-Site WebSocket Hijacking?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Вредоносная страница открывает WebSocket к доверенному сервису, а браузер прикладывает cookies авторизованного пользователя. Если сервер не проверяет `Origin` и считает cookie достаточной, атакующий может отправлять команды и читать сообщения через созданное своей страницей соединение. Защита включает allowlist origins, безопасную сессию и авторизацию каждого сообщения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему сервер должен проверять <code>Origin</code>?</summary>
+<summary><strong>Почему сервер должен проверять <code>Origin</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Header показывает origin страницы, которая инициировала handshake в браузере. Сервер сравнивает полностью разобранную схему, host и port с allowlist и отклоняет неизвестные или отсутствующие значения по выбранной политике. Проверка подстрокой вроде `endsWith('example.com')` опасна без корректной обработки границ домена.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Достаточно ли авторизовать пользователя только при подключении?</summary>
+<summary><strong>Достаточно ли авторизовать пользователя только при подключении?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Успешное подключение не дает право подписаться на любой `documentId`, room или tenant. Каждая команда и подписка проходят проверку действия и конкретного ресурса, как обычный API request. Иначе замена идентификатора в сообщении приводит к WebSocket-варианту IDOR/BOLA.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем валидировать сообщения, если соединение уже аутентифицировано?</summary>
+<summary><strong>Зачем валидировать сообщения, если соединение уже аутентифицировано?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Аутентифицированный клиент тоже может быть ошибочным или вредоносным. Сервер проверяет разрешенный тип сообщения, обязательные поля, размеры, диапазоны и бизнес-инварианты до выполнения. Frontend проверяет входящие данные перед обновлением store, чтобы неизвестная версия сообщения или поврежденные данные не сломали UI.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие ограничения защищают WebSocket server от перегрузки?</summary>
+<summary><strong>Какие ограничения защищают WebSocket server от перегрузки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Ограничивают размер frame и полного сообщения, частоту команд, число соединений на пользователя или IP, число подписок и объем очереди исходящих данных. Неизвестные и слишком большие сообщения отклоняют до затратного parsing. Медленный клиент не должен бесконечно накапливать данные в памяти сервера.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит, когда session или token истекает при открытом соединении?</summary>
+<summary><strong>Что происходит, когда session или token истекает при открытом соединении?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер не должен считать право вечным только из-за старого handshake. Он отслеживает срок сессии, закрывает соединение с согласованным code или требует повторной аутентификации. Клиент обновляет учетные данные через защищенный процесс и создает новое соединение; истекший token не отправляется в бесконечном reconnect loop.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что важно в reconnect logic?</summary>
+<summary><strong>Что важно в reconnect logic?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Используют exponential backoff: после каждой неудачи задержка растет до установленного предела. Jitter добавляет к ней случайное отклонение, чтобы клиенты не переподключались одновременно. После logout, постоянного `401`/`403` или несовместимости версии протокола попытки прекращают. После успешного подключения клиент восстанавливает подписки и запрашивает пропущенное состояние. Иначе одновременное восстановление тысяч клиентов создает reconnect storm, то есть волну соединений, перегружающую сервер.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем heartbeat, если есть событие <code>close</code>?</summary>
+<summary><strong>Зачем heartbeat, если есть событие <code>close</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При обрыве сети без корректного закрывающего кадра протокола (frame) обе стороны могут долго считать соединение живым. Server ping/pong или heartbeat на уровне приложения обнаруживает зависшее соединение и освобождает ресурсы. В браузере protocol ping/pong обрабатывается реализацией WebSocket, поэтому приложение при необходимости вводит собственные сообщения и таймер последней активности.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое backpressure в WebSocket-клиенте?</summary>
+<summary><strong>Что такое backpressure в WebSocket-клиенте?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это ситуация, когда сообщения приходят или отправляются быстрее, чем приложение успевает их обработать. Классический browser `WebSocket` API не предоставляет полноценного автоматического backpressure. Клиент следит за `bufferedAmount`, объединяет частые обновления, ограничивает очередь и договаривается с сервером о полном снимке состояния (snapshot) или повторной синхронизации вместо бесконечного накопления событий.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что должен сделать frontend при logout?</summary>
+<summary><strong>Что должен сделать frontend при logout?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Остановить reconnect и таймеры, удалить обработчики, закрыть socket, очистить локальные подписки и синхронизировать logout между вкладками. Сервер независимо завершает сессию и связанные соединения, потому что клиент может аварийно закрыться или намеренно не отправить logout.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

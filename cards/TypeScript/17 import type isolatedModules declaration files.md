@@ -1,4 +1,4 @@
-# 17 import type isolatedModules declaration files
+# import type isolatedModules declaration files
 
 <!-- CARD-NAV-TOP:START -->
 [← 16 tsconfig strict mode](<./16 tsconfig strict mode.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [18 Проверка данных с backend →](<./18 Проверка данных с backend.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Зачем нужны `import type`, `isolatedModules` и файлы деклараций `.d.ts`? Как они связаны со сборкой frontend-проекта?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Зачем нужны `import type`, `isolatedModules` и файлы деклараций `.d.ts`? Как они связаны со сборкой frontend-проекта?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 TypeScript использует один синтаксис модулей и для значений, существующих во время выполнения программы, и для типов, которые исчезают после компиляции. `import type` явно отмечает зависимость, нужную только системе типов:
 
@@ -63,63 +68,130 @@ declare module "*.svg" {
 
 При сборке библиотеки `declaration: true` создаёт `.d.ts` рядом с выходным JavaScript, а поле `types` или соответствующее условие `exports` в `package.json` указывает потребителю точку входа типов. Декларации обязаны соответствовать реальному JavaScript: компилятор доверяет им и не проверяет реализацию чужого пакета.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>import type</code> отличается от обычного <code>import</code>?</summary>
+<summary><strong>Чем <code>import type</code> отличается от обычного <code>import</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `import type` используется только при проверке типов и полностью стирается из JavaScript. Обычный импорт представляет исполняемую зависимость: он может запустить модуль, добавить его код в bundle или участвовать в цикле. Если из одного модуля нужны и тип, и значение, используется форма `import { value, type SomeType }`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Устраняет ли <code>import type</code> любую циклическую зависимость?</summary>
+<summary><strong>Устраняет ли <code>import type</code> любую циклическую зависимость?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Только цикл, существующий исключительно в системе типов. Если два модуля импортируют исполняемые значения друг друга, `import type` не поможет: нужно изменить границы модулей или вынести общую зависимость. Нельзя пометить реальное значение как импорт только типа и затем использовать его при выполнении программы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно проверяет <code>isolatedModules</code>?</summary>
+<summary><strong>Что именно проверяет <code>isolatedModules</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он отмечает синтаксис, для которого корректное удаление типов требует знания других файлов. Это режим совместимости с однофайловыми транспиляторами, а не полноценная проверка типов. Поэтому проекту с Babel/SWC/esbuild обычно нужны и `isolatedModules`, и отдельный `tsc --noEmit`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>isolatedDeclarations</code> отличается от <code>isolatedModules</code>?</summary>
+<summary><strong>Чем <code>isolatedDeclarations</code> отличается от <code>isolatedModules</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `isolatedModules` гарантирует возможность отдельно создать JavaScript из файла. `isolatedDeclarations` гарантирует возможность отдельно создать его `.d.ts`, поэтому требует явных типов у экспортируемых значений в местах, где вывод зависит от реализации. Второй флаг нужен в основном библиотекам и инструментам параллельной генерации деклараций, а обычному Vite-приложению обычно не нужен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужно писать собственный <code>.d.ts</code>?</summary>
+<summary><strong>Когда нужно писать собственный <code>.d.ts</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда возможность уже существует в JavaScript, но TypeScript о ней не знает: библиотека без типов, нестандартный импорт ресурса, глобальное значение или переменная окружения. Сначала стоит проверить встроенные типы пакета и `@types`, а собственную декларацию делать максимально точной. Широкая запись `declare module "*"` отключит полезную проверку почти для всех импортов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое расширение модуля (<code>module augmentation</code>)?</summary>
+<summary><strong>Что такое расширение модуля (<code>module augmentation</code>)?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это дополнение существующей декларации через слияние объявлений (`declaration merging`). Например, проект добавляет собственные поля в тип `Theme` UI-библиотеки. Файл должен импортировать исходный модуль и повторно объявить его точное имя. Такое расширение может дополнять объявления, но не создавать реализацию и не заменять экспорт по умолчанию (`default export`).
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем внешняя декларация модуля (<code>ambient module declaration</code>) отличается от <code>module augmentation</code>?</summary>
+<summary><strong>Чем внешняя декларация модуля (<code>ambient module declaration</code>) отличается от <code>module augmentation</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `declare module "*.svg"` создаёт типовой контракт для модулей, которых TypeScript иначе не знает. `Module augmentation` с точным именем существующего пакета добавляет поля к его объявлениям. Ошибочная внешняя декларация с именем реальной библиотеки может случайно заменить ожидаемые типы вместо корректного расширения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как типизировать <code>import.meta.env</code> в Vite?</summary>
+<summary><strong>Как типизировать <code>import.meta.env</code> в Vite?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Проект подключает типы `vite/client`, обычно через `vite-env.d.ts`, и расширяет `ImportMetaEnv` собственными ключами. Это проверяет обращения в исходном коде, но не создаёт переменные окружения и не гарантирует их наличие при развёртывании приложения. Обязательные значения дополнительно проверяют при запуске или сборке.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

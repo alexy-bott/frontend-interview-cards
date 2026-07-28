@@ -1,4 +1,4 @@
-# 21 ES modules
+# ES modules
 
 <!-- CARD-NAV-TOP:START -->
 [← 20 Date и Intl](<./20 Date и Intl.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [22 async defer и загрузка скриптов →](<./22 async defer и загрузка скриптов.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают ES modules? Что происходит при `import` и `export`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают ES modules? Что происходит при `import` и `export`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 ES modules, или ESM, являются стандартной модульной системой JavaScript. Каждый модуль имеет собственную область видимости, явно экспортирует доступные значения и импортирует зависимости. Код модуля автоматически выполняется в strict mode, а `this` на верхнем уровне равен `undefined`.
 
@@ -41,79 +46,162 @@ const { openEditor } = await import("./editor.js");
 openEditor();
 ```
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что значит «статический import»?</summary>
+<summary><strong>Что значит «статический import»?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Его положение и строка specifier известны при разборе модуля: `import { value } from "./module.js"`. Такой import нельзя поместить внутрь `if` или функции. Это позволяет построить граф до выполнения, проверить наличие named exports и применять tree shaking. Для условной загрузки используют `import()`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему импорт нельзя переназначить, но импортированный объект можно изменить?</summary>
+<summary><strong>Почему импорт нельзя переназначить, но импортированный объект можно изменить?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Binding имени доступен только для чтения: `import { config } ...; config = other` вызовет ошибку. Но если экспортирован изменяемый объект, запись `config.theme = "dark"` меняет сам объект, а не импортированную связь. `const` и import защищают привязку имени, а не делают значение неизменяемым.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем named export отличается от default export?</summary>
+<summary><strong>Чем named export отличается от default export?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Named export имеет имя в контракте модуля и импортируется в фигурных скобках: `import { Button }`. Default export один на модуль и импортируется под любым локальным именем: `import Button from ...`. Named exports обычно проще искать, автоматически переименовывать и анализировать статически. Default export удобен, когда модуль концептуально предоставляет одну основную сущность.
 
 `export default expression` сохраняет результат выражения. Если нужна живая связь с переменной как default export, её можно объявить и экспортировать через `export { value as default }`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выполняется граф модулей?</summary>
+<summary><strong>Как выполняется граф модулей?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Упрощённо есть три этапа. Сначала загрузка находит и разбирает все зависимости. Затем связывание создаёт bindings между импортами и экспортами. После этого evaluation выполняет тела модулей, начиная с зависимостей. Разделение связывания и выполнения объясняет live bindings и поведение циклов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит при циклической зависимости?</summary>
+<summary><strong>Что происходит при циклической зависимости?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 ESM может связать цикл, потому что imports являются живыми bindings. Но значение нельзя читать до инициализации соответствующего объявления. Если модуль `A` во время своего выполнения обращается к ещё не инициализированному `const` из `B`, возникнет `ReferenceError` из-за TDZ. Даже когда цикл формально работает, он делает порядок инициализации хрупким и часто указывает на смешанные границы ответственности.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как браузер разрешает пути модулей?</summary>
+<summary><strong>Как браузер разрешает пути модулей?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузер понимает URL-подобные specifiers: `./module.js`, `/assets/module.js` или полный URL. Bare specifier вроде `react` сам по себе требует import map или преобразования сборщиком. В отличие от многих bundlers, браузер обычно требует точное имя файла и расширение. Модуль с другого origin загружается по правилам CORS.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>import()</code> связан с code splitting?</summary>
+<summary><strong>Как <code>import()</code> связан с code splitting?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Статические импорты входят в основной граф точки входа. Динамический import создаёт асинхронную границу, которую bundler может вынести в отдельный chunk. Этот chunk загружается при первом вызове. Это уменьшает начальный bundle, но добавляет сетевой запрос и состояние загрузки, поэтому разделение выбирают по пользовательскому сценарию, а не для каждого маленького модуля.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему статический ESM помогает tree shaking?</summary>
+<summary><strong>Почему статический ESM помогает tree shaking?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Bundler заранее видит named imports и exports и может доказать, что часть экспортов недостижима от entry points. Удаление также зависит от побочных эффектов: модуль, который при импорте меняет глобальное состояние или подключает стили, нельзя безусловно отбросить. Tree shaking выполняет инструмент сборки, а не синтаксис `import` сам по себе.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем ESM отличается от CommonJS?</summary>
+<summary><strong>Чем ESM отличается от CommonJS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 ESM имеет статически анализируемый граф, live bindings и поддерживает асинхронную загрузку в браузере. CommonJS использует синхронный `require()` и объект `module.exports`; вызов можно сделать условно во время выполнения. Их модели экспорта и разрешения путей различаются, поэтому interop между ними иногда создаёт неожиданную форму default export или мешает tree shaking.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает top-level <code>await</code>?</summary>
+<summary><strong>Что делает top-level <code>await</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он позволяет ожидать Promise непосредственно в теле модуля. Evaluation такого модуля становится асинхронным, и зависящие от него модули ждут завершения. Это удобно для обязательной инициализации, но медленная сеть или ошибка могут задержать целую ветвь графа. Независимые ветви при этом могут продолжать выполняться.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -135,9 +223,17 @@ console.log(status);
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и почему это не копирование значения?</summary>
+<summary><strong>Что будет выведено и почему это не копирование значения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Будут выведены `"idle"` и `"ready"`. Имя `status` связано с экспортируемым binding из `state.js`, поэтому после вызова `setStatus` чтение получает актуальное значение. Присваивание `status = "other"` внутри `app.js` было бы запрещено.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

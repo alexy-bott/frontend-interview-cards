@@ -1,4 +1,4 @@
-# 27 React DOM form hooks useFormStatus useActionState
+# React DOM form hooks useFormStatus useActionState
 
 <!-- CARD-NAV-TOP:START -->
 [← 26 useInsertionEffect useDebugValue flushSync startTransition](<./26 useInsertionEffect useDebugValue flushSync startTransition.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как в React 19 работают функции в `action` формы, `useActionState` и `useFormStatus`? Заменяют ли они библиотеку форм?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как в React 19 работают функции в `action` формы, `useActionState` и `useFormStatus`? Заменяют ли они библиотеку форм?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 React 19 позволяет передать функцию в `action` элемента `<form>`. React запускает её как Action, управляет transition отправки и передаёт `FormData`. `useActionState` хранит результат Action и состояние выполнения, а `useFormStatus` позволяет дочернему компоненту прочитать состояние ближайшей родительской формы.
 
@@ -82,70 +87,145 @@ Server Function остаётся публичной серверной опер�
 
 Эти API не заменяют библиотеку форм автоматически. Они хорошо организуют отправку, состояние выполнения, результат сервера и прогрессивное улучшение. React Hook Form остаётся полезен для сложной клиентской валидации, признаков посещённого (`touched`) и изменённого (`dirty`) поля, массивов полей, масок, зависимых полей и подписок с малым числом рендеров. Подходы можно сочетать: библиотека управляет полями, а Action выполняет изменение данных.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Где нужно вызывать <code>useFormStatus</code>?</summary>
+<summary><strong>Где нужно вызывать <code>useFormStatus</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В компоненте, который рендерится внутри нужной `<form>`. Хук ищет ближайшую форму выше по дереву. Поэтому обычно создают отдельный `SubmitButton`. Вызов в том же компоненте, который только возвращает JSX `<form>`, прочитает статус внешней формы или значения по умолчанию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>pending</code> из <code>useFormStatus</code> отличается от <code>isPending</code> из <code>useActionState</code>?</summary>
+<summary><strong>Чем <code>pending</code> из <code>useFormStatus</code> отличается от <code>isPending</code> из <code>useActionState</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `useFormStatus` описывает отправку ближайшей родительской формы и удобен глубоко вложенному дочернему интерфейсу. `useActionState` описывает конкретную обёрнутую Action и доступен компоненту, который создал хук. Они могут отражать одну отправку, но имеют разные области чтения и дополнительные данные.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие аргументы получает Action в <code>useActionState</code>?</summary>
+<summary><strong>Какие аргументы получает Action в <code>useActionState</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Первым идёт предыдущее состояние, затем аргументы `dispatchAction`. Если функцию передали в `<form action>`, следующим является `FormData`. Это отличается от исходной функции формы без хука, которая обычно получает только `FormData`, и часто объясняет ошибку, когда код читает не тот аргумент.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что произойдёт при нескольких быстрых вызовах <code>dispatchAction</code>?</summary>
+<summary><strong>Что произойдёт при нескольких быстрых вызовах <code>dispatchAction</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React выполнит их последовательно, передавая результат одной Action как предыдущее состояние следующей. Это сохраняет порядок зависимых обновлений, но четыре медленных вызова могут занять сумму их времени. Для мгновенного интерфейса добавляют `useOptimistic`, отмену очереди или выбирают модель независимых изменений.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>FormData</code> нужно валидировать повторно?</summary>
+<summary><strong>Почему <code>FormData</code> нужно валидировать повторно?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузер и тем более злоумышленник могут отправить любые имена и значения. `FormData.get("age")` возвращает строку, файл или `null`, а не гарантированное число. Сервер преобразует типы, проверяет схему и права независимо от HTML-ограничений и TypeScript-кода клиента.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит с полями после успешной функции в <code>action</code> формы?</summary>
+<summary><strong>Что происходит с полями после успешной функции в <code>action</code> формы?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React сбрасывает неуправляемые поля формы. Управляемые поля изменятся только после обновления их состояния. Если автоматический сброс нежелателен, нужно выбрать другую модель обработки или восстановить подтверждённые значения; при ошибке Action обычно возвращает состояние ошибки без успешного завершения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен <code>permalink</code> в <code>useActionState</code>?</summary>
+<summary><strong>Для чего нужен <code>permalink</code> в <code>useActionState</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он поддерживает отправку Server Function до загрузки JavaScript. Браузер открывает постоянный URL формы, сервер возвращает страницу, а React переносит результат Action в состояние при совпадающей форме. После гидратации `dispatchAction` работает без полной навигации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Заменяет ли <code>useActionState</code> React Hook Form?</summary>
+<summary><strong>Заменяет ли <code>useActionState</code> React Hook Form?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Он хранит результат Action и состояние выполнения, но не предоставляет регистрацию полей, подписки на отдельные поля, признаки посещения и изменения, массивы полей и resolver для запуска схемы валидации. Для небольшой формы, управляемой серверным действием, его может быть достаточно; большая анкета часто использует оба слоя.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как доступно показать состояние выполнения и ошибки?</summary>
+<summary><strong>Как доступно показать состояние выполнения и ошибки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Кнопку можно временно отключить для защиты от повторной отправки, а текст статуса поместить в `aria-live="polite"`. Ошибку поля связывают через `aria-describedby` и при необходимости `aria-invalid`. После серверной ошибки фокус переводят к сводке ошибок или первому ошибочному полю по предсказуемому правилу, а не при каждом рендере.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -165,9 +245,17 @@ function ProfileForm({ action }) {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>pending</code> не отражает отправку этой формы?</summary>
+<summary><strong>Почему <code>pending</code> не отражает отправку этой формы?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Хук вызван в компоненте, который создаёт форму, а не внутри её дочернего компонента. Он не видит контекст статуса формы ниже себя. Нужно вынести кнопку в `SubmitButton`, который рендерится внутри `<form>` и вызывает `useFormStatus` там.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

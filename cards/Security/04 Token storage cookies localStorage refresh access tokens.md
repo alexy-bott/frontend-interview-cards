@@ -1,4 +1,4 @@
-# 04 Token storage cookies localStorage refresh access tokens
+# Token storage cookies localStorage refresh access tokens
 
 <!-- CARD-NAV-TOP:START -->
 [← 03 CSRF cookies SameSite tokens](<./03 CSRF cookies SameSite tokens.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 CORS same-origin preflight credentials →](<./05 CORS same-origin preflight credentials.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Где хранить access token и refresh token в браузерном приложении? Чем отличаются cookies, хранилища браузера и память JavaScript?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Где хранить access token и refresh token в браузерном приложении? Чем отличаются cookies, хранилища браузера и память JavaScript?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Единственного безопасного места для любого приложения нет. Выбор зависит от модели угроз и архитектуры: может ли проект использовать backend for frontend, нужно ли переживать перезагрузку страницы, работает ли API на другом origin и какой ущерб принесет XSS или CSRF.
 
@@ -31,105 +36,220 @@
 
 Cookie с идентификатором сессии обычно получает `Secure`, `HttpOnly`, подходящий `SameSite`, узкий `Path` и без лишнего `Domain`. Префикс `__Host-` требует `Secure`, `Path=/` и отсутствие `Domain`, поэтому не позволяет поддомену установить cookie для родительского домена. Это защита значения cookie, а не всей сессии: сервер также ограничивает срок, обновляет идентификатор после входа и изменения привилегий и отзывает сессию при logout.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое access token?</summary>
+<summary><strong>Что такое access token?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это учетные данные, с которыми клиент обращается к защищенному API. Token описывает или ссылается на предоставленный доступ: аудиторию, разрешения и срок действия. Он может быть JWT или непрозрачной случайной строкой. Формат не меняет главного правила: тот, кто получил bearer token, обычно может использовать его до истечения или отзыва.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое refresh token?</summary>
+<summary><strong>Что такое refresh token?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это учетные данные для authorization server, с помощью которых клиент получает новый access token без повторного входа пользователя. Refresh token не отправляют каждому resource server и не используют как замену access token. Из-за более долгой жизни его защищают строже и ограничивают последствия повторного использования.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какой вариант хранения выбрать по умолчанию?</summary>
+<summary><strong>Какой вариант хранения выбрать по умолчанию?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для чувствительного приложения с доступным backend разумная отправная точка - BFF и серверная сессия в защищенной cookie. Для полностью статической SPA выбор зависит от OAuth-архитектуры и модели угроз; token в памяти исчезает после перезагрузки, а постоянное хранилище упрощает UX, но позволяет успешному XSS украсть token для последующего использования. Решение нельзя принимать только по правилу «cookie всегда безопаснее» или «localStorage всегда запрещен».
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>HttpOnly</code> cookie снижает риск кражи token при XSS?</summary>
+<summary><strong>Почему <code>HttpOnly</code> cookie снижает риск кражи token при XSS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузер не возвращает такую cookie через `document.cookie`, поэтому вредоносный скрипт не может просто прочитать значение и отправить его атакующему. Однако скрипт выполняется в origin приложения и может инициировать запросы, которые браузер подпишет cookie автоматически. `HttpOnly` ограничивает извлечение учетных данных, но не делает XSS безвредным.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему cookie-based сессии нужна CSRF-защита?</summary>
+<summary><strong>Почему cookie-based сессии нужна CSRF-защита?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Cookie прикладывается браузером автоматически, в том числе к части запросов, инициированных другим сайтом. Сервер должен отличить действие доверенного интерфейса от подделанного запроса с помощью `SameSite`, CSRF token, проверки `Origin` и других слоев. `HttpOnly` на это поведение не влияет.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>localStorage</code> уязвим при XSS?</summary>
+<summary><strong>Почему <code>localStorage</code> уязвим при XSS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Любой скрипт, выполняющийся в том же origin, получает доступ к `localStorage`: код приложения, вредоносный payload и скомпрометированный сторонний script имеют одинаковые браузерные полномочия. Bearer token дает доступ самому предъявителю, поэтому украденное значение можно использовать с другого устройства, пока token действителен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Безопаснее ли <code>sessionStorage</code>, чем <code>localStorage</code>?</summary>
+<summary><strong>Безопаснее ли <code>sessionStorage</code>, чем <code>localStorage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он уменьшает длительность хранения и обычно отделен для каждой вкладки, поэтому token не переживает закрытие вкладки. Но выполняющийся в ней XSS по-прежнему может прочитать значение. Это ограничение времени и области хранения, а не защита от вредоносного JavaScript того же origin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что дает хранение access token только в памяти?</summary>
+<summary><strong>Что дает хранение access token только в памяти?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Token не остается в постоянном хранилище браузера и исчезает при перезагрузке документа. Это сокращает окно кражи после завершения страницы, но активный XSS все еще может прочитать переменную или отправить запрос через приложение. Кроме того, нужно отдельно решить восстановление сессии после reload и синхронизацию вкладок.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое refresh token rotation и reuse detection?</summary>
+<summary><strong>Что такое refresh token rotation и reuse detection?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При каждом обмене authorization server выдает новый refresh token, а использованный помечает недействительным. Если старый token появляется повторно, это признак копирования: легитимный клиент или атакующий использовал дубликат. Сервер отзывает всю связанную цепочку refresh tokens или сессию и требует повторной авторизации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно делает BFF безопаснее?</summary>
+<summary><strong>Что именно делает BFF безопаснее?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 OAuth tokens хранятся на сервере и не доступны коду страницы или сторонним скриптам через Web API. Браузер получает только cookie с непрозрачным идентификатором сессии, а BFF связывает ее с tokens и вызывает API. Цена подхода - дополнительный backend, состояние сессий, CSRF-защита, масштабирование и надежная прокси-логика.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужно ли хранить refresh token в <code>HttpOnly</code> cookie SPA?</summary>
+<summary><strong>Нужно ли хранить refresh token в <code>HttpOnly</code> cookie SPA?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Такая схема возможна только как часть спроектированного серверного процесса, а не как универсальный трюк. Endpoint обновления должен защищаться от CSRF, cookie должна иметь ограниченную область, а сервер - выполнять rotation, проверять сессию и отзывать семейство tokens. Если cookie содержит refresh token и автоматически отправляется напрямую authorization server, нужно учитывать требования конкретного OAuth-провайдера и CORS.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя помещать token в URL?</summary>
+<summary><strong>Почему нельзя помещать token в URL?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URL сохраняется в истории и может попасть в журналы сервера и proxy, систему аналитики, сообщения об ошибках и `Referer`. Token из query или path легко выходит за ожидаемую границу. OAuth response обрабатывают так, чтобы authorization code был одноразовым, короткоживущим и обменивался с PKCE, а не использовался как access token.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что должно происходить при logout?</summary>
+<summary><strong>Что должно происходить при logout?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Удаления React state недостаточно. Frontend вызывает серверный logout, сервер завершает сессию или отзывает refresh token, а браузер получает истекшую cookie с теми же `Path` и `Domain`. Access token может оставаться действительным до короткого срока истечения, если система не ведет его серверный отзыв.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли хранить client secret или API secret во frontend?</summary>
+<summary><strong>Можно ли хранить client secret или API secret во frontend?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Все, что отправлено браузеру, пользователь может извлечь из bundle, source map, Network panel или памяти. Идентификатор клиента OAuth для public client не является secret. Настоящие ключи с серверными полномочиями остаются на backend или в защищенном хранилище секретов CI/CD.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

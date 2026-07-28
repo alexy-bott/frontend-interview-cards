@@ -1,4 +1,4 @@
-# 03 GitLab CI для frontend
+# GitLab CI для frontend
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 CI CD pipeline stages jobs artifacts cache](<./02 CI CD pipeline stages jobs artifacts cache.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Docker для frontend multi-stage build →](<./04 Docker для frontend multi-stage build.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как настроить GitLab CI pipeline для frontend-проекта?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как настроить GitLab CI pipeline для frontend-проекта?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 GitLab читает конфигурацию из `.gitlab-ci.yml` и создаёт pipeline для подходящего события: merge request, push в ветку, tag, расписание или ручной запуск. Runner - агент выполнения - забирает job и запускает его через настроенный executor, то есть выбранный способ изоляции. При Docker executor ключ `image` задаёт образ среды, например Node.js с нужной основной версией; следующий job получает новое окружение и не видит файлы предыдущего без artifacts или cache.
 
@@ -95,98 +100,180 @@ deploy_production:
   when: manual
 ```
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое GitLab Runner и executor?</summary>
+<summary><strong>Что такое GitLab Runner и executor?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Runner - агент, который запрашивает jobs у GitLab и сообщает результат. Executor определяет, как job запускается: в Docker container, Kubernetes pod, shell на машине или другой поддерживаемой среде. `image: node:22` имеет прямой смысл для Docker- и Kubernetes-executor, но shell executor использует программы установленной машины.
 
 Тип runner влияет на изоляцию, доступные ресурсы, сеть и безопасность. Production runner обычно защищают от непроверенных веток и не совмещают с произвольными задачами, которые могут получить доступ к его окружению.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему каждый job снова выполняет <code>npm ci</code>?</summary>
+<summary><strong>Почему каждый job снова выполняет <code>npm ci</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Jobs могут работать параллельно на разных runners и начинают с чистой файловой системы. Это предотвращает скрытую зависимость от предыдущей команды. Cache ускоряет скачивание пакетов, но установка проверяет lock-файл и создаёт окружение для текущего job.
 
 Передавать весь `node_modules` как артефакт можно только при осознанном совпадении платформы и инструмента; часто это тяжелее и менее надёжно, чем кэшировать хранилище менеджера пакетов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как разделить проверки merge request и выпуск из main?</summary>
+<summary><strong>Как разделить проверки merge request и выпуск из main?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Проверочные jobs включают правилом для `merge_request_event` и при необходимости default branch. Build для release создают на default branch или tag, а production deploy - только из защищённого источника. Нужно проверить workflow всего pipeline, чтобы push в ветку с открытым merge request не породил дублирующий запуск.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как deploy получает <code>dist</code> из build job?</summary>
+<summary><strong>Как deploy получает <code>dist</code> из build job?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Build объявляет `artifacts.paths`, а deploy указывает `needs` на build с передачей артефактов. GitLab скачивает сохранённый `dist` перед командами задачи deploy. Если артефакт истёк или build не прошёл, deploy не должен пересобирать приложение молча.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем protected variable отличается от masked variable?</summary>
+<summary><strong>Чем protected variable отличается от masked variable?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Protected variable доступна только pipeline из protected branches или tags. Masked variable скрывает совпадающее значение в job log. Environment scope дополнительно ограничивает переменную конкретным окружением, например production.
 
 Эти свойства не превращают переменную в клиентский секрет и не защищают от script, который сознательно отправляет значение наружу. Поэтому доступ к переменным получают только доверенные jobs, а в frontend build передают лишь публичную конфигурацию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое review app и как управлять её жизненным циклом?</summary>
+<summary><strong>Что такое review app и как управлять её жизненным циклом?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Review app - временное окружение для ветки или merge request с отдельным URL. Задача deploy использует динамическое имя вроде `review/$CI_COMMIT_REF_SLUG`, а `on_stop` связывает его с задачей удаления. Окружение автоматически останавливают после merge или заданного срока, чтобы не накапливать ресурсы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что произойдёт, если два pipeline одновременно деплоят production?</summary>
+<summary><strong>Что произойдёт, если два pipeline одновременно деплоят production?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Без координации более старый pipeline может закончить позже нового и вернуть предыдущую версию. `resource_group` последовательно выполняет задачи deploy одного окружения. Дополнительно deploy script проверяет ожидаемую текущую версию и записывает идентификатор релиза, чтобы порядок был наблюдаемым.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие jobs можно отменять после нового commit?</summary>
+<summary><strong>Какие jobs можно отменять после нового commit?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Lint, tests и build старого commit обычно можно сделать `interruptible`: их результат уже не нужен. Job, который изменяет внешнее окружение, мигрирует данные или переключает трафик, отменяют только при транзакционной или явно восстанавливаемой процедуре. Прерывание посередине копирования файлов может оставить смешанную версию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как не дублировать <code>.gitlab-ci.yml</code> в нескольких проектах?</summary>
+<summary><strong>Как не дублировать <code>.gitlab-ci.yml</code> в нескольких проектах?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Общие блоки выносят в скрытые jobs и используют `extends`, YAML anchors или `include` из версионированного шаблона. Шаблон фиксируют по tag или commit, чтобы внешнее изменение не поменяло pipeline всех проектов без проверки. Локальный файл оставляет проектные команды, пути и правила окружений.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужно ли использовать плавающий tag вроде <code>latest</code> для deploy?</summary>
+<summary><strong>Нужно ли использовать плавающий tag вроде <code>latest</code> для deploy?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, tag может начать указывать на другой image. Pipeline публикует уникальный tag по commit SHA, а для точного выпуска сохраняет digest - идентификатор содержимого image. Читаемый release tag может ссылаться на тот же digest, но deploy и rollback должны знать неизменяемую версию.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Задача | GitLab CI механизм |
-> | --- | --- |
-> | Проверки merge request | `rules`, параллельные verify jobs |
-> | Быстрая установка | Cache store по lock-файлу |
-> | Передача сборки | `artifacts` и `needs` |
-> | Временный стенд | Динамический `environment` и `on_stop` |
-> | Защита production | Защищённый источник, variables и ручная задача |
-> | Один deploy за раз | `resource_group` |
-> | Отмена устаревших проверок | `interruptible` |
+| Задача | GitLab CI механизм |
+| --- | --- |
+| Проверки merge request | `rules`, параллельные verify jobs |
+| Быстрая установка | Cache store по lock-файлу |
+| Передача сборки | `artifacts` и `needs` |
+| Временный стенд | Динамический `environment` и `on_stop` |
+| Защита production | Защищённый источник, variables и ручная задача |
+| Один deploy за раз | `resource_group` |
+| Отмена устаревших проверок | `interruptible` |
 
 ## Связанные темы
 

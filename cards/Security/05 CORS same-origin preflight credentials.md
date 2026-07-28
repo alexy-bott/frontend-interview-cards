@@ -1,4 +1,4 @@
-# 05 CORS same-origin preflight credentials
+# CORS same-origin preflight credentials
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 Token storage cookies localStorage refresh access tokens](<./04 Token storage cookies localStorage refresh access tokens.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 CSP security headers clickjacking →](<./06 CSP security headers clickjacking.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое same-origin policy и CORS? Когда браузер выполняет preflight и как работают запросы с credentials?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое same-origin policy и CORS? Когда браузер выполняет preflight и как работают запросы с credentials?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 **Same-origin policy (SOP)**, или политика одного источника, ограничивает взаимодействие страницы с ресурсами другого origin. Для URL origin определяется сочетанием схемы, host (имени хоста) и port (порта). Например, `https://app.example.com` и `https://api.example.com` являются разными origins из-за разных hosts.
 
@@ -31,98 +36,205 @@
 
 CORS исполняется браузером и не заменяет аутентификацию, авторизацию или CSRF-защиту. `curl`, мобильное приложение и чужой backend не обязаны соблюдать CORS. Сервер проверяет права независимо от того, с какого клиента пришел запрос.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое origin?</summary>
+<summary><strong>Что такое origin?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это сочетание схемы, host и port URL. `https://example.com`, `http://example.com` и `https://example.com:8443` имеют разные origins. Path не входит в origin, поэтому `/profile` и `/orders` одного host и порта относятся к одному origin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем same-origin отличается от same-site?</summary>
+<summary><strong>Чем same-origin отличается от same-site?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Same-origin требует совпадения схемы, host и port. Same-site используется, в частности, cookie `SameSite` и объединяет origins с одной схемой и регистрируемым доменом. Поэтому `https://app.example.com` и `https://api.example.com` обычно same-site, но cross-origin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> CORS запрещает серверу принимать cross-origin запросы?</summary>
+<summary><strong>CORS запрещает серверу принимать cross-origin запросы?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Это правило браузера о предоставлении ответа вызывающему JavaScript. Safelisted request может дойти до сервера и изменить состояние, после чего браузер скроет ответ. Запросы из `curl`, Postman или другого сервера вообще не ограничены браузерным CORS.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужен preflight?</summary>
+<summary><strong>Когда нужен preflight?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда cross-origin запрос не соответствует CORS safelist. Типичные причины: `PUT`, `PATCH` или `DELETE`; заголовок `Authorization`; собственный header; `Content-Type: application/json`. Браузер принимает решение автоматически, frontend не должен вручную отправлять `OPTIONS`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит при неуспешном preflight?</summary>
+<summary><strong>Что происходит при неуспешном preflight?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузер не отправляет основной запрос и возвращает вызывающему `fetch` сетевую ошибку. Код обычно не получает HTTP status или body preflight-отказа. Причину ищут в Console и Network panel, а исправляют в конфигурации API, gateway или dev proxy.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли запрос попасть на сервер, если браузер показывает CORS error?</summary>
+<summary><strong>Может ли запрос попасть на сервер, если браузер показывает CORS error?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да, если запрос был safelisted и не требовал preflight: браузер сначала отправляет его, затем проверяет response headers и скрывает ответ. При проваленном preflight основной запрос не уходит, но сам `OPTIONS` виден серверу. Поэтому по одной надписи CORS error нельзя определить, выполнилась ли операция.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что входит в credentials?</summary>
+<summary><strong>Что входит в credentials?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Fetch это прежде всего cookies, TLS client certificates и HTTP authentication. Заголовок `Authorization`, явно заданный приложением, вызывает preflight, но его поведение не полностью совпадает с автоматическими credentials. Для cookie в cross-origin `fetch` обычно требуется `credentials: 'include'`, а правила `SameSite` продолжают действовать отдельно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>Access-Control-Allow-Origin: *</code> нельзя использовать с credentials?</summary>
+<summary><strong>Почему <code>Access-Control-Allow-Origin: *</code> нельзя использовать с credentials?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Иначе любой сайт смог бы попросить браузер прочитать приватный ответ с cookies пользователя. Для credentialed response сервер возвращает конкретный разрешенный origin и `Access-Control-Allow-Credentials: true`. Origin берут из проверенного allowlist, а не отражают любое входное значение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужен <code>Vary: Origin</code>?</summary>
+<summary><strong>Зачем нужен <code>Vary: Origin</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если сервер динамически возвращает `Access-Control-Allow-Origin` для разных разрешенных origins, общий cache должен хранить отдельные варианты ответа. `Vary: Origin` сообщает, что значение `Origin` влияет на вариант ответа. Без него CDN или proxy может отдать одному сайту ответ с CORS header, рассчитанным для другого.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>Access-Control-Expose-Headers</code>?</summary>
+<summary><strong>Что делает <code>Access-Control-Expose-Headers</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Даже после успешного CORS JavaScript может читать только safelisted response headers. Если приложению нужен, например, `X-Request-Id` или `Content-Disposition`, сервер перечисляет его в `Access-Control-Expose-Headers`. Заголовок не добавляет данные в ответ, а открывает к ним доступ Web API.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Помогает ли <code>mode: 'no-cors'</code> исправить CORS?</summary>
+<summary><strong>Помогает ли <code>mode: 'no-cors'</code> исправить CORS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Такой режим дополнительно ограничивает запрос и возвращает непрозрачный ответ (opaque response): JavaScript не видит status, headers и body. Он полезен для отдельных ресурсов, которые не нужно читать программно, но не превращает закрытый API в доступный.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему CORS не заменяет CSRF-защиту?</summary>
+<summary><strong>Почему CORS не заменяет CSRF-защиту?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Cross-site форма может отправить safelisted request с cookies, даже если ответ нельзя прочитать. Если сервер меняет состояние без CSRF token или проверки источника, операция может выполниться. CORS помогает, когда приложение требует пользовательский header и не разрешает origin атакующего, но остается дополнительным, а не единственным слоем.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Где правильно настраивать CORS?</summary>
+<summary><strong>Где правильно настраивать CORS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 На стороне, которая формирует ответ API: в приложении, reverse proxy или API gateway. Frontend не может добавить разрешающий response header к чужому серверу. Dev proxy скрывает cross-origin только в локальной разработке и не исправляет production-конфигурацию.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

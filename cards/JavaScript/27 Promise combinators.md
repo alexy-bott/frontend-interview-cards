@@ -1,4 +1,4 @@
-# 27 Promise combinators
+# Promise combinators
 
 <!-- CARD-NAV-TOP:START -->
 [← 26 Promise](<./26 Promise.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [28 async await →](<./28 async await.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `Promise.all`, `Promise.allSettled`, `Promise.race` и `Promise.any`? Как выбрать нужный combinator?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `Promise.all`, `Promise.allSettled`, `Promise.race` и `Promise.any`? Как выбрать нужный combinator?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Promise combinator объединяет несколько будущих результатов в один Promise. Все четыре метода принимают iterable, например массив, и преобразуют каждый элемент через логику `Promise.resolve`, поэтому обычные значения тоже допустимы.
 
@@ -33,68 +38,139 @@ const [user, permissions] = await Promise.all([
 
 Combinator не запускает операцию и не создаёт параллельный поток. В выражении `Promise.all([loadA(), loadB()])` обе функции вызываются до передачи массива и уже запускают работу. Сетевые операции могут идти одновременно средствами браузера, а их JavaScript callbacks выполняются на main thread.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Отменяет ли <code>Promise.all</code> остальные операции после первой ошибки?</summary>
+<summary><strong>Отменяет ли <code>Promise.all</code> остальные операции после первой ошибки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Итоговый Promise быстро становится rejected, но уже запущенные запросы, таймеры и вычисления продолжаются. Для общей отмены нужно передать операциям связанный механизм, например один `AbortSignal`, и вызвать `abort()` при невозможности продолжать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что значит fail-fast у <code>Promise.all</code>?</summary>
+<summary><strong>Что значит fail-fast у <code>Promise.all</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Как только один входной Promise отклонён, результат `all` отклоняется и больше не ждёт успешных значений для своего публичного результата. Это уменьшает задержку сообщения об ошибке, но не гарантирует, что именно хронологически первая причина является самой важной, и не останавливает остальные действия.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> В каком порядке идут результаты, если Promise завершаются в разное время?</summary>
+<summary><strong>В каком порядке идут результаты, если Promise завершаются в разное время?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `all` и `allSettled` сохраняют порядок входного iterable. Если второй запрос завершился первым, его результат всё равно останется вторым элементом. Это позволяет безопасно использовать деструктуризацию по позиции.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужен <code>allSettled</code>, а не <code>all</code> с общим <code>catch</code>?</summary>
+<summary><strong>Когда нужен <code>allSettled</code>, а не <code>all</code> с общим <code>catch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда вызывающему нужны все отдельные исходы. Общий `catch` у `all` даёт только причину первого rejection и не возвращает единый массив успехов и ошибок. `allSettled` подходит, например, для нескольких независимых виджетов, пакетной загрузки файлов или массовой операции с отчётом по каждому элементу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>Promise.any</code> отличается от <code>Promise.race</code>?</summary>
+<summary><strong>Чем <code>Promise.any</code> отличается от <code>Promise.race</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `race` принимает первый завершившийся исход: быстрая ошибка сразу отклонит результат. `any` игнорирует отдельные rejection и ждёт первое успешное значение. Если успеха не было, `any` отклоняется `AggregateError`, чьё свойство `errors` содержит причины в порядке входных элементов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли реализовать timeout через <code>Promise.race</code>?</summary>
+<summary><strong>Можно ли реализовать timeout через <code>Promise.race</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Можно вернуть ошибку вызывающему раньше, соревнуя операцию с timer Promise. Но проигравшая операция не отменяется, а сам таймер нужно очистить при раннем успехе. Для `fetch` лучше связать timeout с `AbortController` или поддерживаемым `AbortSignal.timeout`, чтобы действительно прервать запрос.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит с пустым массивом?</summary>
+<summary><strong>Что происходит с пустым массивом?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Promise.all([])` и `Promise.allSettled([])` дают fulfilled Promise с пустым массивом. `Promise.any([])` сразу становится rejected с пустым `AggregateError`. `Promise.race([])` навсегда остаётся pending, потому что ни один участник не может завершить гонку. Подписанные `.then` и `.catch` в любом случае выполняются через microtask, не синхронно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как ограничить число одновременных запросов?</summary>
+<summary><strong>Как ограничить число одновременных запросов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Promise.all(items.map(load))` сразу вызывает `load` для каждого элемента и не ограничивает concurrency, то есть число одновременно начатых операций. Для сотен запросов используют worker pool, очередь или библиотечный limiter: запускают фиксированное число workers, каждый берёт следующую задачу после завершения предыдущей. Ограничение защищает браузер, сеть и backend.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выполнить операции строго последовательно?</summary>
+<summary><strong>Как выполнить операции строго последовательно?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Использовать цикл и ждать внутри него:
 
@@ -105,6 +181,10 @@ for (const item of items) {
 ```
 
 Последовательность нужна, когда следующий шаг зависит от предыдущего или backend требует порядок. Для независимых операций она только увеличивает общее время.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -122,9 +202,17 @@ Promise.race([fastError, slow]).catch(console.log);
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что выведут две цепочки?</summary>
+<summary><strong>Что выведут две цепочки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `race` выведет `"failed"`, потому что rejection уже готов и первым завершает гонку. `any` проигнорирует этот rejection, дождётся fulfilled `slow` и выведет `"slow"`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

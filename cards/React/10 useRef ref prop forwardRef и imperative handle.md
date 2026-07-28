@@ -1,4 +1,4 @@
-# 10 useRef ref prop forwardRef и imperative handle
+# useRef ref prop forwardRef и imperative handle
 
 <!-- CARD-NAV-TOP:START -->
 [← 09 useMemo useCallback и React memo](<./09 useMemo useCallback и React memo.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [11 Context →](<./11 Context.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Для чего нужен `useRef`? Как связаны DOM-ссылка, `forwardRef`, передача `ref` как prop и `useImperativeHandle`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Для чего нужен `useRef`? Как связаны DOM-ссылка, `forwardRef`, передача `ref` как prop и `useImperativeHandle`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `useRef` возвращает один и тот же изменяемый объект `{ current }` между рендерами. Запись в `ref.current` не запускает рендер, поэтому `ref` подходит для данных, которые нужны обработчикам или интеграции с внешним API, но не определяют отображаемый интерфейс. Значение, от которого зависит JSX, должно находиться в состоянии.
 
@@ -46,49 +51,100 @@ function MyInput({ ref, ...props }: React.ComponentProps<"input">) {
 
 Callback ref, то есть `ref` в виде функции, получает DOM-узел при присоединении. Начиная с React 19 эта функция может вернуть функцию очистки, которую React вызовет при отсоединении. Краткая стрелочная функция не должна случайно возвращать результат присваивания: TypeScript для React 19 ожидает `void` или функцию очистки.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему изменение <code>ref.current</code> не вызывает рендер?</summary>
+<summary><strong>Почему изменение <code>ref.current</code> не вызывает рендер?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Ref` является обычным изменяемым контейнером, запись в который React не отслеживает как обновление интерфейса. Это позволяет хранить таймер или DOM-узел без лишнего рендера. Если пользователь должен увидеть новое значение, нужно состояние.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>useRef</code> отличается от переменной на уровне модуля?</summary>
+<summary><strong>Чем <code>useRef</code> отличается от переменной на уровне модуля?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Каждый экземпляр компонента получает собственный `ref` при монтировании. Модульная переменная общая для всех экземпляров в одной среде выполнения JavaScript и может смешать таймеры или DOM-узлы разных компонентов. На уровне модуля хранят только намеренно общую инфраструктуру или константы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли читать <code>ref.current</code> во время рендера?</summary>
+<summary><strong>Можно ли читать <code>ref.current</code> во время рендера?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычно нет. Рендер должен зависеть от `props`, состояния и Context, а `ref` меняется без уведомления React, поэтому результат станет непредсказуемым. Исключением является одноразовая детерминированная инициализация объекта под условием `ref.current === null`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> <code>forwardRef</code> больше не нужен в React 19?</summary>
+<summary><strong><code>forwardRef</code> больше не нужен в React 19?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Новые функциональные компоненты React 19 могут принимать `ref` как prop. Но `forwardRef` остаётся рабочим и необходим для React 18, библиотек с широким диапазоном поддерживаемых версий React и существующего кода. Его нельзя удалить из библиотеки без изменения минимальной поддерживаемой версии и типов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен <code>useImperativeHandle</code>?</summary>
+<summary><strong>Для чего нужен <code>useImperativeHandle</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он заменяет значение, которое родитель получит через `ref`, на небольшой объект методов. Например, компонент дизайн-системы может раскрыть `focus()` и `select()`, но скрыть внутренний `<input>`. Массив зависимостей должен включать все реактивные значения, использованные при создании этого объекта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что изменилось у callback refs в React 19?</summary>
+<summary><strong>Что изменилось у callback refs в React 19?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Ref` в виде функции может вернуть функцию очистки. React вызовет её, когда узел отсоединится или сама callback-функция изменится. Раньше очистку обычно получали повторным вызовом callback с `null`; в React 19 можно явно вернуть функцию очистки.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

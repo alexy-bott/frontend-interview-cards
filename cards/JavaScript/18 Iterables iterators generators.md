@@ -1,4 +1,4 @@
-# 18 Iterables iterators generators
+# Iterables iterators generators
 
 <!-- CARD-NAV-TOP:START -->
 [← 17 Array methods](<./17 Array methods.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 JSON serialization →](<./19 JSON serialization.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое iterable, iterator и generator? Как работает протокол итерации в JavaScript?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое iterable, iterator и generator? Как работает протокол итерации в JavaScript?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Iterable, или итерируемый объект, предоставляет последовательность значений. У него есть метод с ключом `Symbol.iterator`. JavaScript вызывает этот метод, когда объект используется в `for...of`, spread для массива, деструктуризации, `Array.from`, `Promise.all` и других операциях, которые принимают iterable.
 
@@ -55,28 +60,51 @@ console.log([...createRange(1, 3)]); // [1, 2, 3]
 
 Массивы, строки, `Map`, `Set`, типизированные массивы и многие DOM-коллекции уже являются iterable. Обычный объект `{}` по умолчанию им не является: его поля перебирают через `Object.keys`, `Object.values`, `Object.entries` или собственную реализацию `Symbol.iterator`.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>for...of</code> отличается от <code>for...in</code>?</summary>
+<summary><strong>Чем <code>for...of</code> отличается от <code>for...in</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `for...of` получает значения через протокол итерации. `for...in` перечисляет строковые enumerable-свойства объекта, включая унаследованные. Enumerable означает, что свойство участвует в таком перечислении.
 
 Для массива `for...in` возвращает строковые ключи, может увидеть добавленные свойства и не предназначен для получения элементов. Для значений массива используют `for...of`, методы массива или индексный цикл. Для собственных полей объекта обычно используют `Object.keys`, `Object.values` или `Object.entries`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Iterator всегда можно пройти несколько раз?</summary>
+<summary><strong>Iterator всегда можно пройти несколько раз?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Iterator хранит текущую позицию и обычно является одноразовым. После `done: true` повторный обход не начинает последовательность заново. Повторно итерируемая коллекция создаёт новый iterator при каждом вызове `[Symbol.iterator]()`. Generator object, наоборот, обычно одновременно является iterable и своим собственным одноразовым iterator.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что передаёт аргумент <code>next(value)</code> в generator?</summary>
+<summary><strong>Что передаёт аргумент <code>next(value)</code> в generator?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он становится результатом предыдущего выражения `yield` внутри generator. Первый вызов `next(value)` только запускает функцию до первого `yield`, поэтому его аргументу ещё некуда попасть и он игнорируется.
 
@@ -91,42 +119,86 @@ iterator.next();       // { value: "question", done: false }
 iterator.next("yes"); // { value: "YES", done: true }
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делают <code>return()</code> и <code>throw()</code> у generator?</summary>
+<summary><strong>Что делают <code>return()</code> и <code>throw()</code> у generator?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `return(value)` завершает generator и возвращает результат с `done: true`, но перед завершением выполняет блоки `finally`. `throw(error)` выбрасывает ошибку в приостановленной точке `yield`, поэтому generator может перехватить её через `try...catch`. Эти методы позволяют потребителю управлять незавершённой последовательностью.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит, если <code>for...of</code> завершается через <code>break</code>?</summary>
+<summary><strong>Что происходит, если <code>for...of</code> завершается через <code>break</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если у iterator есть метод `return`, цикл вызывает его для закрытия iterator. У generator это даёт возможность выполнить `finally` и освободить ресурс. Обычное исчерпание последовательности через `done: true` дополнительного закрытия не требует.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны generators во frontend-разработке?</summary>
+<summary><strong>Зачем нужны generators во frontend-разработке?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они позволяют лениво, то есть только по запросу, выдавать последовательность без создания полного массива. Это полезно для обхода дерева, порционной обработки, генерации идентификаторов и конечных автоматов. Generator также лежит в основе эффектов `redux-saga`: saga отдаёт описания операций через `yield`, а middleware выполняет их и возвращает результат обратно.
 
 Для обычного запроса `async/await` читается проще. Generator выбирают, когда нужен управляемый протокол последовательных шагов, а не только ожидание Promise.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем async iterable отличается от обычного iterable?</summary>
+<summary><strong>Чем async iterable отличается от обычного iterable?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Async iterable предоставляет `[Symbol.asyncIterator]`, а его `next()` возвращает `Promise` с объектом `{ value, done }`. Значения получают через `for await...of`. Это подходит для потоков и страниц данных, которые приходят асинхронно. Обычный `for...of` не ожидает такие результаты.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Всегда ли spread безопасно применять к iterable?</summary>
+<summary><strong>Всегда ли spread безопасно применять к iterable?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. `[...iterable]` полностью исчерпывает последовательность и создаёт массив в памяти. Для бесконечного generator операция никогда не завершится, а для очень большой последовательности может потребовать слишком много памяти. В таких случаях значения обрабатывают постепенно через цикл.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -147,9 +219,17 @@ console.log(iterator.next());
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и почему первый аргумент проигнорирован?</summary>
+<summary><strong>Что будет выведено и почему первый аргумент проигнорирован?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Результаты будут `{ value: "name?", done: false }`, `{ value: "hello, Ada", done: false }` и `{ value: "done", done: true }`. Первый `next` запускает тело, но предыдущего `yield` ещё нет. Второй передаёт `"Ada"` как результат первого `yield`, а третий продолжает выполнение до `return`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

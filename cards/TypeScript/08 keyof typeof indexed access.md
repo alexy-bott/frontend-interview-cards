@@ -1,4 +1,4 @@
-# 08 keyof typeof indexed access
+# keyof typeof indexed access
 
 <!-- CARD-NAV-TOP:START -->
 [← 07 Generics](<./07 Generics.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Mapped types и Utility Types →](<./09 Mapped types и Utility Types.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают `keyof`, `typeof` в позиции типа и indexed access types?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают `keyof`, `typeof` в позиции типа и indexed access types?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Эти операторы позволяют получить новый тип из уже существующего типа или значения. Они помогают не дублировать вручную имена свойств и поддерживать связь между источником данных и производными типами.
 
@@ -79,19 +84,34 @@ type RoutePath = (typeof routes)[RouteName];
 
 Без `as const` ключи остались бы точными, но значения расширились бы до `string`, поэтому `RoutePath` потерял бы список конкретных путей.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем часто пишут <code>keyof typeof config</code>?</summary>
+<summary><strong>Зачем часто пишут <code>keyof typeof config</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `typeof config` сначала получает тип существующего объекта, а `keyof` извлекает его ключи. Так конфигурация времени выполнения становится единственным источником правды: после добавления или удаления свойства union допустимых имён обновляется автоматически.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как написать типобезопасный <code>getProperty</code>?</summary>
+<summary><strong>Как написать типобезопасный <code>getProperty</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Ключ нужно связать с объектом через ограничение параметра типа, а результат получить через indexed access:
 
@@ -103,26 +123,54 @@ function getProperty<T, K extends keyof T>(object: T, key: K): T[K] {
 
 `K extends keyof T` разрешает только существующие ключи. `T[K]` сохраняет тип выбранного свойства, поэтому `getProperty(user, "active")` вернёт `boolean`, а не общий `unknown`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что вернёт <code>keyof</code> для union типов?</summary>
+<summary><strong>Что вернёт <code>keyof</code> для union типов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для `A | B` безопасно обратиться без предварительной проверки только к ключам, которые существуют у каждого варианта. Поэтому `keyof (A | B)` содержит общие ключи. Чтобы получить ключи каждого участника union по отдельности, используют distributive conditional type, то есть условный тип, который применяется к каждому варианту объединения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>keyof</code> иногда содержит <code>number</code> или <code>symbol</code>?</summary>
+<summary><strong>Почему <code>keyof</code> иногда содержит <code>number</code> или <code>symbol</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В JavaScript ключом свойства может быть строка или `symbol`, а числовой ключ обычного объекта преобразуется в строку. Тип `keyof any` поэтому равен `string | number | symbol`. Конкретный объект без index signature обычно даёт более узкий union литеральных ключей.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>T[number]</code> отличается от <code>T[0]</code> для tuple?</summary>
+<summary><strong>Чем <code>T[number]</code> отличается от <code>T[0]</code> для tuple?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Tuple, или кортеж, хранит тип каждого положения отдельно. `T[0]` получает тип первого элемента, а `T[number]` объединяет типы всех доступных числовых позиций. Для обычного массива оба выражения обычно сводятся к общему типу элемента.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -140,9 +188,17 @@ type PermissionLabel = PermissionMeta["label"];
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Какие типы получатся и что изменится без <code>as const</code>?</summary>
+<summary><strong>Какие типы получатся и что изменится без <code>as const</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Permission` будет `"read" | "remove"`, `PermissionMeta` объединит два объекта, а `PermissionLabel` станет `"Read" | "Remove"`. Без `as const` ключи сохранятся, но `label` расширится до `string`, а `dangerous` до `boolean`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

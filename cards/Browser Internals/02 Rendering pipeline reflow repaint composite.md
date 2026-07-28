@@ -1,4 +1,4 @@
-# 02 Rendering pipeline reflow repaint composite
+# Rendering pipeline reflow repaint composite
 
 <!-- CARD-NAV-TOP:START -->
 [← 01 Что происходит после ввода URL](<./01 Что происходит после ввода URL.md>) · [↑ Browser Internals](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Event delegation capture bubble →](<./03 Event delegation capture bubble.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает rendering pipeline браузера? Чем отличаются layout/reflow, paint и composite?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает rendering pipeline браузера? Чем отличаются layout/reflow, paint и composite?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Rendering pipeline, или конвейер рендеринга, - последовательность этапов, через которые браузер превращает HTML, CSS и изменения JavaScript в пиксели на экране. Для полного кадра это style calculation, layout, paint, rasterization и composite, но конкретное изменение может не затронуть часть этапов.
 
@@ -29,63 +34,130 @@ Rendering pipeline, или конвейер рендеринга, - послед
 
 **Layout thrashing** - повторение такого шаблона: запись, чтение, запись, чтение в цикле. Его уменьшают, группируя сначала чтения, затем записи, кэшируя измерения и планируя визуальные изменения через `requestAnimationFrame`. Результат проверяют в Performance panel DevTools, а не только по списку «быстрых» CSS-свойств.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое layout/reflow?</summary>
+<summary><strong>Что такое layout/reflow?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это расчёт или повторный расчёт геометрии: размеров, координат, переносов строк и влияния контейнеров. Термин reflow обычно означает повторный layout после изменения. Браузер может пересчитать только затронутую ветку, но изменение верхнего контейнера способно распространить работу на большое поддерево.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое repaint?</summary>
+<summary><strong>Что такое repaint?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Repaint - повторное создание команд рисования для изменившейся области без обязательного изменения геометрии. Например, новый `background-color` меняет будущие пиксели, но не размеры элемента. После paint всё равно требуются растеризация затронутого содержимого и сборка кадра.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем paint отличается от rasterization?</summary>
+<summary><strong>Чем paint отличается от rasterization?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Paint определяет, что и в каком порядке нужно нарисовать: текст, фон, границу, тень. Rasterization выполняет эти команды и создаёт пиксельные плитки, которые можно передать на GPU и использовать при compositing. В инструментах и статьях эти детали иногда упрощённо объединяют словом «отрисовка».
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое composite?</summary>
+<summary><strong>Что такое composite?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это размещение уже растеризованных слоёв в итоговом кадре с учётом их позиции, преобразования, прозрачности и порядка. Если изменяемый элемент находится в отдельном подготовленном слое, `transform` или `opacity` часто можно обновить без нового layout и paint.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>transform</code> часто быстрее, чем <code>top/left</code>?</summary>
+<summary><strong>Почему <code>transform</code> часто быстрее, чем <code>top/left</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `top` и `left` участвуют в расчёте расположения и могут вызвать layout и paint. `transform` меняет способ композиции уже рассчитанного элемента и при наличии отдельного слоя может обрабатываться compositor thread. Это не абсолютная гарантия: крупный слой, сложное содержимое или его постоянное перерастрирование тоже могут быть дорогими.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое forced reflow?</summary>
+<summary><strong>Что такое forced reflow?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузер обычно откладывает style/layout до подходящего момента перед кадром. Если JavaScript изменил `style.width`, а затем прочитал `offsetHeight`, чтению нужна актуальная геометрия, и браузер выполняет расчёт немедленно. Один такой расчёт не всегда заметен; повторное чередование записей и чтений образует layout thrashing.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>will-change</code> не ставят на всё подряд?</summary>
+<summary><strong>Почему <code>will-change</code> не ставят на всё подряд?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `will-change` сообщает браузеру, какое свойство скоро изменится, чтобы движок мог заранее подготовить оптимизацию. Это не приказ создать слой и не постоянное ускорение. Подсказку применяют к небольшому числу элементов незадолго до изменения и убирают после него, иначе растёт расход памяти и служебная работа compositor.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как искать дорогие layout и paint на практике?</summary>
+<summary><strong>Как искать дорогие layout и paint на практике?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Chrome DevTools записывают сценарий в Performance panel и смотрят длинные события Recalculate Style, Layout и Paint на main thread, а также области перерисовки и число кадров. Затем связывают событие с конкретным JavaScript-вызовом или CSS-изменением. Сначала измеряют реальный сценарий, потому что одно и то же свойство имеет разную стоимость на разном DOM и устройстве.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

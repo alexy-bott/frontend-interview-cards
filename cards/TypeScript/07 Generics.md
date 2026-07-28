@@ -1,4 +1,4 @@
-# 07 Generics
+# Generics
 
 <!-- CARD-NAV-TOP:START -->
 [← 06 Narrowing type guards assertions](<./06 Narrowing type guards assertions.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 keyof typeof indexed access →](<./08 keyof typeof indexed access.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое generics в TypeScript? Когда параметр типа действительно нужен?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое generics в TypeScript? Когда параметр типа действительно нужен?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Generic, или обобщённый тип, использует параметр типа вместо заранее выбранного конкретного типа. Его задача состоит не просто в переиспользовании, а в сохранении связи между несколькими частями контракта.
 
@@ -51,63 +56,130 @@ TypeScript обычно выводит generic-параметры из аргу�
 
 Generic стоит вводить, когда параметр используется минимум в двух значимых местах или ограничивает допустимую операцию. Параметр, который встречается только в результате и выбирается вызывающим без доказательства, часто является замаскированным утверждением типа.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что означает <code>T extends SomeType</code>?</summary>
+<summary><strong>Что означает <code>T extends SomeType</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это ограничение: конкретный тип `T` может содержать дополнительные поля, но обязан быть совместим с `SomeType`. Внутри функции доступны свойства ограничения, а наружу возвращается исходный конкретный тип, а не только `SomeType`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем generic отличается от union?</summary>
+<summary><strong>Чем generic отличается от union?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Union описывает конечный набор возможных вариантов. Generic сохраняет конкретный тип и связь между входами и выходами каждого вызова. `first(string[])` возвращает `string | undefined`, а не общий union всех типов, с которыми функция когда-либо использовалась.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда TypeScript выводит generic автоматически?</summary>
+<summary><strong>Когда TypeScript выводит generic автоматически?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда аргументы, контекст функции обратного вызова или ожидаемый тип содержат достаточно информации. В `first(users)` параметр `T` выводится из массива. Если вход пустой, равен `null` или параметр присутствует только в результате, явная аннотация может понадобиться либо сам API следует изменить.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>fetchJson&lt;T&gt;()</code> может быть небезопасным?</summary>
+<summary><strong>Почему <code>fetchJson&lt;T&gt;()</code> может быть небезопасным?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер не знает выбранный в TypeScript параметр, а JSON не проверяется автоматически. Вызов `fetchJson<Admin>()` способен вернуть объект другой формы и всё равно скомпилироваться. Без схемы, выполняемой во время работы программы, функция должна возвращать `unknown`; со схемой generic связывают с проверяющим значением, например `fetchWithSchema(userSchema)`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое значение параметра типа по умолчанию (<code>generic default</code>)?</summary>
+<summary><strong>Что такое значение параметра типа по умолчанию (<code>generic default</code>)?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это значение, которое используется, если вызывающий не передал соответствующий параметр типа, например `type ApiResult<TData, TError = Error>`. Здесь без явного `TError` будет выбран `Error`. Обязательные параметры должны стоять перед параметрами со значением по умолчанию, как и обычные параметры функций.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Где generics применяются в React?</summary>
+<summary><strong>Где generics применяются в React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В таблицах, Select и Combobox, хуках данных, формах и компонентах, где `props` должны зависеть от типа записи или значения. Например, `Column<TRecord>` связывает ключ колонки со строкой таблицы. Для простого компонента без такой связи generic только усложняет API.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда generic ухудшает код?</summary>
+<summary><strong>Когда generic ухудшает код?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда параметров много, их роли неясны, ошибки становятся длиннее полезного контракта или реализация всё равно заполнена `as`. Хороший generic запрещает реальную ошибку и выводится из использования; плохой переносит внутреннюю сложность на каждого потребителя.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что дают <code>const</code> type parameters?</summary>
+<summary><strong>Что дают <code>const</code> type parameters?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Начиная с TypeScript 5.0 модификатор `const` у параметра типа просит выводить более узкие литеральные типы для значений, созданных прямо в вызове. Это удобно авторам библиотечных API, но не делает переданную заранее изменяемую переменную `readonly` и не заменяет продуманную сигнатуру.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -123,9 +195,17 @@ function pluck<T, K extends keyof T>(
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Как связаны <code>T</code>, <code>K</code> и результат?</summary>
+<summary><strong>Как связаны <code>T</code>, <code>K</code> и результат?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `T` является типом элемента массива, `K` ограничен его ключами, а `T[K]` получает тип выбранного свойства. Для `pluck(users, "id")` результатом будет массив типа поля `id`, а не `unknown[]`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

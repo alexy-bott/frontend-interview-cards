@@ -1,4 +1,4 @@
-# 35 localStorage sessionStorage IndexedDB
+# localStorage sessionStorage IndexedDB
 
 <!-- CARD-NAV-TOP:START -->
 [← 34 Garbage collection](<./34 Garbage collection.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [36 CustomEvent EventTarget dispatchEvent →](<./36 CustomEvent EventTarget dispatchEvent.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `localStorage`, `sessionStorage` и `IndexedDB`? Как выбрать браузерное хранилище?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `localStorage`, `sessionStorage` и `IndexedDB`? Как выбрать браузерное хранилище?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `localStorage` и `sessionStorage` образуют Web Storage API. Они хранят пары строковых ключей и значений и предоставляют синхронные методы `getItem`, `setItem`, `removeItem`, `clear`. Синхронный доступ может задержать main thread, особенно при больших значениях, частой сериализации и медленном устройстве.
 
@@ -42,84 +47,175 @@ try {
 | HTTP Request/Response для offline | Cache API |
 | Cookie-сессия, отправляемая серверу | Cookie, не storage API |
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя считать объём storage фиксированным?</summary>
+<summary><strong>Почему нельзя считать объём storage фиксированным?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Quota зависит от браузера, устройства, доступного диска, origin и режима приватности. Запись может выбросить `QuotaExceededError`, а доступ иногда запрещён политикой пользователя и приводит к `SecurityError`. Приложение должно обрабатывать отказ и не считать browser storage единственной копией критических данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как версионировать данные в <code>localStorage</code>?</summary>
+<summary><strong>Как версионировать данные в <code>localStorage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Включить версию в ключ или envelope, проверить parsed shape и выполнить явную миграцию. Старый клиент, ручная правка или повреждённая запись не должны ломать запуск приложения. При несовместимой версии безопаснее удалить cache или применить fallback, чем без проверки привести значение к TypeScript-типу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как работает событие <code>storage</code>?</summary>
+<summary><strong>Как работает событие <code>storage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Изменение `localStorage` вызывает `storage` event в других документах того же origin, но не в окне, которое сделало запись. Event содержит `key`, `oldValue`, `newValue`, `url` и `storageArea`. Это подходит для простых сигналов logout или настройки темы, но не даёт транзакций между вкладками; одновременные read-modify-write могут потерять изменение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли хранить access token в <code>localStorage</code>?</summary>
+<summary><strong>Можно ли хранить access token в <code>localStorage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Любой script, выполняющийся в origin, может его прочитать, поэтому XSS позволяет украсть токен. HttpOnly cookie недоступна JavaScript и снижает этот конкретный риск, но автоматически отправляется браузером и требует защиты от CSRF. Выбор модели авторизации делают вместе с backend и threat model; ни один storage не исправляет XSS сам по себе.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>localStorage</code> нельзя использовать как реактивный state store?</summary>
+<summary><strong>Почему <code>localStorage</code> нельзя использовать как реактивный state store?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 API синхронный, не уведомляет ту же вкладку о собственной записи и хранит только строки. Частые writes замедляют UI, а одновременные изменения не транзакционны. Состояние держат в памяти, а storage используют как persistence boundary с контролируемой частотой, схемой и восстановлением.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Из чего состоит IndexedDB?</summary>
+<summary><strong>Из чего состоит IndexedDB?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Database имеет version и object stores. Store хранит records по key или key path, index даёт дополнительный путь поиска, transaction задаёт атомарную область чтения или записи, request сообщает результат, cursor перебирает диапазон. Обычно используют Promise-обёртку вроде `idb`, но она не отменяет правила транзакций и upgrade.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя ожидать сетевой запрос внутри активной IndexedDB transaction?</summary>
+<summary><strong>Почему нельзя ожидать сетевой запрос внутри активной IndexedDB transaction?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Transaction автоматически commit-ится, когда управление возвращается event loop и у неё нет pending IndexedDB requests. Пока выполняется `await fetch`, она может стать inactive, и следующая запись выбросит `TransactionInactiveError`. Сетевые данные получают до write transaction, затем открывают короткую транзакцию и выполняют только связанные IDB-операции.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит при изменении схемы IndexedDB?</summary>
+<summary><strong>Что происходит при изменении схемы IndexedDB?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Новую version передают в `indexedDB.open`; в `upgradeneeded` создают и изменяют stores/indexes внутри versionchange transaction. Другие открытые вкладки могут блокировать upgrade. Они должны обработать `versionchange`, закрыть старое соединение, а новая вкладка должна уметь показать состояние `blocked`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Гарантирует ли IndexedDB постоянное хранение?</summary>
+<summary><strong>Гарантирует ли IndexedDB постоянное хранение?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Данные относятся к storage quota и в некоторых режимах могут быть очищены системой или пользователем. `navigator.storage.persist()` позволяет запросить persistent storage, но решение принимает браузер. Сервер или экспорт остаётся источником восстановления для действительно важных данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем IndexedDB отличается от Cache API?</summary>
+<summary><strong>Чем IndexedDB отличается от Cache API?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 IndexedDB хранит прикладные records и поддерживает keys, indexes и transactions. Cache API хранит пары HTTP `Request`/`Response` и удобен Service Worker для стратегии offline. Metadata о кеше часто лежит в IndexedDB, а сами ответы в Cache API.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что учитывать при SSR?</summary>
+<summary><strong>Что учитывать при SSR?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `window`, Web Storage и IndexedDB отсутствуют на сервере. Чтение выполняют только на клиенте. Если первое client render зависит от сохранённой темы или auth state, нужно избежать расхождения с серверной разметкой: передать начальное значение через HTML/cookie, применить ранний безопасный script или показать состояние после hydration.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

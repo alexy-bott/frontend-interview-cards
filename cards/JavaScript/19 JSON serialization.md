@@ -1,4 +1,4 @@
-# 19 JSON serialization
+# JSON serialization
 
 <!-- CARD-NAV-TOP:START -->
 [← 18 Iterables iterators generators](<./18 Iterables iterators generators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [20 Date и Intl →](<./20 Date и Intl.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают `JSON.stringify` и `JSON.parse`? Какие данные нельзя без потерь представить в JSON?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают `JSON.stringify` и `JSON.parse`? Какие данные нельзя без потерь представить в JSON?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 JSON является текстовым форматом обмена данными. Он поддерживает объект, массив, строку, число, `true`, `false` и `null`. В отличие от JavaScript, в JSON нет `undefined`, функций, `Symbol`, `BigInt`, комментариев, методов объектов и циклических ссылок.
 
@@ -39,33 +44,64 @@ console.log(data); // { id: 1, active: true }
 
 `JSON.parse` восстанавливает только типы самого JSON. Дата останется строкой, экземпляр класса станет обычным объектом, а методы и прототип исходного объекта не восстановятся.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем JSON отличается от литерала объекта JavaScript?</summary>
+<summary><strong>Чем JSON отличается от литерала объекта JavaScript?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 JSON является строковым форматом с более строгим синтаксисом. Имена полей и строки записываются в двойных кавычках; комментарии, trailing comma, `undefined`, функции и вычисляемые выражения запрещены. Литерал объекта является частью JavaScript-кода и может содержать методы, spread, вычисляемые ключи и другие конструкции языка.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем отличаются отсутствующее поле, <code>undefined</code> и <code>null</code> при отправке API?</summary>
+<summary><strong>Чем отличаются отсутствующее поле, <code>undefined</code> и <code>null</code> при отправке API?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Поле с `undefined` при обычной сериализации объекта исчезает, поэтому сервер не отличит его от отсутствующего поля. `null` передаётся явно. Например, в `PATCH` отсутствие поля может означать «не изменять», а `null` может означать «очистить значение». Точный смысл должен быть закреплён в контракте API.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит с <code>Date</code>?</summary>
+<summary><strong>Что происходит с <code>Date</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Перед сериализацией `JSON.stringify` вызывает метод `toJSON`; у корректного `Date` он возвращает ISO-строку в UTC. После `JSON.parse` получится обычная строка. Если приложению нужен `Date`, его нужно восстановить явно, например `new Date(data.createdAt)`, и проверить корректность результата.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужны <code>replacer</code> и <code>reviver</code>?</summary>
+<summary><strong>Для чего нужны <code>replacer</code> и <code>reviver</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Второй аргумент `JSON.stringify` называется `replacer` и позволяет выбрать или преобразовать значения перед записью. Второй аргумент `JSON.parse` называется `reviver` и обходит уже разобранную структуру снизу вверх, позволяя заменить значения перед возвратом результата.
 
@@ -80,33 +116,69 @@ const data = JSON.parse(
 
 Автоматически превращать любую похожую строку в дату опасно: схема должна точно указывать, какие поля имеют этот тип.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли делать deep copy через <code>JSON.parse(JSON.stringify(value))</code>?</summary>
+<summary><strong>Можно ли делать deep copy через <code>JSON.parse(JSON.stringify(value))</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Только для заранее известной JSON-совместимой структуры, и даже тогда это лишняя сериализация. Метод теряет `undefined`, специальные числа и прототипы, меняет `Date`, не сохраняет `Map` и `Set`, падает на `BigInt` и циклах. Для поддерживаемых платформ лучше использовать `structuredClone`, а состояние приложения обычно обновлять с сохранением неизменившихся ветвей.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как обработать циклическую ссылку?</summary>
+<summary><strong>Как обработать циклическую ссылку?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала нужно решить, как представить граф в линейном формате. Для API обычно передают идентификаторы вместо вложенной обратной ссылки. Для отладочного вывода можно использовать `replacer`, который отмечает уже посещённые объекты. Просто удалить все повторы тоже неверно: повторная ссылка на один объект не всегда образует цикл и может нести смысл.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Достаточно ли успешного <code>JSON.parse</code>, чтобы доверять ответу API?</summary>
+<summary><strong>Достаточно ли успешного <code>JSON.parse</code>, чтобы доверять ответу API?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Успешный парсинг подтверждает только синтаксис JSON. Он не гарантирует наличие обязательных полей, их типы и допустимые значения. Данные на внешней границе нужно проверить по контракту, а затем преобразовать в модель приложения. TypeScript проверяет код во время разработки, но не меняет ответ, пришедший во время выполнения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужно ли всегда оборачивать <code>JSON.parse</code> в <code>try...catch</code>?</summary>
+<summary><strong>Нужно ли всегда оборачивать <code>JSON.parse</code> в <code>try...catch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если строка может быть некорректной и ошибка должна быть обработана на этом уровне, да. Это типично для `localStorage`, пользовательского ввода и ручного чтения ответа неизвестного формата. Метод `Response.json()` тоже отклоняет свой Promise при некорректном JSON, поэтому ошибка обрабатывается в асинхронной цепочке запроса.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -128,9 +200,17 @@ console.log(typeof parsed.createdAt);
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Какие данные окажутся в строке и какой тип будет у <code>createdAt</code> после парсинга?</summary>
+<summary><strong>Какие данные окажутся в строке и какой тип будет у <code>createdAt</code> после парсинга?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `missing` исчезнет, `invalidNumber` станет `null`, элементы `list` станут `[null, null]`, а `createdAt` станет ISO-строкой. После `JSON.parse` оператор `typeof` вернёт `"string"`, потому что JSON не содержит отдельного типа даты.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

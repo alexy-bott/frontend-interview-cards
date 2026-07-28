@@ -1,4 +1,4 @@
-# 04 Vite dev server build env proxy
+# Vite dev server build env proxy
 
 <!-- CARD-NAV-TOP:START -->
 [← 03 Semver caret tilde exact versions](<./03 Semver caret tilde exact versions.md>) · [↑ Tooling](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Webpack entry loaders plugins optimization →](<./05 Webpack entry loaders plugins optimization.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как Vite работает во время разработки и production-сборки? Что обычно настраивают в `vite.config`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как Vite работает во время разработки и production-сборки? Что обычно настраивают в `vite.config`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Vite является сервером разработки (dev server) и инструментом production-сборки frontend-приложений. Во время разработки он отдаёт исходные модули через нативную поддержку ESM в браузере и преобразует файл по запросу. При сборке Vite объединяет и оптимизирует граф модулей в готовые HTML, JavaScript, CSS и другие ресурсы.
 
@@ -58,63 +63,130 @@ export default defineConfig({
 
 `vite preview` локально раздаёт уже собранный каталог. Это не production-сервер и не замена Nginx или платформе размещения. Команда нужна для быстрой проверки путей, загрузки чанков и поведения собранной версии.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему Vite быстро запускается в режиме разработки?</summary>
+<summary><strong>Почему Vite быстро запускается в режиме разработки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он не собирает всё приложение перед первым показом. Браузер запрашивает ESM-модули по мере обхода импортов, а Vite преобразует только нужные файлы. Зависимости предварительно объединяются и кэшируются, поэтому повторный запуск не обрабатывает их без причины.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое HMR и чем он отличается от полной перезагрузки?</summary>
+<summary><strong>Что такое HMR и чем он отличается от полной перезагрузки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HMR заменяет изменившийся модуль и сообщает принимающей границе обновить интерфейс, сохраняя остальное состояние страницы. Полная перезагрузка заново создаёт документ и теряет состояние. Если изменение нельзя безопасно принять, Vite перезагружает страницу целиком.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>optimizeDeps</code>?</summary>
+<summary><strong>Что делает <code>optimizeDeps</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он управляет предварительным объединением зависимостей только в режиме разработки. `include` принудительно добавляет проблемный или локально связанный пакет, `exclude` исключает ESM-пакет, а `--force` перестраивает кеш. CommonJS-зависимость нельзя исключать без проверки, потому что браузеру может понадобиться её преобразование для совместимости с ESM.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Решает ли <code>server.proxy</code> проблему CORS в рабочей среде?</summary>
+<summary><strong>Решает ли <code>server.proxy</code> проблему CORS в рабочей среде?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Во время разработки браузер обращается к API по origin Vite, а сервер разработки пересылает запрос. После развёртывания этого сервера нет. Нужен настоящий reverse proxy, общий origin приложения и API либо корректная CORS-политика backend-сервера.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему секрет нельзя хранить в <code>VITE_*</code>?</summary>
+<summary><strong>Почему секрет нельзя хранить в <code>VITE_*</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Значение подставляется в клиентский JavaScript во время сборки. Пользователь может скачать бандл и прочитать его независимо от того, показывается значение в интерфейсе или нет. Префикс разрешает публикацию переменной, а не защищает её.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем настраивать <code>base</code>?</summary>
+<summary><strong>Зачем настраивать <code>base</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Vite использует его при формировании URL для точки входа, ресурсов и динамических импортов. Значение `/` подходит корню домена, а `/cabinet/` нужно для подкаталога. Оно должно согласовываться с адресом хостинга и fallback-правилом маршрутизации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> При чём здесь Rollup, если проект использует Vite?</summary>
+<summary><strong>При чём здесь Rollup, если проект использует Vite?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Vite 7 и предыдущих версиях Rollup выполнял production-сборку, поэтому расширенные настройки находились в `build.rollupOptions`. В Vite 8 эту роль получил Rolldown, а актуальное поле называется `build.rolldownOptions`. Версию проекта нужно назвать до объяснения внутренней цепочки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем запускать <code>vite preview</code>, если dev server уже работает?</summary>
+<summary><strong>Зачем запускать <code>vite preview</code>, если dev server уже работает?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер разработки отдаёт преобразованные исходники, а `vite preview` раздаёт результат `vite build`. Так обнаруживаются неверный `base`, отсутствующие ресурсы, ошибка динамического импорта и различия переменных окружения. Проверка не заменяет рабочий хостинг, но ближе к нему, чем режим разработки.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

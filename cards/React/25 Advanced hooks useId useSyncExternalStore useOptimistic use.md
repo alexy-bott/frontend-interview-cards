@@ -1,4 +1,4 @@
-# 25 Advanced hooks useId useSyncExternalStore useOptimistic use
+# Advanced hooks useId useSyncExternalStore useOptimistic use
 
 <!-- CARD-NAV-TOP:START -->
 [← 24 HOC render props PureComponent Component lifecycle](<./24 HOC render props PureComponent Component lifecycle.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [26 useInsertionEffect useDebugValue flushSync startTransition →](<./26 useInsertionEffect useDebugValue flushSync startTransition.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Для чего нужны `useId`, `useSyncExternalStore`, `useOptimistic` и API `use`? К каким версиям React они относятся?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Для чего нужны `useId`, `useSyncExternalStore`, `useOptimistic` и API `use`? К каким версиям React они относятся?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `useId` и `useSyncExternalStore` появились в React 18. `useOptimistic` и `use` появились в стабильном React 19. Эти API решают независимые задачи: идентификаторы для связей доступности, согласованную подписку на внешнее хранилище, оптимистичный интерфейс и чтение Promise или Context во время рендера.
 
@@ -65,56 +70,115 @@ const [optimisticMessages, addOptimisticMessage] = useOptimistic(
 
 В Server Component для обычного получения данных чаще используют `await`, потому что асинхронный компонент продолжает выполнение с того же места. `use` полезен, когда Promise передаётся глубже, особенно через Client Component и границу Suspense.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>useId</code> нельзя использовать как ключ списка?</summary>
+<summary><strong>Почему <code>useId</code> нельзя использовать как ключ списка?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `useId` идентифицирует экземпляр компонента и DOM-связь, а `key` должен идентифицировать конкретную сущность данных среди соседей. При сортировке пользователя нужно узнавать по `user.id`, а не по позиции хука в дереве. Кроме того, хук нельзя вызывать внутри `map` в одном компоненте.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда прикладному коду нужен <code>useSyncExternalStore</code>?</summary>
+<summary><strong>Когда прикладному коду нужен <code>useSyncExternalStore</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При собственной интеграции с браузерным API или внешним хранилищем, которые живут вне состояния React: статус сети, общее хранилище истории или подписка на CSS-медиазапрос. Для готовой библиотеки состояния лучше использовать её официальный хук-селектор, потому что он уже обеспечивает согласованные снимки и подписку.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>getSnapshot</code> должен быть кеширован?</summary>
+<summary><strong>Почему <code>getSnapshot</code> должен быть кеширован?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React вызывает его многократно и сравнивает результат через `Object.is`. Если функция каждый раз создаёт новый объект без изменения хранилища, React увидит бесконечную последовательность изменений. Иммутабельное хранилище может вернуть текущий объект, а изменяемое хранилище сохраняет последний снимок и создаёт новый только после реального изменения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен <code>getServerSnapshot</code>?</summary>
+<summary><strong>Для чего нужен <code>getServerSnapshot</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он возвращает значение во время SSR и первоначальной гидратации. Клиент должен получить тот же снимок, иначе разметка не совпадёт. Например, серверный снимок статуса сети можно зафиксировать как `true` и использовать его до первой фактической браузерной подписки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что может пойти не так с оптимистичным интерфейсом?</summary>
+<summary><strong>Что может пойти не так с оптимистичным интерфейсом?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер может отклонить действие, вернуть другой объект или принять параллельные операции в ином порядке. Оптимистично добавленный элемент получает временный идентификатор, затем заменяется подтверждённым ответом сервера. Ошибка откатывает базовое представление и остаётся видимой пользователю, а изменение не отправляется повторно без защиты от дублей.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>use</code> отличается от обычного хука?</summary>
+<summary><strong>Чем <code>use</code> отличается от обычного хука?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он умеет читать Promise или Context и допускается в условиях и циклах. Но его всё равно вызывают только внутри React-компонента или хука и не оборачивают в `try/catch`. `use` не хранит локальное состояние и не заменяет `useEffect` для произвольного клиентского запроса.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что произойдёт с отклонённым Promise в <code>use</code>?</summary>
+<summary><strong>Что произойдёт с отклонённым Promise в <code>use</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React бросит причину во время рендера. Ближайший Error Boundary покажет интерфейс ошибки. Suspense обрабатывает только ожидание, а не отказ. Если отклонение Promise нужно преобразовать в обычное значение, это делают заранее через цепочку Promise, а не `try/catch` вокруг `use`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -131,9 +195,17 @@ function Users({ users }) {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему такой <code>key</code> хуже <code>user.id</code>?</summary>
+<summary><strong>Почему такой <code>key</code> хуже <code>user.id</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React id относится к экземпляру списка, а `name` может измениться или повториться. Key должен сохранять идентичность пользователя при редактировании и перестановке, поэтому нужен устойчивый уникальный `user.id`. `useId` здесь вообще не требуется.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

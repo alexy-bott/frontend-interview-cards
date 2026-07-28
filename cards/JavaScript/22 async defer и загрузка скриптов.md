@@ -1,4 +1,4 @@
-# 22 async defer и загрузка скриптов
+# async defer и загрузка скриптов
 
 <!-- CARD-NAV-TOP:START -->
 [← 21 ES modules](<./21 ES modules.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [23 Ошибки try catch →](<./23 Ошибки try catch.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются обычный `<script>`, `defer`, `async` и `type="module"`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются обычный `<script>`, `defer`, `async` и `type="module"`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Атрибуты определяют, может ли браузер продолжать разбирать HTML во время загрузки скрипта, когда скрипт выполнится и сохраняется ли порядок между несколькими файлами.
 
@@ -28,77 +33,160 @@ HTML parser, или парсер HTML, читает разметку и стро
 
 `type="module"` включает ESM и deferred-поведение по умолчанию даже для inline module script. Браузер загружает весь граф импортов, выполняет зависимости перед модулем, использует strict mode и CORS для cross-origin запросов. Атрибут `defer` модулю не нужен. Если добавить `async` к внешнему module script, граф выполнится, как только станет готов, без ожидания обычной очереди deferred scripts.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно блокирует обычный script?</summary>
+<summary><strong>Что именно блокирует обычный script?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он блокирует продолжение разбора HTML с места, где встретился элемент. Для внешнего файла пауза включает загрузку, компиляцию и выполнение. Inline script не требует сети, но тоже выполняется до продолжения парсинга. Долгое выполнение также занимает main thread и задерживает rendering и обработку событий.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему основной bundle обычно подключают как module script или с <code>defer</code>?</summary>
+<summary><strong>Почему основной bundle обычно подключают как module script или с <code>defer</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Браузер рано обнаруживает файл в `<head>` и начинает загрузку, но продолжает строить DOM. Код запускается после разбора документа, поэтому видит элементы страницы и не создаёт длинную сетевую паузу внутри HTML parser. Module script дополнительно даёт стандартный граф ESM.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего подходит <code>async</code>?</summary>
+<summary><strong>Для чего подходит <code>async</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для независимого кода, которому не нужен DOM в конкретном состоянии и порядок относительно других скриптов. Типичные примеры: часть аналитики, реклама или автономный внешний виджет. Даже независимый third-party script может занять main thread, ухудшить метрики и получить доступ к странице, поэтому `async` решает порядок загрузки, но не вопросы производительности и доверия.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет, если одновременно указать <code>async</code> и <code>defer</code>?</summary>
+<summary><strong>Что будет, если одновременно указать <code>async</code> и <code>defer</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В поддерживающих `async` браузерах script ведёт себя как `async`: выполняется по готовности и не сохраняет порядок deferred scripts. Исторически `defer` добавляли как fallback для старых браузеров, но в современном коде одновременное указание обычно только скрывает выбранную семантику.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Гарантирует ли <code>defer</code>, что DOM полностью готов?</summary>
+<summary><strong>Гарантирует ли <code>defer</code>, что DOM полностью готов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HTML уже разобран, `document.readyState` находится в состоянии `interactive`, и элементы разметки созданы. Но это не означает, что загружены изображения и другие ресурсы или уже произошёл окончательный layout. Для доступа к DOM этого достаточно; для размеров, зависящих от ресурсов, может потребоваться ждать конкретный ресурс или применять наблюдение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>DOMContentLoaded</code> связан со скриптами?</summary>
+<summary><strong>Как <code>DOMContentLoaded</code> связан со скриптами?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Событие возникает после разбора HTML и выполнения deferred classic scripts и обычных module scripts. Async scripts его предсказуемо не задерживают. `window.load` происходит позже, после загрузки зависимых ресурсов страницы. Если код подключён динамически и мог запуститься после `DOMContentLoaded`, перед добавлением listener проверяют `document.readyState`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем module script отличается от <code>defer</code> classic script?</summary>
+<summary><strong>Чем module script отличается от <code>defer</code> classic script?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Отложенный classic script остаётся одним глобальным скриптом и выполняется в порядке элементов. Module script имеет собственную область видимости, strict mode, зависимости `import`, единственное выполнение по URL и обязательный CORS-режим для другого origin. Порядок внутри module graph определяется зависимостями, а не только положением файлов в HTML.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как ведут себя скрипты, добавленные через JavaScript?</summary>
+<summary><strong>Как ведут себя скрипты, добавленные через JavaScript?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Внешний classic script, созданный через `document.createElement("script")`, по умолчанию ведёт себя как async и выполняется по готовности. Если нескольким динамическим classic scripts нужен порядок, свойство `async` устанавливают в `false` до вставки и внимательно управляют последовательностью. Для модулей чаще используют `import()`, который возвращает Promise и явно отражает асинхронность.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужен <code>modulepreload</code>?</summary>
+<summary><strong>Зачем нужен <code>modulepreload</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `<link rel="modulepreload" href="...">` позволяет раньше загрузить, разобрать и подготовить модуль, не выполняя его сразу. Браузер также может получить его зависимости. Это помогает, если важный модуль обнаруживается поздно, но избыточный preload конкурирует за сеть с критическими ресурсами, поэтому подсказку добавляют по результатам измерений.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему script в конце <code>body</code> не всегда равен <code>defer</code> в <code>head</code>?</summary>
+<summary><strong>Почему script в конце <code>body</code> не всегда равен <code>defer</code> в <code>head</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Оба варианта запускают код после большей части разметки, но script в конце документа обнаруживается позже, поэтому его загрузка может начаться позже. `defer` в `head` позволяет одновременно строить DOM и загружать файл, сохраняя выполнение после парсинга.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

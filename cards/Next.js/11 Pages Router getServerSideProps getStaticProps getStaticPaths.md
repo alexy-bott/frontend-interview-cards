@@ -1,4 +1,4 @@
-# 11 Pages Router getServerSideProps getStaticProps getStaticPaths
+# Pages Router getServerSideProps getStaticProps getStaticPaths
 
 <!-- CARD-NAV-TOP:START -->
 [← 10 Next.js 14 15 16 версии Turbopack Cache Components PPR](<./10 Next.js 14 15 16 версии Turbopack Cache Components PPR.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Route Groups Parallel и Intercepting Routes →](<./12 Route Groups Parallel и Intercepting Routes.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает Pages Router и для чего нужны `getServerSideProps`, `getStaticProps` и `getStaticPaths`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает Pages Router и для чего нужны `getServerSideProps`, `getStaticProps` и `getStaticPaths`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Pages Router является файловой системой маршрутизации Next.js на основе каталога `pages`. `pages/index.tsx` создаёт `/`, `pages/users/[id].tsx` создаёт динамический маршрут, а файлы в `pages/api` создают API Routes. Модель появилась раньше App Router, но остаётся поддерживаемой и часто встречается в существующих production-проектах.
 
@@ -56,63 +61,130 @@ export async function getStaticProps() {
 
 Каталоги `pages` и `app` можно держать в одном проекте во время постепенной миграции, но один URL не должен определяться сразу в обоих. Переход выполняют по маршрутам, а не обязательным переписыванием всего приложения за один раз.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Когда использовать <code>getServerSideProps</code>?</summary>
+<summary><strong>Когда использовать <code>getServerSideProps</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда результат должен учитывать конкретный запрос и не может быть безопасно общим: закрытая страница с серверной проверкой сессии, данные из headers запроса или информация, требующая актуальности на каждое открытие. Если страница публичная и допускает небольшую задержку обновления, SSG или ISR обычно дешевле и быстрее.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Видит ли браузер код и данные из <code>getServerSideProps</code>?</summary>
+<summary><strong>Видит ли браузер код и данные из <code>getServerSideProps</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Тело функции выполняется только на сервере и не входит в клиентский бандл. Однако возвращённые props сериализуются и отправляются браузеру, поэтому пользователь способен их прочитать. Закрытый token можно использовать для серверного запроса, но нельзя вернуть в props.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли вызвать собственный API Route из <code>getServerSideProps</code>?</summary>
+<summary><strong>Можно ли вызвать собственный API Route из <code>getServerSideProps</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Технически можно, но обычно не нужно. Обе функции работают на сервере, поэтому лучше напрямую вызвать общий service или repository, то есть слой получения данных. Внутренний HTTP создаёт лишнюю задержку и дублирует сериализацию, а относительный URL на сервере требует дополнительной настройки origin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем SSG с <code>getStaticProps</code> отличается от ISR?</summary>
+<summary><strong>Чем SSG с <code>getStaticProps</code> отличается от ISR?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Без `revalidate` страница меняется только после новой сборки. ISR добавляет срок, после которого посещение может запустить regeneration, то есть повторное формирование сохранённой страницы. До успешного обновления пользователи продолжают получать предыдущую версию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужен <code>getStaticPaths</code>?</summary>
+<summary><strong>Зачем нужен <code>getStaticPaths</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Во время сборки Next.js не знает все допустимые значения динамического `[slug]`. `getStaticPaths` перечисляет пути для предварительной генерации, а `fallback` определяет судьбу остальных. Без этой функции динамическая page с `getStaticProps` не знает, какие файлы создать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>fallback: true</code> отличается от <code>fallback: "blocking"</code>?</summary>
+<summary><strong>Чем <code>fallback: true</code> отличается от <code>fallback: "blocking"</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При `true` обычная клиентская навигация может сначала получить страницу без готовых props, поэтому компонент показывает fallback через `router.isFallback`. При `"blocking"` первый запрос ждёт готовый HTML и не видит промежуточное состояние. Оба варианта затем сохраняют сформированную страницу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>getInitialProps</code> отличается от этих функций?</summary>
+<summary><strong>Чем <code>getInitialProps</code> отличается от этих функций?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это более старый API. На первом открытии он выполняется на сервере, а при клиентской навигации может выполняться в браузере. Использование `getInitialProps` в пользовательском `_app` отключает автоматическую статическую оптимизацию для страниц без собственных API статической загрузки данных, поэтому в новом коде обычно выбирают более конкретные функции.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли постепенно мигрировать с Pages Router на App Router?</summary>
+<summary><strong>Можно ли постепенно мигрировать с Pages Router на App Router?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. Каталоги `pages` и `app` могут сосуществовать, пока разные файлы не определяют один URL. Обычно переносят один маршрут или группу маршрутов, отдельно проверяя загрузку данных, layouts, границы клиентских компонентов, SEO и кэширование, потому что прямой замены API один к одному нет.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 05 Webpack entry loaders plugins optimization
+# Webpack entry loaders plugins optimization
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 Vite dev server build env proxy](<./04 Vite dev server build env proxy.md>) · [↑ Tooling](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Bundle code splitting tree shaking size budgets →](<./06 Bundle code splitting tree shaking size budgets.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как устроена конфигурация Webpack? Чем отличаются `entry`, loaders, plugins, `output` и `optimization`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как устроена конфигурация Webpack? Чем отличаются `entry`, loaders, plugins, `output` и `optimization`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Webpack является сборщиком модулей (module bundler). Он начинает с точки входа `entry`, проходит по импортам, строит граф зависимостей и формирует один или несколько chunks, то есть частей бандла, с JavaScript, CSS и другими ресурсами для браузера.
 
@@ -77,63 +82,130 @@ Plugin подключается к hooks, то есть точкам расши�
 
 Tree shaking удаляет неиспользуемый код из production-бандла. Для него нужны ESM и экспорты, которые можно определить статически. `optimization.usedExports` отмечает используемые значения, поле `sideEffects` сообщает, какие модули можно безопасно удалить, а минификатор окончательно убирает мёртвый код. CommonJS, динамический доступ и неверное описание побочных эффектов ограничивают оптимизацию.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем loader отличается от plugin?</summary>
+<summary><strong>Чем loader отличается от plugin?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Loader преобразует импортируемый файл и возвращает JavaScript либо результат для следующего loader. Plugin подключается к точкам расширения сборки и может влиять на граф, чанки, ресурсы и итоговые файлы. SCSS обрабатывает цепочка loaders, а HTML-файл обычно создаёт plugin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> В каком порядке выполняются loaders?</summary>
+<summary><strong>В каком порядке выполняются loaders?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычная цепочка `use` выполняется справа налево. Для `use: ["style-loader", "css-loader", "sass-loader"]` сначала работает `sass-loader`, затем `css-loader`, затем `style-loader`. У loader также есть фазы `pitch` и `normal`, но для настройки типовой цепочки достаточно помнить направление преобразования.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое <code>publicPath</code>?</summary>
+<summary><strong>Что такое <code>publicPath</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это базовый URL, который служебный код Webpack использует для ресурсов и лениво загружаемых чанков. Физический `output.path` может быть `dist`, а публичный путь `/app/assets/` или адрес CDN. Ошибка приводит к 404 при динамическом импорте, даже если файл присутствует на сервере.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что изменили Asset Modules в Webpack 5?</summary>
+<summary><strong>Что изменили Asset Modules в Webpack 5?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они добавили встроенную обработку ресурсов без обязательных `file-loader`, `url-loader` и `raw-loader`. `asset/resource` создаёт отдельный файл, `asset/inline` возвращает data URL, `asset/source` отдаёт текст, а `asset` выбирает между встраиванием и отдельным файлом по размеру.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>splitChunks</code>?</summary>
+<summary><strong>Что делает <code>splitChunks</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он анализирует общий код и формирует переиспользуемые чанки по условиям размера, числа использований и правилам `cacheGroups`. Это уменьшает дублирование и помогает кешу браузера, но чрезмерное объединение в один vendor-чанк может заставить пользователя скачать код всех экранов сразу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем выносить <code>runtimeChunk</code>?</summary>
+<summary><strong>Зачем выносить <code>runtimeChunk</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Webpack runtime содержит таблицу модулей и логику загрузки чанков. Отдельный файл может улучшить долгосрочное кеширование: изменение кода приложения не обязано менять vendor-чанк только из-за служебных данных runtime. Польза зависит от количества точек входа и стратегии HTTP-кеширования.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Работает ли <code>devServer.proxy</code> в production?</summary>
+<summary><strong>Работает ли <code>devServer.proxy</code> в production?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Webpack Dev Server работает только во время разработки. После развёртывания проксирование, раздачу статических файлов, заголовки кеширования и fallback для SPA настраивают в Nginx, ingress, CDN или на backend-сервере.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему import одной функции иногда включает почти всю библиотеку?</summary>
+<summary><strong>Почему import одной функции иногда включает почти всю библиотеку?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сборщик может использовать CommonJS-точку входа, импорт пространства имён, barrel-файл с побочными эффектами или пакет без корректного ESM и поля `sideEffects`. Нужно проверить фактическую точку входа из `exports` и результат в анализаторе бандла. Замена синтаксиса импорта помогает только тогда, когда пакет предоставляет подходящую модульную структуру.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

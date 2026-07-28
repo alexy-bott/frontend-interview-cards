@@ -1,4 +1,4 @@
-# 06 HTTP cache cookies storage basics
+# HTTP cache cookies storage basics
 
 <!-- CARD-NAV-TOP:START -->
 [← 05 REST API resource model](<./05 REST API resource model.md>) · [↑ Web Basics](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Web protocols HTTP WebSocket SSE polling →](<./07 Web protocols HTTP WebSocket SSE polling.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются HTTP cache, cookies, Web Storage, IndexedDB и Cache API?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются HTTP cache, cookies, Web Storage, IndexedDB и Cache API?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Это разные браузерные механизмы. Они могут хранить похожие данные, но решают разные задачи и по-разному участвуют в сетевом обмене:
 
@@ -52,139 +57,245 @@ Cookies браузер хранит с заданной областью дей�
 
 Область действия cookie не включает порт. Cookie для `example.com` может отправляться в запросах к разным портам этого host, если остальные правила совпали. Это отличается от origin-bound storage: `localStorage` и IndexedDB разделяются по origin, то есть по сочетанию scheme, host и port.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем HTTP cache отличается от Cache API?</summary>
+<summary><strong>Чем HTTP cache отличается от Cache API?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HTTP-кэш встроен в сетевой слой браузера и автоматически следует HTTP-заголовкам. JavaScript обычно не выбирает конкретную запись кэша и не перечисляет его содержимое. Браузер и CDN могут переиспользовать ответ без участия приложения.
 
 Cache API является явным Web API: код открывает именованный кэш, выполняет `match`, `put` и `delete` для `Request`/`Response`. Service Worker использует его для стратегий cache-first, network-first и offline-работы. Сохранение в Cache API не отменяет HTTP-кэш, поэтому оба слоя нужно учитывать при отладке.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>no-cache</code> отличается от <code>no-store</code>?</summary>
+<summary><strong>Чем <code>no-cache</code> отличается от <code>no-store</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `no-cache` разрешает сохранить ответ, но запрещает использовать его для нового запроса без успешной проверки актуальности на исходном сервере. При `ETag` это часто приводит к небольшому ответу `304`, а тело берётся из кэша.
 
 `no-store` запрещает кэшу намеренно сохранять запрос и ответ. Он нужен для чувствительных или непригодных к повторному использованию данных, но сам по себе не стирает уже сохранённую старую запись и не является полной защитой приватности.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое fresh и stale response?</summary>
+<summary><strong>Что такое fresh и stale response?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Fresh response, или актуальный ответ, находится внутри рассчитанного срока актуальности и может быть переиспользован без обращения к исходному серверу, если другие правила не требуют проверки. Stale response, или устаревший ответ, вышел за этот срок.
 
 Устаревшая запись не обязательно сразу удаляется. Кэш может проверить validator и снова сделать запись актуальной. Директивы `stale-while-revalidate` и `stale-if-error` разрешают ограниченное использование устаревшего ответа, но должны быть заданы в заголовках и поддерживаться кэшем.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>ETag</code> отличается от <code>Last-Modified</code>?</summary>
+<summary><strong>Чем <code>ETag</code> отличается от <code>Last-Modified</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `ETag` - выбранный сервером идентификатор конкретного представления. Он может отражать версию или hash и участвует в `If-None-Match` для проверки кэша, а также в `If-Match` для optimistic concurrency, или оптимистичного контроля одновременных изменений.
 
 `Last-Modified` хранит время последнего изменения и проверяется через `If-Modified-Since`. Время имеет ограниченную точность и не всегда надёжно различает быстрые изменения, поэтому `ETag` обычно является более точным валидатором. Сервер может передавать оба значения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен <code>Vary</code>?</summary>
+<summary><strong>Для чего нужен <code>Vary</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Vary` сообщает кэшу, какие заголовки запроса повлияли на выбор представления. Если ответ содержит `Vary: Accept-Encoding`, сохраненное gzip-представление нельзя использовать для запроса с несовместимым кодированием.
 
 `Vary: Origin` важен для динамического CORS-ответа. Слишком широкий `Vary`, особенно `Vary: *`, резко снижает повторное использование. Ключ кэша должен различать реальные варианты, иначе пользователь может получить представление для другого языка или контекста.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему HTML и hashed assets, или ресурсы с хешем в имени, кэшируют по-разному?</summary>
+<summary><strong>Почему HTML и hashed assets, или ресурсы с хешем в имени, кэшируют по-разному?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HTML обычно содержит ссылки на текущие версии ресурсов и должен быстро узнавать о новом deployment. Поэтому его заставляют проверять актуальность через `no-cache` или дают небольшой `max-age`.
 
 JS/CSS с content hash меняет имя при изменении содержимого. Старый URL остается неизменным, поэтому ему безопасно дать `public, max-age=31536000, immutable`. Если надолго закэшировать HTML под постоянным URL, пользователь может продолжать запрашивать уже удаленные старые chunks.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем host-only cookie отличается от cookie с <code>Domain</code>?</summary>
+<summary><strong>Чем host-only cookie отличается от cookie с <code>Domain</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если `Domain` отсутствует, cookie возвращается только тому host, который её установил. `api.example.com` не может сделать такую cookie доступной `app.example.com`.
 
 `Domain=example.com` разрешает отправку к `example.com` и подходящим поддоменам. Сервер не может установить cookie для чужого домена или public suffix, то есть общедоступной доменной зоны вроде `.com`. Чем шире область действия, тем больше приложений могут влиять на cookie, поэтому host-only вариант безопаснее по умолчанию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делают <code>Secure</code>, <code>HttpOnly</code> и <code>SameSite</code>?</summary>
+<summary><strong>Что делают <code>Secure</code>, <code>HttpOnly</code> и <code>SameSite</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Secure` ограничивает отправку защищённым каналом. `HttpOnly` скрывает значение от JavaScript API и уменьшает риск кражи session id при XSS, но XSS всё ещё может отправлять действия от имени пользователя.
 
 `SameSite` управляет отправкой cookie в cross-site context. `Strict` наиболее ограничителен, `Lax` допускает часть переходов верхнего уровня, `None` разрешает cross-site отправку и требует `Secure`. Схема аутентификации должна учитывать OAuth redirects, встраиваемый контент и CSRF.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>localStorage</code> отличается от <code>sessionStorage</code>?</summary>
+<summary><strong>Чем <code>localStorage</code> отличается от <code>sessionStorage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Оба API синхронно хранят строки и разделяются по origin. `localStorage` сохраняется между запусками браузера, пока пользователь или браузер его не очистит. `sessionStorage` дополнительно разделяется по вкладкам и живёт в пределах сессии страницы.
 
 Синхронный доступ блокирует main thread, а запись объекта требует сериализации в JSON. Эти хранилища подходят для небольших настроек, но не для больших наборов данных и не гарантируют вечное хранение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужен IndexedDB?</summary>
+<summary><strong>Когда нужен IndexedDB?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 IndexedDB - асинхронная транзакционная база данных в браузере. Она хранит копии структурированных JavaScript-значений по алгоритму structured clone, поддерживает индексы и значительно большие объемы, чем разумно помещать в Web Storage. Подходит для offline-first данных, очереди изменений, больших справочников и частей файлов.
 
 API сложнее обычной пары key/value, миграции выполняются при изменении версии, а операции могут завершаться ошибкой из-за квоты или политики приватности браузера. Приложение должно уметь восстанавливаться и не считать локальную базу единственной копией критичных серверных данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли хранить access token в localStorage?</summary>
+<summary><strong>Можно ли хранить access token в localStorage?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Технически можно, но любой JavaScript того же origin получает доступ к значению, включая вредоносный код при успешной XSS. `HttpOnly` cookie не читается script, но автоматически отправляется и требует продуманной модели защиты от CSRF и настройки CORS.
 
 Универсально безопасного места нет. Выбор зависит от модели угроз, архитектуры backend-for-frontend, срока жизни token, CSP и refresh flow. В любом случае нельзя хранить секреты без срока действия, ротации и способа отзыва.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Гарантируют ли браузерные хранилища постоянное хранение?</summary>
+<summary><strong>Гарантируют ли браузерные хранилища постоянное хранение?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Пользователь может очистить данные, private mode имеет отдельные правила, браузер применяет квоты и eviction, то есть удаление данных при нехватке места. Privacy partitioning дополнительно разделяет хранилище по контексту сайта. Даже persistent storage, запрошенное через Storage API, не является резервной копией серверных данных.
 
 Приложение должно обрабатывать отсутствие, повреждение и устаревшую схему данных. Критичные данные синхронизируют с сервером, а локальное состояние считают кэшем или черновиком согласно требованиям продукта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему cookies увеличивают размер каждого запроса?</summary>
+<summary><strong>Почему cookies увеличивают размер каждого запроса?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Подходящие cookies сериализуются в заголовок `Cookie` и отправляются автоматически, даже если конкретному endpoint их значения не нужны. Большие cookies или слишком широкая область их действия добавляют байты к каждому запросу этого домена и пути и могут ухудшить приватность и производительность.
 
 Поэтому cookie оставляют небольшой, задают узкую область действия и не хранят в ней большой профиль пользователя. Обычно передают непрозрачный session id, а данные сессии находятся на сервере.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Данные | Подходящий механизм |
-> |---|---|
-> | JS/CSS с версией в имени | HTTP-кэш с большим `max-age` и `immutable` |
-> | Главный HTML-документ | проверка актуальности через `no-cache`/`ETag` |
-> | Идентификатор сессии | cookie с `Secure; HttpOnly; SameSite` |
-> | Настройка темы | небольшое значение в `localStorage` |
-> | Черновик вкладки | `sessionStorage` либо состояние формы |
-> | Большие offline-данные | IndexedDB |
-> | Offline-ответы | Service Worker и Cache API |
+| Данные | Подходящий механизм |
+|---|---|
+| JS/CSS с версией в имени | HTTP-кэш с большим `max-age` и `immutable` |
+| Главный HTML-документ | проверка актуальности через `no-cache`/`ETag` |
+| Идентификатор сессии | cookie с `Secure; HttpOnly; SameSite` |
+| Настройка темы | небольшое значение в `localStorage` |
+| Черновик вкладки | `sessionStorage` либо состояние формы |
+| Большие offline-данные | IndexedDB |
+| Offline-ответы | Service Worker и Cache API |
 
 ## Связанные темы
 

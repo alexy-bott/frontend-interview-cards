@@ -1,4 +1,4 @@
-# 33 requestAnimationFrame и requestIdleCallback
+# requestAnimationFrame и requestIdleCallback
 
 <!-- CARD-NAV-TOP:START -->
 [← 32 Observer APIs](<./32 Observer APIs.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [34 Garbage collection →](<./34 Garbage collection.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `requestAnimationFrame` и `requestIdleCallback`? Как планировать визуальную и фоновую работу на main thread?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `requestAnimationFrame` и `requestIdleCallback`? Как планировать визуальную и фоновую работу на main thread?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `requestAnimationFrame(callback)` просит браузер вызвать callback перед будущим repaint. Он предназначен для работы, которая должна попасть в визуальный кадр: JavaScript-анимации, canvas, применение последнего положения drag или scroll. Вызов одноразовый, поэтому для продолжения анимации callback планирует следующий rAF сам.
 
@@ -33,47 +38,94 @@ frameId = requestAnimationFrame(step);
 
 Оба callback выполняются на main thread. rAF выбирает момент перед кадром, idle callback ищет свободный бюджет, но ни один API не ускоряет тяжёлый алгоритм и не переносит его в другой поток.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему rAF лучше <code>setInterval</code> для анимации?</summary>
+<summary><strong>Почему rAF лучше <code>setInterval</code> для анимации?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он синхронизирован с rendering opportunity и обычно вызывается с частотой дисплея. Браузер может приостановить rAF в скрытой вкладке, не выполняя невидимую анимацию. Interval не знает время paint, может сработать между кадрами и продолжает измерять только таймерную задержку. При этом тяжёлый rAF callback всё равно сорвёт кадр.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> rAF является task или microtask?</summary>
+<summary><strong>rAF является task или microtask?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, это callback отдельного шага rendering pipeline. После task и microtask checkpoint браузер при наличии rendering opportunity вызывает rAF callbacks, затем выполняет необходимые style/layout и paint-шаги. Конкретный кадр может быть отложен, если main thread занят или документ скрыт.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя увеличивать координату на фиксированное число за кадр?</summary>
+<summary><strong>Почему нельзя увеличивать координату на фиксированное число за кадр?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Скорость станет зависеть от частоты вызовов: на 120 Гц анимация пройдёт путь примерно вдвое быстрее, чем на 60 Гц. Нужно вычислять прогресс из разницы timestamps и ограничивать его длительностью. После паузы вкладки большой delta также следует обработать осознанно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как использовать rAF как throttle для scroll или pointermove?</summary>
+<summary><strong>Как использовать rAF как throttle для scroll или pointermove?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Handler сохраняет последние координаты и ставит rAF только если кадр ещё не запланирован. В rAF он сбрасывает флаг и применяет последнее значение. Если вызывать rAF на каждое входное событие без такого флага, браузер вызовет все накопленные callbacks в одном кадре.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> В каком порядке читать и изменять layout в rAF?</summary>
+<summary><strong>В каком порядке читать и изменять layout в rAF?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала сгруппировать необходимые reads вроде `getBoundingClientRect`, затем writes вроде изменения `style` или class. Чередование write-read-write может заставить браузер синхронно пересчитывать layout несколько раз. rAF даёт удобную границу кадра, но сам по себе не предотвращает layout thrashing.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как обрабатывать очередь через <code>requestIdleCallback</code>?</summary>
+<summary><strong>Как обрабатывать очередь через <code>requestIdleCallback</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Выполнять маленькие элементы, пока `deadline.timeRemaining()` остаётся выше безопасного порога или пока `didTimeout` требует сделать ограниченный обязательный шаг. Если очередь не пуста, запланировать новый idle callback. Один длинный цикл внутри callback уничтожает смысл idle scheduling.
 
@@ -87,40 +139,84 @@ function processQueue(deadline) {
 }
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Гарантирует ли option <code>timeout</code> свободное время?</summary>
+<summary><strong>Гарантирует ли option <code>timeout</code> свободное время?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Она лишь требует вызвать callback не позднее предела, даже если idle budget нет; тогда `didTimeout` будет `true`, а работа может конкурировать с вводом и кадром. Timeout применяют к действительно необходимой отложенной задаче и всё равно ограничивают объём одного вызова.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем заменить <code>requestIdleCallback</code> при отсутствии поддержки?</summary>
+<summary><strong>Чем заменить <code>requestIdleCallback</code> при отсутствии поддержки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Зависит от задачи. Небольшую работу можно отложить через timer с chunking, приоритетную планировать через доступный Scheduler API или библиотечный scheduler, CPU-heavy переносить в Worker. `setTimeout` не знает idle budget и является только fallback со своей семантикой, а не полным полифилом.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Подходит ли idle callback для обязательной аналитики при закрытии страницы?</summary>
+<summary><strong>Подходит ли idle callback для обязательной аналитики при закрытии страницы?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, он может вообще не успеть выполниться. Для отправки небольших данных при завершении страницы применяют подходящий lifecycle и `navigator.sendBeacon` или `fetch` с `keepalive`, учитывая ограничения. Необязательную подготовку аналитики можно выполнять в idle раньше.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем эти API отличаются от Web Worker?</summary>
+<summary><strong>Чем эти API отличаются от Web Worker?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 rAF и idle только планируют callback на main thread. Worker выполняет JavaScript в отдельном потоке и подходит для вычислений, которым не нужен DOM. Результат Worker всё равно применяется к UI на main thread, часто в ближайшем rAF, если он визуальный.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>requestIdleCallback</code> отличается от React <code>useTransition</code>?</summary>
+<summary><strong>Чем <code>requestIdleCallback</code> отличается от React <code>useTransition</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Idle callback является browser API для произвольной низкоприоритетной функции. `useTransition` помечает React state update как non-urgent и позволяет React планировать interruptible render. Он не ждёт буквального простоя браузера и не предназначен для запуска произвольной фоновой задачи.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -142,9 +238,17 @@ requestAnimationFrame(step);
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему анимация сохранит примерно одинаковую длительность на экранах с разной частотой?</summary>
+<summary><strong>Почему анимация сохранит примерно одинаковую длительность на экранах с разной частотой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Позиция зависит от прошедшего времени `timestamp - start`, а не от числа вызовов. На экране с высокой частотой будет больше промежуточных положений, но progress достигнет `1` примерно через те же 300 миллисекунд.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

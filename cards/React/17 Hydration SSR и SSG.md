@@ -1,4 +1,4 @@
-# 17 Hydration SSR и SSG
+# Hydration SSR и SSG
 
 <!-- CARD-NAV-TOP:START -->
 [← 16 useTransition и useDeferredValue](<./16 useTransition и useDeferredValue.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [18 Server Components и Server Actions →](<./18 Server Components и Server Actions.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое CSR, SSR, SSG и hydration? Почему возникает hydration mismatch?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое CSR, SSR, SSG и hydration? Почему возникает hydration mismatch?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 CSR, SSR и SSG описывают, где и когда создаётся первоначальный HTML страницы. Hydration, или гидратация, является отдельным клиентским этапом: React связывает уже полученный серверный HTML со своим деревом, добавляет обработчики событий и делает интерфейс интерактивным.
 
@@ -41,56 +46,115 @@ React 18 добавил конкурентный потоковый SSR: сер�
 
 SSR и React Server Components не являются одним механизмом. SSR создаёт HTML для загрузки страницы. RSC создаёт сериализованное описание React-дерева, часть которого никогда не попадает в клиентский бандл; первоначальный RSC-результат фреймворк может дополнительно преобразовать в HTML через SSR.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Hydration заново создаёт весь DOM?</summary>
+<summary><strong>Hydration заново создаёт весь DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При совпадающей разметке React переиспользует существующие DOM-узлы и подключает к ним обработчики и состояние. Он всё равно выполняет клиентский рендер для сопоставления дерева. При несовпадении React может пересоздать проблемное поддерево или весь корневой узел, поэтому совпадение является обязательным контрактом.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем SSR отличается от CSR?</summary>
+<summary><strong>Чем SSR отличается от CSR?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При CSR первоначальный интерфейс строит браузер после загрузки и выполнения JavaScript. При SSR сервер заранее отправляет HTML, а браузер позднее гидрирует его. SSR улучшает наличие первоначального контента, но приложение может какое-то время выглядеть готовым и ещё не реагировать на ввод, если JavaScript загружается медленно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем SSR отличается от SSG?</summary>
+<summary><strong>Чем SSR отличается от SSG?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 SSR вычисляет результат на сервере во время запроса или динамического обновления. SSG создаёт файл заранее и позволяет отдавать его напрямую с CDN. SSG дешевле на запрос, но требует стратегии обновления данных; фреймворк может добавлять ревалидацию и получать промежуточную модель.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что даёт потоковый SSR?</summary>
+<summary><strong>Что даёт потоковый SSR?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер начинает отправлять готовый HTML, не ожидая медленных частей страницы. Границы Suspense отмечают места, которые можно раскрыть позже. Это сокращает ожидание каркаса страницы, но не отменяет загрузку JavaScript и гидратацию интерактивных Client Components.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как безопасно использовать <code>window</code> или <code>localStorage</code>?</summary>
+<summary><strong>Как безопасно использовать <code>window</code> или <code>localStorage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Серверный рендер не должен обращаться к браузерным API. Для некритичного клиентского значения сначала рендерят одинаковый запасной результат, затем читают API в эффекте. Если весь компонент зависит от браузера, используют клиентский механизм фреймворка. Простая проверка `typeof window` внутри JSX часто создаёт несовпадение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>useId</code> подходит для SSR, а <code>Math.random()</code> нет?</summary>
+<summary><strong>Почему <code>useId</code> подходит для SSR, а <code>Math.random()</code> нет?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React координирует `useId` так, чтобы сервер и клиент получили совместимые идентификаторы при одинаковом дереве. `Math.random()` создаёт независимые значения в двух средах. `useId` предназначен для связей доступности, например между полем и подписью, а не для `key` элементов списка.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как это проявляется в Next.js 14 App Router?</summary>
+<summary><strong>Как это проявляется в Next.js 14 App Router?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Фреймворк сочетает Server Components, SSR или статическую генерацию, потоковую передачу через Suspense и гидратацию Client Components. Конкретный маршрут может иметь статические и динамические части. Директива `"use client"` не означает полный CSR страницы: сервер всё ещё может сформировать её начальный HTML.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

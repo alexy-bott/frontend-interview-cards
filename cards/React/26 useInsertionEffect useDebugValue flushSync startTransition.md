@@ -1,4 +1,4 @@
-# 26 useInsertionEffect useDebugValue flushSync startTransition
+# useInsertionEffect useDebugValue flushSync startTransition
 
 <!-- CARD-NAV-TOP:START -->
 [← 25 Advanced hooks useId useSyncExternalStore useOptimistic use](<./25 Advanced hooks useId useSyncExternalStore useOptimistic use.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [27 React DOM form hooks useFormStatus useActionState →](<./27 React DOM form hooks useFormStatus useActionState.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Для чего нужны `useInsertionEffect`, `useDebugValue`, `flushSync` и отдельная функция `startTransition`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Для чего нужны `useInsertionEffect`, `useDebugValue`, `flushSync` и отдельная функция `startTransition`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Это четыре независимых специальных API. `useInsertionEffect` нужен авторам CSS-in-JS библиотек, которые создают стили во время выполнения, `useDebugValue` улучшает отображение пользовательского хука в DevTools, `flushSync` принудительно завершает DOM-обновление, а `startTransition` помечает обновления React как несрочные без предоставления `isPending`.
 
@@ -61,56 +66,115 @@ startTransition(() => {
 
 Transition не переносит код в другой поток. Он позволяет React прервать и повторить рендер с меньшим приоритетом. Длинная синхронная функция внутри Action всё равно блокирует главный поток.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>useInsertionEffect</code> редко нужен приложению?</summary>
+<summary><strong>Почему <code>useInsertionEffect</code> редко нужен приложению?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Его задача заключается во вставке CSS, создаваемого во время выполнения, до измерения расположения элементов. Прикладной компонент обычно использует готовые стили, `useEffect` для внешней синхронизации или `useLayoutEffect` для измерения. `useInsertionEffect` работает в слишком ранней фазе для обычной DOM-логики и имеет жёсткие ограничения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>useInsertionEffect</code> отличается от <code>useLayoutEffect</code>?</summary>
+<summary><strong>Чем <code>useInsertionEffect</code> отличается от <code>useLayoutEffect</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `useInsertionEffect` предназначен для внедрения CSS, чтобы последующие layout-эффекты увидели правильное расположение элементов. `useLayoutEffect` уже может читать DOM и синхронно исправлять визуальное положение до отрисовки браузером. Перенос обычного измерения в `useInsertionEffect` неверен, потому что `ref` ещё могут отсутствовать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужна функция форматирования в <code>useDebugValue</code>?</summary>
+<summary><strong>Для чего нужна функция форматирования в <code>useDebugValue</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Она преобразует внутреннее значение в удобную подпись только при просмотре хука в DevTools. Это позволяет не выполнять дорогое форматирование на каждом рендере, когда DevTools не запрашивает значение. Для простого логического значения достаточно передать готовую строку.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>flushSync</code> опасен?</summary>
+<summary><strong>Почему <code>flushSync</code> опасен?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он блокирует обычное объединение и приоритизацию обновлений, может выполнить дополнительную ожидающую работу и показать `fallback` Suspense. Частое применение ухудшает отзывчивость интерфейса. Сначала проверяют, можно ли выполнить действие после commit через `ref` или эффект либо использовать API библиотеки без синхронного чтения DOM.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем отдельная функция <code>startTransition</code> отличается от <code>useTransition</code>?</summary>
+<summary><strong>Чем отдельная функция <code>startTransition</code> отличается от <code>useTransition</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Оба помечают обновление как transition. Хук дополнительно возвращает `isPending` и привязан к компоненту. Отдельную функцию можно вызвать во внешнем хранилище или интеграции маршрутизатора, но состояние ожидания она не предоставляет.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему обновление внутри <code>setTimeout</code> не становится transition автоматически?</summary>
+<summary><strong>Почему обновление внутри <code>setTimeout</code> не становится transition автоматически?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `startTransition` отмечает setter-функции, вызванные синхронно во время выполнения Action. Функция таймера выполняется позже, когда этот контекст уже завершён. Внутри таймера нужен отдельный `startTransition`, если обновление действительно несрочное.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Переносит ли transition вычисление в Worker?</summary>
+<summary><strong>Переносит ли transition вычисление в Worker?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. React только меняет приоритет и может освобождать поток между частями рендера. Произвольный тяжёлый цикл остаётся на главном потоке. Для настоящего параллельного расчёта используется Web Worker и передача сериализуемых данных.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -126,9 +190,17 @@ function handleChange(value: string) {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Какое обновление нельзя помещать в transition?</summary>
+<summary><strong>Какое обновление нельзя помещать в transition?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `setInput(value)` управляет управляемым полем и должно выполниться срочно. Его выносят перед `startTransition`. Несрочным оставляют `setQuery(value)`, если он запускает тяжёлый рендер результатов.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 04 type vs interface
+# type vs interface
 
 <!-- CARD-NAV-TOP:START -->
 [← 03 any unknown never void](<./03 any unknown never void.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Union intersection discriminated unions →](<./05 Union intersection discriminated unions.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `type` и `interface` в TypeScript? Что выбирать для frontend-кода?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `type` и `interface` в TypeScript? Что выбирать для frontend-кода?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 И `type`, и `interface` могут описывать форму объекта, принимать generic-параметры, то есть параметры типа, и участвовать в расширении типов. Для обычных `props` разница часто не влияет на поведение, поэтому единое правило команды важнее личного предпочтения.
 
@@ -60,56 +65,115 @@ type AdminModel = User & {
 - для обычной закрытой формы объекта подходят оба варианта;
 - выбор не должен скрывать модель данных или создавать слияние объявлений случайно.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое declaration merging?</summary>
+<summary><strong>Что такое declaration merging?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 TypeScript объединяет несколько `interface` с одинаковым именем в один контракт. Это используется для расширения глобальных объектов и типов библиотек. У `type` повторное объявление имени является ошибкой. Слияние полезно для augmentation, то есть дополнения деклараций, но в обычной предметной модели может скрыть случайное изменение типа из другого файла.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое module augmentation?</summary>
+<summary><strong>Что такое module augmentation?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это дополнение деклараций существующего модуля без изменения его исходников. Например, плагин может добавить поле в тип темы библиотеки. В блоке `declare module "library"` обычно дополняют экспортированный `interface`; дополнение типов не создаёт реализацию JavaScript, поэтому фактическое поле должно появиться отдельно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>interface extends</code> отличается от intersection <code>A &amp; B</code>?</summary>
+<summary><strong>Чем <code>interface extends</code> отличается от intersection <code>A &amp; B</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `extends` строит новый объектный контракт и сразу проверяет, можно ли совместить переопределённые свойства. Intersection создаёт тип, который обязан удовлетворять всем операндам. При конфликте `{ id: string } & { id: number }` свойство `id` станет `never`, из-за чего тип практически невозможно создать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли через <code>interface</code> описать union?</summary>
+<summary><strong>Можно ли через <code>interface</code> описать union?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Для `"idle" | "loading"`, `string | null` или union объектов нужен `type`. `interface` может описать объект или сигнатуру вызова, но не альтернативу между несколькими типами.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что использовать для React props?</summary>
+<summary><strong>Что использовать для React props?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для простой объектной формы подходят оба варианта. Если `props` образуют взаимоисключающие варианты, удобнее `type` с discriminated union. Если библиотека намеренно позволяет потребителям расширять публичный контракт через declaration merging, нужен `interface`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли класс реализовать <code>type</code>?</summary>
+<summary><strong>Может ли класс реализовать <code>type</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Класс может `implements` объектный тип или intersection с известными статическими свойствами. Он не может реализовать union, потому что `implements` требует один определённый контракт экземпляра. Это не уникальное преимущество `interface`, но интерфейс обычно яснее выражает контракт класса.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что лучше для публичной библиотеки?</summary>
+<summary><strong>Что лучше для публичной библиотеки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Зависит от того, должен ли контракт расширяться. `interface` даёт declaration merging и часто удобен для открытого объектного API. `type` лучше фиксирует закрытый union и не может быть незаметно дополнен. Публичная поверхность должна выбирать это поведение осознанно.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

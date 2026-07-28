@@ -1,4 +1,4 @@
-# 13 Image Font Link Script и оптимизация
+# Image Font Link Script и оптимизация
 
 <!-- CARD-NAV-TOP:START -->
 [← 12 Route Groups Parallel и Intercepting Routes](<./12 Route Groups Parallel и Intercepting Routes.md>) · [↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [14 Environment variables next config standalone и deployment →](<./14 Environment variables next config standalone и deployment.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как Next.js оптимизирует изображения, шрифты, навигацию и сторонние скрипты через `next/image`, `next/font`, `next/link` и `next/script`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как Next.js оптимизирует изображения, шрифты, навигацию и сторонние скрипты через `next/image`, `next/font`, `next/link` и `next/script`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Next.js предоставляет компоненты для часто встречающихся ресурсов, потому что их загрузка напрямую влияет на Core Web Vitals, объём JavaScript и скорость переходов. Эти компоненты не делают страницу быстрой автоматически: разработчик всё равно задаёт правильные размеры, форматы и момент загрузки.
 
@@ -44,63 +49,130 @@ Next.js предоставляет компоненты для часто вст
 
 `beforeInteractive` следует использовать редко и размещать в корневом layout. Аналитика, чат-виджет и скрипт A/B-теста не должны без причины блокировать главный поток. Для каждого стороннего скрипта нужно оценить сетевой вес, время работы CPU, влияние на приватность, Content Security Policy и необходимость на конкретных страницах.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем <code>Image</code> нужны <code>width</code> и <code>height</code>, если CSS всё равно меняет размер?</summary>
+<summary><strong>Зачем <code>Image</code> нужны <code>width</code> и <code>height</code>, если CSS всё равно меняет размер?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Эти значения задают исходное соотношение сторон, чтобы браузер зарезервировал место до загрузки файла. CSS может сделать изображение отзывчивым, сохраняя это соотношение. Без известных размеров контент после загрузки способен сдвинуть соседние элементы и ухудшить CLS.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда использовать <code>fill</code>?</summary>
+<summary><strong>Когда использовать <code>fill</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда размер задаётся контейнером, например у обложки карточки или главного изображения первого экрана. Родитель должен иметь `position: relative` или другой содержащий блок и явную геометрию. `object-fit` определяет вписывание, а `sizes` сообщает браузеру реальную ширину изображения на разных размерах viewport.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем ограничивать <code>remotePatterns</code>?</summary>
+<summary><strong>Зачем ограничивать <code>remotePatterns</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер Next.js получает внешний URL и тратит ресурсы на загрузку и преобразование изображения. Разрешение любого домена превратило бы endpoint оптимизации в открытый proxy-сервис. `remotePatterns` ограничивает `protocol`, `hostname`, `port` и `pathname` ожидаемыми источниками.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя ставить <code>priority</code> всем изображениям?</summary>
+<summary><strong>Почему нельзя ставить <code>priority</code> всем изображениям?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Приоритет сообщает браузеру загружать ресурс раньше обычного. Если так пометить всю страницу, фоновые изображения начинают конкурировать с LCP-изображением, CSS, шрифтами и данными. Приоритет нужен только одному или нескольким действительно видимым критическим изображениям.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>next/font</code> лучше обычной ссылки на Google Fonts?</summary>
+<summary><strong>Чем <code>next/font</code> лучше обычной ссылки на Google Fonts?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Шрифт загружается во время сборки и раздаётся с того же приложения, поэтому браузеру не нужен отдельный запрос к Google. Next.js генерирует CSS и уменьшает layout shift за счёт метрик шрифта. Это не отменяет выбора небольшого числа начертаний и subsets, то есть наборов символов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно prefetch делает для <code>Link</code>?</summary>
+<summary><strong>Что именно prefetch делает для <code>Link</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он заранее получает RSC Payload и необходимые chunks маршрута, то есть части JavaScript-бандла, чтобы переход не начинался с нуля. Результат помещается в Router Cache браузера. Prefetch не означает загрузку всех backend-данных навсегда и может быть отключён через `prefetch={false}`, если автоматическая загрузка создаёт лишний трафик.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выбрать стратегию для стороннего скрипта?</summary>
+<summary><strong>Как выбрать стратегию для стороннего скрипта?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала проверяют, нужен ли скрипт вообще. Код, без которого страница не может работать до гидратации, относится к редкому `beforeInteractive`. Функциональный скрипт после взаимодействия использует `afterInteractive`, а необязательный виджет или аналитика без требования раннего события можно отложить через `lazyOnload`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Заменяет ли <code>next/script</code> Content Security Policy?</summary>
+<summary><strong>Заменяет ли <code>next/script</code> Content Security Policy?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Компонент управляет загрузкой и порядком выполнения, но не определяет, каким источникам браузер доверяет. CSP ограничивает скрипты по источнику, nonce или hash. Для строгой политики стороннему скрипту может потребоваться nonce, то есть одноразовое разрешение, и явное разрешение домена.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 06 RTK Query createApi query mutation tags
+# RTK Query createApi query mutation tags
 
 <!-- CARD-NAV-TOP:START -->
 [← 05 Selectors normalization и createEntityAdapter](<./05 Selectors normalization и createEntityAdapter.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 RTK Query cache lifecycle optimistic updates polling →](<./07 RTK Query cache lifecycle optimistic updates polling.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое RTK Query? Как работают `createApi`, query, mutation, `providesTags` и `invalidatesTags`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое RTK Query? Как работают `createApi`, query, mutation, `providesTags` и `invalidatesTags`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 RTK Query является частью Redux Toolkit для работы с серверным состоянием. Он отправляет запросы, хранит ответы в Redux store, объединяет одинаковые запросы, предоставляет статусы загрузки и синхронизирует кэш после изменений. Вместо отдельных thunk, reducers и флагов для каждого endpoint разработчик описывает API и использует сгенерированные hooks.
 
@@ -34,77 +39,160 @@ Tags, или метки кэша, не являются его ключами. `
 
 Для подключения к store нужно добавить `api.reducer` по ключу `api.reducerPath` и `api.middleware`. Без middleware не будут полноценно работать подписки, invalidation, polling и жизненный цикл кэша.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем query отличается от mutation?</summary>
+<summary><strong>Чем query отличается от mutation?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Query получает данные и создаёт кэш по endpoint и аргументам. Mutation обычно изменяет серверное состояние, не разделяет результат между компонентами как query и после завершения может пометить устаревшими или вручную обновить связанные записи кэша. Тип HTTP-метода сам по себе не является единственным критерием: важна семантика операции.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как RTK Query понимает, что два запроса одинаковые?</summary>
+<summary><strong>Как RTK Query понимает, что два запроса одинаковые?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Аргументы query сериализуются, а затем объединяются с именем endpoint в `queryCacheKey`. Одинаковый ключ означает одну запись кэша. Поэтому все параметры, влияющие на ответ, должны входить в аргумент, а его структура должна быть стабильной и сериализуемой.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем tags отличаются от cache key?</summary>
+<summary><strong>Чем tags отличаются от cache key?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Ключ кэша определяет конкретный сохранённый результат, например `getPosts({ page: 2 })`. Tags описывают логические данные внутри результата, например список постов или пост с id 5. Одна метка может относиться к нескольким записям кэша, поэтому mutation через неё сообщает, какие результаты стали потенциально устаревшими.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит после <code>invalidatesTags</code>?</summary>
+<summary><strong>Что происходит после <code>invalidatesTags</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 RTK Query находит записи кэша, которые предоставили такие tags. Записи с активными подписчиками повторно загружаются. Неиспользуемые записи удаляются, чтобы при следующей подписке данные были получены заново. Invalidation, то есть пометка данных как устаревших, не означает безусловный запрос для каждой когда-либо созданной записи.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем списку tags <code>LIST</code> и отдельных id?</summary>
+<summary><strong>Зачем списку tags <code>LIST</code> и отдельных id?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `LIST` представляет состав коллекции. После создания или удаления элемента список нужно обновить, даже если id новой сущности раньше в нём не было. Tags по id нужны для точечных изменений существующих элементов. Query списка может предоставить оба вида tags, а mutation инвалидировать только те, на которые реально влияет.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>isLoading</code> отличается от <code>isFetching</code>?</summary>
+<summary><strong>Чем <code>isLoading</code> отличается от <code>isFetching</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `isLoading` означает первую загрузку, когда данных ещё нет. `isFetching` означает любой выполняющийся запрос, включая фоновое обновление при уже показанных данных. Поэтому при `isLoading` уместна заглушка загрузки (skeleton) для всего блока, а при повторном `isFetching` часто достаточно небольшого индикатора без скрытия старого результата.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как не запускать query при первой отрисовке компонента?</summary>
+<summary><strong>Как не запускать query при первой отрисовке компонента?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для условного запроса используют параметр `skip` или типобезопасный `skipToken`. Если запрос должен запускаться по действию пользователя, используют hook отложенного запроса (lazy query), который возвращает функцию `trigger`. Условие должно быть связано с реальной готовностью аргументов, а не маскировать неверное размещение загрузки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен <code>selectFromResult</code>?</summary>
+<summary><strong>Для чего нужен <code>selectFromResult</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он позволяет компоненту подписаться только на часть результата query, например на одну сущность из списка. RTK Query сравнивает выбранные поля поверхностно, поэтому стабильные ссылки уменьшают лишние повторные отрисовки. Возвращать новые массивы и объекты без мемоизации в таком selector не следует.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему не стоит создавать API slice для каждого ресурса?</summary>
+<summary><strong>Почему не стоит создавать API slice для каждого ресурса?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Tags и автоматическая invalidation не пересекают границу API slice. Кроме того, middleware каждого slice обрабатывает все actions и увеличивает накладные расходы. Обычно общий базовый API slice создают один раз, а endpoints пользователей, заказов и других ресурсов добавляют через `injectEndpoints`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что нужно подключить к Redux store?</summary>
+<summary><strong>Что нужно подключить к Redux store?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `api.reducer` хранит состояние query, mutation и кэша, а `api.middleware` управляет запросами, подписками и временем жизни. Reducer подключают под вычисляемым ключом `[api.reducerPath]`, middleware добавляют к стандартному набору `getDefaultMiddleware().concat(api.middleware)`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -126,9 +214,17 @@ addPost: build.mutation<Post, NewPost>({
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>addPost</code> инвалидирует <code>LIST</code>, а не id созданного поста?</summary>
+<summary><strong>Почему <code>addPost</code> инвалидирует <code>LIST</code>, а не id созданного поста?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 До ответа сервера новый id может быть неизвестен, а главное изменение касается состава списка. Пометка `LIST` как устаревшего обновит активные списки. Если созданный объект уже вернулся в ответе, отдельную карточку также можно заполнить вручную, но это другая запись кэша с собственными аргументами.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

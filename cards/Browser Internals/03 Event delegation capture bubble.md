@@ -1,4 +1,4 @@
-# 03 Event delegation capture bubble
+# Event delegation capture bubble
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 Rendering pipeline reflow repaint composite](<./02 Rendering pipeline reflow repaint composite.md>) · [↑ Browser Internals](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Page lifecycle visibility bfcache background tabs →](<./04 Page lifecycle visibility bfcache background tabs.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают фазы DOM-события: capture, target и bubble? Что такое event delegation?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают фазы DOM-события: capture, target и bubble? Что такое event delegation?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 DOM-событие - объект, который браузер создаёт при клике, вводе текста, отправке формы или другом действии. Для события строится путь через DOM, после чего обработчики вызываются в фазах capture, target и, если событие поддерживает всплытие, bubble.
 
@@ -47,65 +52,132 @@ React принимает исходное DOM-событие и передаёт
 
 Это особенно заметно с Portal. DOM-узел модального окна может находиться в `document.body`, но компонент остаётся потомком в React-дереве. Поэтому событие из Portal всплывает к React-родителю, даже если тот не является его DOM-родителем.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое <code>event.target</code>?</summary>
+<summary><strong>Что такое <code>event.target</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это исходная цель события. Если кликнули по иконке внутри кнопки, `target` может указывать на иконку, а не на кнопку. Тип свойства - `EventTarget`, поэтому перед вызовом методов элемента в JavaScript или TypeScript проверяют, что цель действительно является `Element`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое <code>event.currentTarget</code>?</summary>
+<summary><strong>Что такое <code>event.currentTarget</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это элемент, чей обработчик сейчас выполняется. При делегировании `currentTarget` обычно указывает на общий контейнер, даже если `target` находится глубоко внутри кнопки. Значение меняется по мере прохождения события через разные обработчики.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>preventDefault()</code>?</summary>
+<summary><strong>Что делает <code>preventDefault()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он запрашивает отмену стандартного действия браузера: отправки формы, перехода по ссылке или открытия контекстного меню. Метод не останавливает распространение события и работает только при `event.cancelable === true`. В passive listener вызов игнорируется, потому что такой обработчик обещал не блокировать стандартное действие.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>stopPropagation()</code>?</summary>
+<summary><strong>Что делает <code>stopPropagation()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он не даёт событию перейти к следующим элементам на пути распространения, поэтому родительские обработчики могут не выполниться. Другие обработчики на текущем элементе всё ещё вызываются; их останавливает `stopImmediatePropagation()`. Стандартное действие браузера этим методом не отменяется.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем capture listener отличается от bubble listener?</summary>
+<summary><strong>Чем capture listener отличается от bubble listener?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Capture-обработчик вызывается по пути к цели, а bubble-обработчик - по пути от цели к предкам. По умолчанию `addEventListener` регистрирует обработчик всплытия. На самой цели оба типа относятся к target phase, но capture-обработчики выполняются первыми.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как делегировать событие, которое не всплывает?</summary>
+<summary><strong>Как делегировать событие, которое не всплывает?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Иногда используют всплывающий аналог: `focusin` вместо `focus`, `focusout` вместо `blur`, `mouseover` вместо `mouseenter`. Другой вариант - слушать исходное событие на фазе capture у общего предка. Выбор зависит от семантики: `mouseover` срабатывает при переходах между потомками, поэтому не полностью равен `mouseenter`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему delegation может сломаться?</summary>
+<summary><strong>Почему delegation может сломаться?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Событие может не всплывать, промежуточный код может вызвать `stopPropagation()`, а `target` - оказаться внутренней иконкой вместо ожидаемой кнопки. Надёжный обработчик использует `closest()`, проверяет тип `target` и границу контейнера. В Shadow DOM браузер может заменить внутреннюю цель на shadow host, чтобы скрыть детали изолированного дерева; это называется retargeting. Фактический доступный путь события можно проверить через `event.composedPath()`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как React events связаны с DOM events?</summary>
+<summary><strong>Как React events связаны с DOM events?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Событие сначала возникает в браузере как обычное DOM-событие, например `click`, `input` или `submit`. React связывает его со своей иерархией компонентов и вызывает JSX-обработчик, передавая `SyntheticEvent`.
 
 `SyntheticEvent` сохраняет привычный интерфейс и предоставляет исходное событие в `nativeEvent`. Главное отличие проявляется в Portal: распространение следует React-дереву, хотя DOM-родители могут быть другими. Поэтому для диагностики нужно понимать обе иерархии.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

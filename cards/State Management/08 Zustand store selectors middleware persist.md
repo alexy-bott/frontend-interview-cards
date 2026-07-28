@@ -1,4 +1,4 @@
-# 08 Zustand store selectors middleware persist
+# Zustand store selectors middleware persist
 
 <!-- CARD-NAV-TOP:START -->
 [← 07 RTK Query cache lifecycle optimistic updates polling](<./07 RTK Query cache lifecycle optimistic updates polling.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Redux Toolkit vs Zustand vs Context vs RTK Query →](<./09 Redux Toolkit vs Zustand vs Context vs RTK Query.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое Zustand? Как в нём работают store, selectors, middleware и `persist`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое Zustand? Как в нём работают store, selectors, middleware и `persist`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Zustand является библиотекой для клиентского состояния с небольшим API. Store находится вне React, а функция `create` возвращает React hook для чтения состояния и вызова actions. Компонент подписывается на выбранную часть store и повторно отрисовывается, только когда результат selector изменился.
 
@@ -40,70 +45,145 @@ Middleware расширяют поведение store. `persist` сохраня
 
 Zustand подходит для общего UI и клиентских процессов с простыми правилами. Он не предоставляет серверный кэш, пометку данных как устаревших и повторные запросы, поэтому данные API лучше отдавать RTK Query или TanStack Query. Простота Zustand требует договорённостей о границах store, иначе в нём быстро смешиваются несвязанные формы, ответы API и временные UI-флаги.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Как компонент подписывается на Zustand store?</summary>
+<summary><strong>Как компонент подписывается на Zustand store?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Hook принимает selector и сохраняет его результат. После обновления store selector выполняется снова, а результат сравнивается с предыдущим через `Object.is`. Если значение не изменилось, повторная отрисовка из-за store не требуется. Поэтому selector должен возвращать минимально нужную и стабильную часть состояния.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужен <code>useShallow</code>?</summary>
+<summary><strong>Когда нужен <code>useShallow</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда selector возвращает объект, массив или кортеж (tuple) из нескольких полей и достаточно сравнить их верхний уровень. Без `useShallow` новый объект является новым результатом при каждом вызове. Для одного примитива или стабильной ссылки он не нужен, а для глубоких структур лучше пересмотреть форму state, а не выполнять дорогое глубокое сравнение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как работает <code>set</code>?</summary>
+<summary><strong>Как работает <code>set</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `set({ count: 1 })` поверхностно объединяет переданные поля с текущим store. Вложенный объект при этом не объединяется глубоко, поэтому его нужно копировать или использовать Immer middleware. Если обновление зависит от прежнего значения, применяют `set(state => ({ count: state.count + 1 }))`. Для полной замены вторым аргументом передают `true`: `set(nextState, true)`. Это нужно использовать осторожно, чтобы вместе с прежним state не удалить actions.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Zustand отличается от Context?</summary>
+<summary><strong>Чем Zustand отличается от Context?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Context передаёт одно значение через React-дерево, и изменение значения Provider уведомляет компоненты-потребители. Zustand является внешним store с выборочными подписками через selectors. Context удобен для относительно стабильной зависимости, а Zustand обычно удобнее для часто меняющегося общего состояния, когда разным компонентам нужны разные поля.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда Redux Toolkit лучше Zustand?</summary>
+<summary><strong>Когда Redux Toolkit лучше Zustand?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда важны единая событийная модель, явные actions, общая цепочка middleware, подробный журнал в DevTools и сложная координация многих модулей. Zustand требует меньше кода и подходит для более прямых обновлений, но почти не навязывает архитектурные ограничения. Поэтому выбор зависит от сложности процессов и размера команды, а не только от размера bundle.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие риски есть у <code>persist</code>?</summary>
+<summary><strong>Какие риски есть у <code>persist</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В хранилище может остаться несовместимая старая структура, чувствительные данные или слишком большой объём. Сохранённое состояние восстанавливается не одновременно с серверной отрисовкой, что способно вызвать несовпадение при гидратации (hydration mismatch). Нужны `partialize`, `version`, `migrate`, безопасное поведение до восстановления и осознанная модель хранения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны <code>version</code> и <code>migrate</code>?</summary>
+<summary><strong>Зачем нужны <code>version</code> и <code>migrate</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 После релиза поля store могут быть переименованы или изменить формат, а в браузере пользователя останутся старые данные. `version` позволяет обнаружить несовпадение схемы, а `migrate` преобразует сохранённое значение в текущую форму. Если безопасная миграция невозможна, старое состояние лучше сбросить.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему глобальный store с единственным экземпляром опасен при SSR?</summary>
+<summary><strong>Почему глобальный store с единственным экземпляром опасен при SSR?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Область видимости серверного модуля (module scope) может жить дольше одного HTTP-запроса. Если store хранит пользователя или данные страницы, следующий запрос способен увидеть предыдущее значение. Store создают отдельно на запрос и передают нужному React-дереву. Начальное состояние клиента должно совпадать с серверным, чтобы гидратация была корректной.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли хранить ответы API в Zustand?</summary>
+<summary><strong>Можно ли хранить ответы API в Zustand?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Технически можно, но тогда кэширование, актуальность, устранение одинаковых запросов, отмену и синхронизацию придётся реализовать самостоятельно. Для обычного серверного состояния надёжнее специализированная библиотека запросов и кэша. В Zustand имеет смысл хранить только клиентскую часть процесса, например выбранный id, а сами сущности получать из кэша запросов.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

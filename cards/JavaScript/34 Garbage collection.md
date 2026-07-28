@@ -1,4 +1,4 @@
-# 34 Garbage collection
+# Garbage collection
 
 <!-- CARD-NAV-TOP:START -->
 [← 33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [35 localStorage sessionStorage IndexedDB →](<./35 localStorage sessionStorage IndexedDB.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как JavaScript освобождает память? Из-за чего возникают memory leaks во frontend и как их искать?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как JavaScript освобождает память? Из-за чего возникают memory leaks во frontend и как их искать?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Garbage collector, или сборщик мусора, освобождает память объектов, которые стали недостижимыми. Достижимость означает, что до объекта существует цепочка сильных ссылок от roots, то есть исходных точек живой программы: глобальной среды, активных стеков, выполняемых jobs и объектов, которые browser host считает используемыми.
 
@@ -42,77 +47,160 @@ function mountDashboard(root, rows) {
 
 Без возвращённого cleanup объект `window` удерживает `onResize`, а замыкание удерживает `root` и `rows` после удаления dashboard.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Является ли циклическая ссылка утечкой?</summary>
+<summary><strong>Является ли циклическая ссылка утечкой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, если вся группа недостижима от roots. Например, два локальных объекта могут ссылаться друг на друга и всё равно быть собраны после выхода из функции. Цикл становится проблемой, только когда внешняя живая ссылка удерживает хотя бы один объект группы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое detached DOM node?</summary>
+<summary><strong>Что такое detached DOM node?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это узел, который больше не входит в активное document tree, но остаётся достижимым из JavaScript. Например, удалённая панель сохранена в глобальном массиве или closure listener на `window`. Узел может удерживать потомков и связанные данные. Сам факт удаления через `element.remove()` не освобождает его, пока есть сильный путь ссылок.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Всегда ли listener на DOM-элементе вызывает утечку после удаления элемента?</summary>
+<summary><strong>Всегда ли listener на DOM-элементе вызывает утечку после удаления элемента?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Если удалённый элемент, его listener и замкнутые данные образуют недостижимую группу, GC может собрать её целиком. Опасен listener на долгоживущем target вроде `window`, который удерживает callback и его closure, либо внешняя коллекция, продолжающая хранить элемент. Cleanup всё равно важен для прекращения поведения и предсказуемого lifecycle.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как closure может удерживать лишнюю память?</summary>
+<summary><strong>Как closure может удерживать лишнюю память?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Живая функция сохраняет необходимые связи с lexical environment. Если callback хранится в timer, subscription или cache, связанные значения могут жить столько же. Проблема не в closure как механизме, а в слишком долгой жизни функции или в захвате крупного объекта вместо минимальных данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>WeakMap</code> помогает с памятью?</summary>
+<summary><strong>Как <code>WeakMap</code> помогает с памятью?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Слабый ключ не мешает собрать объект, когда других достижимых ссылок на него нет. Это подходит для metadata или memoization, жизненный цикл которых совпадает с объектом. `WeakMap` не закрывает WebSocket, не удаляет listener с `window` и не ограничивает cache по строковым ключам, поэтому явный cleanup остаётся необходимым.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли использовать <code>WeakRef</code> и <code>FinalizationRegistry</code> для обязательной очистки?</summary>
+<summary><strong>Можно ли использовать <code>WeakRef</code> и <code>FinalizationRegistry</code> для обязательной очистки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. GC может запуститься намного позже или не запуститься до завершения процесса, а finalizer не имеет гарантированного времени выполнения. Эти API подходят редким оптимизациям кеша и диагностике, но закрытие соединения, освобождение lock и запись данных должны происходить явно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему бесконечный cache является утечкой, даже если данные ещё достижимы намеренно?</summary>
+<summary><strong>Почему бесконечный cache является утечкой, даже если данные ещё достижимы намеренно?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для GC все записи легитимно живые, потому что cache на них ссылается. Но для продукта старые записи уже бесполезны, а память растёт. Нужна политика: LRU, TTL, ограничение размера, очистка по route/user или слабые object keys там, где это соответствует задаче.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как искать memory leak в DevTools?</summary>
+<summary><strong>Как искать memory leak в DevTools?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала воспроизвести цикл, который должен возвращать приложение в исходное состояние: открыть и закрыть экран несколько раз. Затем сравнить heap snapshots или allocation timeline после принудительного GC в DevTools. Для растущих объектов изучить retaining path, то есть цепочку ссылок до root. Detached nodes, повторяющиеся listeners и closures являются подсказками, но исправлять нужно конкретный удерживающий путь.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как отличить leak от нормального роста памяти?</summary>
+<summary><strong>Как отличить leak от нормального роста памяти?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 JIT-компиляция, кеши, изображения и отложенный GC могут временно увеличивать heap. Утечка подтверждается повторяемым сценарием: после нескольких одинаковых циклов и collection число экземпляров или retained size продолжает расти без стабилизации. Один снимок памяти сам по себе редко достаточен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что очищать в React effect?</summary>
+<summary><strong>Что очищать в React effect?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Всё, что effect подключил и что продолжает жить самостоятельно: DOM listeners, timers, observers, subscriptions, socket handlers, media queries и незавершённые операции с отменой. Cleanup должен быть симметричен setup и выдерживать повторный setup/cleanup в Strict Mode development.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

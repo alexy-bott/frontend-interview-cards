@@ -1,4 +1,4 @@
-# 41 postMessage BroadcastChannel
+# postMessage BroadcastChannel
 
 <!-- CARD-NAV-TOP:START -->
 [← 40 FormData Blob FileReader](<./40 FormData Blob FileReader.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [42 Execution context lexical environment scope chain →](<./42 Execution context lexical environment scope chain.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как безопасно обмениваться сообщениями между window, iframe, popup, вкладками и workers?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как безопасно обмениваться сообщениями между window, iframe, popup, вкладками и workers?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `window.postMessage` отправляет данные другому browsing context, на который есть ссылка: iframe через `contentWindow`, popup через результат `window.open`, opener через `window.opener`. Отправитель обязан указать ожидаемый `targetOrigin`, а получатель проверяет `event.origin`, `event.source` и структуру `event.data`.
 
@@ -36,91 +41,190 @@ Payload проходит structured clone. Functions и DOM nodes передат
 
 Worker messaging использует похожие `postMessage` и `message` events, но вместо origin-проверки связь уже задана объектом Worker или MessagePort. Данные всё равно валидируют, если worker или код интеграции не полностью контролируется приложением.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нужно проверять и <code>event.origin</code>, и <code>event.source</code>?</summary>
+<summary><strong>Почему нужно проверять и <code>event.origin</code>, и <code>event.source</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Origin подтверждает сайт отправителя, а source подтверждает конкретное окно. На доверенном origin может быть несколько frames или страниц с разными ролями. Для popup flow сравнение с сохранённой ссылкой окна не позволяет другому окну того же origin подделать ожидаемый ответ.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли доверять <code>event.data</code> после проверки origin?</summary>
+<summary><strong>Можно ли доверять <code>event.data</code> после проверки origin?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Доверенный sender может иметь баг, старую версию протокола или XSS. Payload проверяют во время выполнения: `type`, version, request id, обязательные поля и допустимые значения. TypeScript discriminated union помогает внутри кода, но не проверяет входное сообщение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как спроектировать messaging protocol?</summary>
+<summary><strong>Как спроектировать messaging protocol?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Использовать небольшой envelope вроде `{ type, version, requestId, payload }`, allowlist типов и отдельную schema каждого payload. Для request-response хранить pending requests по id, ограничивать timeout и принимать один ответ. Не следует превращать произвольный `type` в имя метода или передавать executable code.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делать с iframe, у которого sandboxed origin равен <code>null</code>?</summary>
+<summary><strong>Что делать с iframe, у которого sandboxed origin равен <code>null</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `event.origin` может быть строкой `"null"` для opaque origin. Нельзя считать любое сообщение с таким origin доверенным, потому что его разделяют разные непрозрачные контексты. Нужны строгая проверка `event.source`, минимальный payload, одноразовый secret/capability из безопасного handshake и по возможности архитектура с обычным проверяемым origin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Связан ли <code>postMessage</code> с CORS?</summary>
+<summary><strong>Связан ли <code>postMessage</code> с CORS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет напрямую. CORS управляет чтением cross-origin network response через `fetch`/XHR. `postMessage` является отдельным browser messaging channel между уже существующими contexts и защищается `targetOrigin`, проверкой `origin/source` и payload. Успешный CORS не даёт права доверять message, и наоборот.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>MessageChannel</code> отличается от прямого <code>window.postMessage</code>?</summary>
+<summary><strong>Чем <code>MessageChannel</code> отличается от прямого <code>window.postMessage</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он создаёт два связанных `MessagePort`. Один port можно передать другому context, после чего общение идёт по выделенному каналу без глобального window `message` listener. Это удобно для handshake, RPC и Worker-интеграции. Port нужно закрыть, когда канал больше не нужен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем BroadcastChannel отличается от <code>storage</code> event?</summary>
+<summary><strong>Чем BroadcastChannel отличается от <code>storage</code> event?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 BroadcastChannel предназначен для сообщений и передаёт structured-clone payload без записи на диск. `storage` event является побочным сигналом изменения localStorage, несёт строковые old/new values и не возникает в source document. Для legacy fallback используют storage, а для явного cross-tab protocol BroadcastChannel понятнее.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему две страницы одного origin иногда не видят один BroadcastChannel?</summary>
+<summary><strong>Почему две страницы одного origin иногда не видят один BroadcastChannel?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Browser storage partitioning может дополнительно разделять данные по top-level site. Например, iframe `b.example` внутри сайта `a.example` может быть в другой partition, чем top-level вкладка `b.example`, хотя origins совпадают. Third-party privacy policy нельзя обходить предположением «same-origin всегда достаточно».
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Подходит ли BroadcastChannel для надёжной очереди событий?</summary>
+<summary><strong>Подходит ли BroadcastChannel для надёжной очереди событий?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. У него нет persistence, replay, acknowledgement и доставки закрытой вкладке. Он подходит для live coordination: logout, theme, lease или invalidation hint. Важное состояние хранится в server/IndexedDB, а сообщение только предлагает другим вкладкам перечитать источник истины.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как избежать конфликтов между вкладками?</summary>
+<summary><strong>Как избежать конфликтов между вкладками?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сообщение само по себе не делает операцию атомарной. Для выбора одного leader используют lease с expiration, Web Locks API или server coordination. Для state update добавляют version/timestamp и разрешение конфликтов. Слепое «последнее сообщение победило» может потерять данные при одновременной работе.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как обрабатывать lifecycle?</summary>
+<summary><strong>Как обрабатывать lifecycle?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Снимать window `message` listener, закрывать `BroadcastChannel` и `MessagePort`, очищать pending request timers. Для popup также проверять закрытие и завершать ожидающий Promise. В React ресурсы создают и уничтожают в одном effect или в общем сервисе с явным ownership.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое <code>messageerror</code>?</summary>
+<summary><strong>Что такое <code>messageerror</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Событие возникает, когда получатель не смог десериализовать сообщение. Это отличается от прикладной ошибки payload после успешного clone. На MessagePort, BroadcastChannel и Worker полезно логировать `messageerror`, но исправлять нужно несовместимый тип или контекст передачи.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -140,9 +244,17 @@ window.addEventListener("message", onMessage);
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Какие четыре независимые проверки здесь выполнены?</summary>
+<summary><strong>Какие четыре независимые проверки здесь выполнены?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Проверены origin сайта, identity конкретного iframe, allowlisted тип команды и runtime-тип обязательного поля. В реальном flow также проверяют request/order correlation, текущий state операции и снимают listener после завершения.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

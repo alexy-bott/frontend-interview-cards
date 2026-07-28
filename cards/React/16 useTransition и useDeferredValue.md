@@ -1,4 +1,4 @@
-# 16 useTransition и useDeferredValue
+# useTransition и useDeferredValue
 
 <!-- CARD-NAV-TOP:START -->
 [← 15 Suspense lazy и code splitting](<./15 Suspense lazy и code splitting.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [17 Hydration SSR и SSG →](<./17 Hydration SSR и SSG.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Для чего нужны `useTransition` и `useDeferredValue`? Чем они отличаются от debounce?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Для чего нужны `useTransition` и `useDeferredValue`? Чем они отличаются от debounce?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `useTransition` и `useDeferredValue` позволяют React обрабатывать часть обновлений как несрочные. Срочное обновление, например ввод символа, должно немедленно отразиться в поле. Перестроение тяжёлого списка можно начать с меньшим приоритетом, прервать при следующем вводе и завершить, когда главный поток свободнее.
 
@@ -50,56 +55,115 @@ Transition не является debounce или throttle. Debounce отклад
 
 Если `startTransition` получает асинхронную функцию, React 19 учитывает её ожидание в состоянии `isPending`. Однако обновления состояния после `await` пока нужно снова оборачивать в `startTransition`, чтобы они сохранили несрочный приоритет. Несвязанные transitions могут объединяться React; это ограничение текущей реализации, поэтому `isPending` не всегда описывает одну предметную операцию.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> <code>useTransition</code> является debounce?</summary>
+<summary><strong><code>useTransition</code> является debounce?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Debounce запускает работу после временной паузы и может сократить число запросов. Transition запускает обновление с меньшим приоритетом; React может начать его сразу, прервать и повторить. В поиске debounce может ограничивать частоту запросов к API, а отложенное значение сохранять отзывчивость тяжёлого списка.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда выбирать <code>useTransition</code>, а когда <code>useDeferredValue</code>?</summary>
+<summary><strong>Когда выбирать <code>useTransition</code>, а когда <code>useDeferredValue</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `useTransition` выбирают, когда код контролирует setter-функцию несрочного состояния. `useDeferredValue` выбирают, когда значение уже существует или приходит как prop, а отложить нужно его использование в тяжёлом поддереве. Оба решения наиболее полезны, когда дорогое дерево способно пропустить работу при равных входных данных, например благодаря Compiler или `memo`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему состояние текстового поля нельзя обновлять в transition?</summary>
+<summary><strong>Почему состояние текстового поля нельзя обновлять в transition?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Управляемое поле должно синхронно получить новое `value` после `onChange`, иначе ввод будет запаздывать или возвращаться к прежнему значению. Сам `query` обновляют срочно, а результаты поиска получают отложенный `query` или отдельное состояние, обновляемое в transition.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Отправляет ли <code>useDeferredValue</code> меньше запросов?</summary>
+<summary><strong>Отправляет ли <code>useDeferredValue</code> меньше запросов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Он откладывает рендер React с новым значением, но не вводит временную задержку и не отменяет побочные эффекты, привязанные к исходному состоянию. Для сокращения запросов нужны debounce, отмена через AbortController, кеш и защита от устаревших ответов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему transition не спасает от тяжёлой синхронной функции?</summary>
+<summary><strong>Почему transition не спасает от тяжёлой синхронной функции?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Пока функция непрерывно выполняется, главный поток не может обработать ввод или отрисовать следующий кадр. React умеет освобождать поток между частями собственной работы рендера, но не может прервать произвольный цикл внутри компонента. Вычисление оптимизируют, делят или выносят в Web Worker.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как transitions взаимодействуют с Suspense?</summary>
+<summary><strong>Как transitions взаимодействуют с Suspense?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если навигация или другое обновление помечено как transition, React старается сохранить уже показанный интерфейс, пока новое дерево ожидает данные, вместо немедленной замены ближайшим `fallback`. `isPending` позволяет показать индикатор в существующем интерфейсе. Первая загрузка без прежнего содержимого всё равно показывает запасной интерфейс.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Для чего нужен второй аргумент <code>initialValue</code> у <code>useDeferredValue</code>?</summary>
+<summary><strong>Для чего нужен второй аргумент <code>initialValue</code> у <code>useDeferredValue</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В актуальном React можно передать начальную отложенную версию для первого рендера. React сначала вернёт `initialValue`, затем запланирует рендер с меньшим приоритетом и фактическим `value`. На последующих обновлениях этот аргумент не используется.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

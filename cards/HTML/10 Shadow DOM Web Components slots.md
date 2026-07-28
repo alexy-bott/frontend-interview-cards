@@ -1,4 +1,4 @@
-# 10 Shadow DOM Web Components slots
+# Shadow DOM Web Components slots
 
 <!-- CARD-NAV-TOP:START -->
 [← 09 iframe sandbox security](<./09 iframe sandbox security.md>) · [↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое Shadow DOM и как он связан с Web Components?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое Shadow DOM и как он связан с Web Components?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Web Components - набор API веб-платформы для создания переиспользуемых HTML-элементов без обязательной привязки к React, Vue или другому фреймворку. Основные части - Custom Elements (пользовательские элементы), Shadow DOM (изолированное DOM-поддерево), `<template>` и slots (слоты для передаваемого содержимого).
 
@@ -27,72 +32,147 @@ Light DOM - обычное содержимое между открывающи�
 
 Shadow DOM не то же самое, что Virtual DOM. Shadow DOM - реальный браузерный механизм инкапсуляции. Virtual DOM - структура в памяти, которую React использует при reconciliation, то есть при сверке нового описания интерфейса с предыдущим.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Shadow DOM - это то же самое, что Virtual DOM?</summary>
+<summary><strong>Shadow DOM - это то же самое, что Virtual DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Shadow DOM - реальный браузерный API для инкапсуляции DOM/CSS. Virtual DOM - структура в памяти, которую React использует для сравнения интерфейса и обновления реального DOM.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое light DOM?</summary>
+<summary><strong>Что такое light DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это обычные дочерние узлы custom element, записанные во внешнем документе. Slot определяет, где эти узлы отображаются в shadow tree, но сами узлы не становятся частью Shadow DOM и остаются доступными как дочерние элементы хоста.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны slots?</summary>
+<summary><strong>Зачем нужны slots?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Slots позволяют пользователю компонента передать содержимое в заранее определённые места Shadow DOM. Это механизм композиции: компонент контролирует оболочку, а внешний код передаёт заголовок, основное содержимое или действия.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие плюсы Shadow DOM?</summary>
+<summary><strong>Какие плюсы Shadow DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Инкапсуляция стилей и разметки, меньше конфликтов CSS, удобство для переиспользуемых виджетов, примитивов дизайн-системы и встраиваемых компонентов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие минусы Shadow DOM?</summary>
+<summary><strong>Какие минусы Shadow DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сложнее внешняя стилизация, тестирование, SSR, интеграция с формами, детали доступности и интеграция с жизненным циклом React/Vue. Нужно понимать границу между light DOM и Shadow DOM.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как стилизовать Web Component снаружи?</summary>
+<summary><strong>Как стилизовать Web Component снаружи?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Публичный контракт стилизации задаёт автор компонента. CSS custom properties передают значения темы, `part` на внутреннем элементе вместе с внешним `::part()` открывает конкретную часть, а стили элемента-хоста задаются обычным селектором. Произвольный селектор страницы не проходит внутрь shadow tree.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>open</code> Shadow Root отличается от <code>closed</code>?</summary>
+<summary><strong>Чем <code>open</code> Shadow Root отличается от <code>closed</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При `mode: 'open'` внешний код получает корень через `element.shadowRoot`. При `mode: 'closed'` это свойство возвращает `null`, и взаимодействие должно идти через публичный API компонента. Закрытый режим не является надёжной защитой данных: это ограничение доступа через стандартную ссылку, а не граница безопасности (`security boundary`).
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как события проходят через Shadow DOM?</summary>
+<summary><strong>Как события проходят через Shadow DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Всплывающее событие проходит по внутреннему дереву, но снаружи его `target` часто выглядит как элемент-хост, чтобы не раскрывать внутреннее устройство. Многие браузерные события пользовательского ввода пересекают границу, а для собственного `CustomEvent` нужно явно выбрать `bubbles: true` и `composed: true`, если внешний код должен его получить.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что важно при использовании Web Component в React?</summary>
+<summary><strong>Что важно при использовании Web Component в React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Поведение зависит от версии. В React 19 на клиенте `prop`, совпавший со свойством экземпляра Custom Element, передаётся как JavaScript-свойство; остальные значения становятся HTML-атрибутами. При SSR строки, числа и `true` выводятся как атрибуты, а `false`, объекты, функции и `Symbol` пропускаются. React 19 также поддерживает пользовательские события Custom Elements.
 
 В React 18 интеграция слабее: для сложных свойств и пользовательских событий часто нужен компонент-обёртка (`wrapper`) с `ref` и ручным `addEventListener`. В обеих версиях отдельно проверяют момент регистрации элемента, SSR/hydration, доступность и форму публичного API.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

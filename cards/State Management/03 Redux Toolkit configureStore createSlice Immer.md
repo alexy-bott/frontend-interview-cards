@@ -1,4 +1,4 @@
-# 03 Redux Toolkit configureStore createSlice Immer
+# Redux Toolkit configureStore createSlice Immer
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 Redux и Flux](<./02 Redux и Flux.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Async logic createAsyncThunk listener middleware →](<./04 Async logic createAsyncThunk listener middleware.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что даёт Redux Toolkit? Как работают `configureStore`, `createSlice` и Immer?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что даёт Redux Toolkit? Как работают `configureStore`, `createSlice` и Immer?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Redux Toolkit, или RTK, является официальным способом писать современный Redux. Он сохраняет модель store, actions и reducers, но убирает повторяющийся код, добавляет безопасные настройки по умолчанию и улучшает вывод типов в TypeScript.
 
@@ -34,56 +39,115 @@ export type AppDispatch = typeof store.dispatch;
 
 Затем создают типизированные `useAppSelector` и `useAppDispatch`. Компоненты получают актуальные типы state, thunk и middleware без ручного дублирования.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что <code>configureStore</code> делает сверх обычного <code>createStore</code>?</summary>
+<summary><strong>Что <code>configureStore</code> делает сверх обычного <code>createStore</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он объединяет переданные slice reducers, подключает thunk middleware, настраивает Redux DevTools и добавляет проверки типичных ошибок в режиме разработки. Также его API лучше сохраняет TypeScript-типы middleware и `dispatch`. Низкоуровневый `createStore` всё ещё лежит в основе, но вручную собирать эту конфигурацию обычно не требуется.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что создаёт <code>createSlice</code>?</summary>
+<summary><strong>Что создаёт <code>createSlice</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он создаёт reducer для slice, action creators и action types. Поле `reducers` описывает actions, принадлежащие этому slice. Поле `extraReducers` позволяет реагировать на внешние actions, например на actions жизненного цикла от `createAsyncThunk` или action другого slice, не создавая для них новый action creator.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему в Redux Toolkit можно писать <code>state.value++</code>?</summary>
+<summary><strong>Почему в Redux Toolkit можно писать <code>state.value++</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Внутри RTK reducer переменная `state` является Immer draft. Immer перехватывает запись, вычисляет новое состояние и сохраняет прежние ссылки у неизменённых ветвей. Это синтаксис изменения draft, а не разрешение мутировать реальный Redux state в любом месте приложения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли в Immer reducer одновременно изменить draft и вернуть значение?</summary>
+<summary><strong>Можно ли в Immer reducer одновременно изменить draft и вернуть значение?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Обработчик action внутри reducer либо изменяет draft и ничего не возвращает, либо возвращает полностью новое состояние. Иначе Immer не может однозначно определить результат. Для замены всего состояния нужен `return newState`; выражение `state = newState` ничего не меняет в store.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему Redux рекомендует сериализуемое состояние?</summary>
+<summary><strong>Почему Redux рекомендует сериализуемое состояние?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сериализуемые данные можно надёжно логировать, сохранять, передавать и воспроизводить. Это важно для Redux DevTools, persist и серверной гидратации. Несериализуемое значение может меняться скрыто или потерять поведение после преобразования, поэтому Date обычно хранят как строку или timestamp, а функции и DOM-узлы не кладут в store.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужны типизированные hooks?</summary>
+<summary><strong>Зачем нужны типизированные hooks?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычный `useDispatch` не знает обо всех thunk и middleware приложения, а тип `useSelector` нужно связать с `RootState`. Типизированные hooks делают это один раз в инфраструктурном файле. После этого компоненты получают правильные типы `dispatch`, state и результатов selectors без повторяющихся аннотаций.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выбирать границы slice?</summary>
+<summary><strong>Как выбирать границы slice?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычно slice соответствует предметной области или самостоятельному процессу: `auth`, `cart`, `notifications`, `checkout`. Внутри должны находиться данные, которые меняются по связанным правилам. Один slice на каждый компонент слишком дробит модель, а один огромный slice связывает несвязанные сценарии и усложняет сопровождение.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -101,7 +165,11 @@ const tasksSlice = createSlice({
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему этот reducer вызовет ошибку Immer и как его исправить?</summary>
+<summary><strong>Почему этот reducer вызовет ошибку Immer и как его исправить?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `push` изменяет draft и одновременно возвращает новую длину массива. Стрелочная функция неявно возвращает это число, поэтому Immer видит и мутацию, и возвращаемое значение. Нужно добавить фигурные скобки, чтобы ничего не возвращать:
 
@@ -110,6 +178,10 @@ addTask(state, action: PayloadAction<Task>) {
   state.push(action.payload);
 }
 ```
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

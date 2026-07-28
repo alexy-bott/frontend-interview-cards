@@ -1,4 +1,4 @@
-# 02 XSS reflected stored DOM React
+# XSS reflected stored DOM React
 
 <!-- CARD-NAV-TOP:START -->
 [← 01 Frontend threat model](<./01 Frontend threat model.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 CSRF cookies SameSite tokens →](<./03 CSRF cookies SameSite tokens.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое XSS, чем reflected, stored и DOM XSS отличаются и где React перестает защищать приложение?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое XSS, чем reflected, stored и DOM XSS отличаются и где React перестает защищать приложение?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 **XSS (Cross-Site Scripting)** - уязвимость, при которой данные атакующего становятся исполняемым HTML или JavaScript в origin доверенного приложения. Origin, или источник, определяется схемой, именем хоста и портом. Внедренный код получает возможности страницы: читает данные DOM и хранилищ браузера, отправляет запросы от имени пользователя, подменяет интерфейс и перехватывает введенные данные.
 
@@ -39,98 +44,205 @@ return <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
 
 CSP и Trusted Types служат дополнительными слоями. CSP ограничивает источники скриптов и inline-код. Trusted Types может запретить передавать обычные строки в DOM XSS sinks без утвержденной policy. Они уменьшают последствия ошибки, но не заменяют безопасный вывод данных и sanitization.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что атакующий получает при XSS?</summary>
+<summary><strong>Что атакующий получает при XSS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Код выполняется в origin уязвимого приложения и может делать то, что доступно его JavaScript: читать страницу и незащищенное storage, вызывать same-origin API с сессией пользователя, менять реквизиты формы и отправлять введенные данные наружу. `HttpOnly` скроет cookie от чтения, но не запретит XSS-коду отправлять запросы через браузер пользователя.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем server XSS отличается от DOM XSS?</summary>
+<summary><strong>Чем server XSS отличается от DOM XSS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При server XSS небезопасная строка уже включена сервером в HTML-ответ. При DOM XSS сервер может вернуть безопасный документ, но клиентский JavaScript позже берет недоверенные данные и передает их в исполняемый sink. Reflected и stored описывают место появления данных, поэтому могут сочетаться с клиентским или серверным способом выполнения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое source и sink?</summary>
+<summary><strong>Что такое source и sink?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Source - место получения потенциально недоверенных данных. Sink - операция, которая при неправильном значении меняет контекст с «данные» на «код или разметка». Уязвимость возникает не от самого `location.hash`, а от потока значения из него в `innerHTML`, `eval` или другой опасный sink без подходящей защиты.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>textContent</code> безопаснее <code>innerHTML</code>?</summary>
+<summary><strong>Почему <code>textContent</code> безопаснее <code>innerHTML</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `textContent` создает текст: строка `<img onerror=...>` останется видимыми символами. `innerHTML` запускает синтаксический анализатор HTML, создает элементы и обрабатывает атрибуты и URL. Если разметка не нужна, безопасный текстовый API устраняет целый класс ошибок.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему React защищает не от любого XSS?</summary>
+<summary><strong>Почему React защищает не от любого XSS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React экранирует значения, которые вставляет как текст или обычные атрибуты, но не может определить намерение приложения во всех API. `dangerouslySetInnerHTML` явно передает строку HTML parser. Код через ref может вызвать `innerHTML`, сторонняя библиотека может использовать опасный sink, а URL требует отдельной проверки допустимого протокола и назначения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда допустим <code>dangerouslySetInnerHTML</code>?</summary>
+<summary><strong>Когда допустим <code>dangerouslySetInnerHTML</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда продукт действительно должен отображать HTML, например ограниченный форматированный текст (rich text) из CMS, и содержимое прошло sanitization по явному allowlist. Очищенное значение желательно создавать в одном контролируемом модуле, тестировать на опасных конструкциях и не смешивать с необработанными строками после очистки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем encoding отличается от sanitization?</summary>
+<summary><strong>Чем encoding отличается от sanitization?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Encoding, или экранирование, сохраняет всю строку как данные и заменяет управляющие символы безопасным представлением для конкретного контекста. Sanitization разбирает HTML и удаляет запрещенные части, сохраняя разрешенную разметку. Для обычного текста выбирают экранирование; sanitization нужна только при осознанной поддержке HTML.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя очищать HTML регулярным выражением?</summary>
+<summary><strong>Почему нельзя очищать HTML регулярным выражением?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HTML имеет сложный parser, разные пространства имен, поврежденную разметку, кодировки, URL и множество исполняемых контекстов. Браузер может разобрать строку иначе, чем ожидает регулярное выражение. Нужен sanitizer, который строит DOM и применяет проверенный allowlist с учетом поведения браузера.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему URL может стать XSS-вектором?</summary>
+<summary><strong>Почему URL может стать XSS-вектором?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URL в `href`, `src` или перенаправлении влияет не только на адрес. Опасный протокол вроде `javascript:` способен выполнить код в подходящем контексте, а `data:` может содержать активный документ. Для внешних ссылок проверяют протокол и, когда требуется, host по точному allowlist; значение строят через `URL`, а не проверяют подстрокой.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как безопасно отображать Markdown?</summary>
+<summary><strong>Как безопасно отображать Markdown?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нужно знать, разрешает ли обработчик Markdown встроенный HTML и какие расширения он поддерживает. Сам Markdown не гарантирует безопасность итогового HTML. Обычно raw HTML отключают либо результат пропускают через sanitizer, отдельно проверяют ссылки и изображения и безопасно настраивают открытие внешних вкладок.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Возможен ли XSS при SSR React-приложения?</summary>
+<summary><strong>Возможен ли XSS при SSR React-приложения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. React экранирует JSX, но серверный шаблон может небезопасно вставить начальное состояние приложения в `<script>`, HTML из CMS или значение в заголовок и URL. Сериализацию данных для script-контекста выполняют специализированным способом, не конкатенируют пользовательскую строку с HTML и применяют ту же контекстную модель, что на клиенте.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Защищает ли CSP от XSS полностью?</summary>
+<summary><strong>Защищает ли CSP от XSS полностью?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Строгая CSP может заблокировать inline script и неизвестный источник, но слабый allowlist, `unsafe-inline`, разрешенный опасный скрипт или DOM-gadget позволяют обход. DOM-gadget - уже присутствующий код страницы, который передает контролируемые данные в опасный sink. CSP применяют как дополнительный слой после безопасных DOM API, экранирования и sanitization.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что дают Trusted Types?</summary>
+<summary><strong>Что дают Trusted Types?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При включенной директиве `require-trusted-types-for 'script'` поддерживающий браузер отклоняет обычные строки в известных injection sinks. Значение должно быть создано зарегистрированной policy, где централизуется sanitization или построение доверенного URL. Это помогает найти и перекрыть DOM XSS sinks, но policy, которая без проверки возвращает входную строку, уничтожает защиту.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 07 Production troubleshooting logs rollback smoke tests
+# Production troubleshooting logs rollback smoke tests
 
 <!-- CARD-NAV-TOP:START -->
 [← 06 Env variables secrets build-time runtime](<./06 Env variables secrets build-time runtime.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 Deployment strategies health checks rollback →](<./08 Deployment strategies health checks rollback.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как действовать, если после deploy frontend в production что-то сломалось?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как действовать, если после deploy frontend в production что-то сломалось?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Сначала фиксируют симптом, время начала, затронутые окружение и релиз, долю пользователей и критичность сценария. «Frontend сломан» может означать недоступный HTML, `404` на часть JavaScript-сборки (`chunk`), ошибку выполнения (`runtime exception`), ошибку API, неверную конфигурацию, старый service worker или визуальную регрессию. Конкретный симптом определяет первые проверки и способ восстановления.
 
@@ -29,44 +34,83 @@ Health check и smoke test отвечают на разные вопросы. He
 
 После восстановления фиксируют причину и добавляют предотвращение: проверку artifact, cache policy, test, alert, ограничение rollout или runbook. Postmortem описывает условия и решения без поиска виноватого. Ценность имеет конкретное действие с владельцем и сроком, например сохранять предыдущие chunks семь дней или останавливать rollout при росте `ChunkLoadError`.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что проверить в первые минуты после сообщения об инциденте?</summary>
+<summary><strong>Что проверить в первые минуты после сообщения об инциденте?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Production ли это, какой release сейчас обслуживает пользователя, когда началась ошибка и насколько она массовая. Затем статус главной страницы и критичного маршрута, error tracking, метрики запросов, последний pipeline и изменения конфигурации. Это позволяет решить, требуется ли немедленное восстановление или локальная диагностика.
 
 Скриншот без URL, времени, browser и release даёт мало данных. Полезно получить request id, точный маршрут и шаги, не собирая лишние персональные сведения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как расследовать белый экран после релиза?</summary>
+<summary><strong>Как расследовать белый экран после релиза?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В Network проверяют `index.html`, основной JavaScript, CSS, динамические chunks, их HTTP-статус и `Content-Type`. В Console находят первую ошибку выполнения. Затем сверяют `base` или `publicPath`, runtime config, поддержку браузера и активный service worker. Сервис сбора ошибок по идентификатору релиза показывает, массовая ли ошибка и с какого commit она появилась.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему после release возникает <code>404</code> на JavaScript chunk?</summary>
+<summary><strong>Почему после release возникает <code>404</code> на JavaScript chunk?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Старый HTML или открытая вкладка ссылается на файл предыдущей сборки, а deploy уже удалил его. Другие причины - неверный public path, частичная публикация, разные версии на узлах CDN или fallback, который скрывает `404` HTML-ответом. Проверяют URL файла, manifest релиза, заголовки кэша и наличие объекта на origin-сервере.
 
 Предотвращение: content hash, атомарное переключение release и хранение старых assets дольше жизни HTML и активных сессий.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему ошибка проявляется только у части пользователей?</summary>
+<summary><strong>Почему ошибка проявляется только у части пользователей?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они могут получать другой canary release - версию, включённую для небольшой аудитории, - другой регион CDN, feature flag, роль, tenant или конфигурацию. Также различаются браузер, расширения, сеть, старый HTML и service worker. Сегментация событий по релизу, браузеру, route и flag помогает увидеть границу, но персональные данные в tags передавать нельзя.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> После deploy ошибка появилась только у части пользователей. Что делать, если они могли остаться на старой версии из кэша браузера?</summary>
+<summary><strong>После deploy ошибка появилась только у части пользователей. Что делать, если они могли остаться на старой версии из кэша браузера?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Такая причина возможна, но её нужно подтвердить. Просьба очистить кэш может временно помочь отдельному пользователю, однако она скрывает симптом и не устраняет ошибку публикации.
 
@@ -82,68 +126,127 @@ Production ли это, какой release сейчас обслуживает �
 
 Повторение проблемы предотвращают правилами публикации. HTML и конфигурация должны регулярно проверяться на актуальность. JavaScript-файлы с хешем содержимого в имени можно кэшировать надолго, но файлы предыдущих релизов нельзя удалять сразу. Новую версию сначала загружают полностью и проверяют, а затем одним переключением делают активной: это называется атомарным deploy. Service Worker не должен смешивать файлы разных сборок. Backend API сохраняют совместимым со старым frontend в течение периода, когда у пользователей ещё могут быть открыты прежние вкладки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что должно быть подготовлено для быстрого rollback?</summary>
+<summary><strong>Что должно быть подготовлено для быстрого rollback?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Неизменяемые artifacts или image digests предыдущих версий, запись о том, что развёрнуто, доступная команда переключения и smoke test результата. API, config и миграции должны сохранять обратную совместимость хотя бы на окно rollback. Права на действие и ответственный определяются до инцидента.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему после rollback проблема может остаться?</summary>
+<summary><strong>Почему после rollback проблема может остаться?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 CDN или browser продолжает отдавать прежний HTML, service worker держит Cache Storage, runtime config не откатился, а backend уже изменил несовместимый контракт. Также rollback мог переключить tag, но не фактический digest. Нужно проверить каждый компонент release и подтвердить версию ответом или диагностическим endpoint.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выбрать между hotfix и rollback?</summary>
+<summary><strong>Как выбрать между hotfix и rollback?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Rollback предпочтителен при массовом влиянии, критичном сценарии, неясной причине и готовой стабильной версии. Hotfix разумен, если причина локализована, изменение мало, rollback опасен из-за совместимости, а исправление можно быстро проверить в staging и canary. Сначала минимизируют время и риск восстановления пользователей.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему error tracking показывает только минифицированный stack trace?</summary>
+<summary><strong>Почему error tracking показывает только минифицированный stack trace?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Source maps могли не сгенерироваться, не загрузиться, иметь другой идентификатор релиза или не соответствовать опубликованным файлам. Задача сборки загружает карты с именами и релизом той же сборки, а deploy сообщает сервису окружение и версию. Публично раздавать карты для этого необязательно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что должен проверять frontend smoke test после deploy?</summary>
+<summary><strong>Что должен проверять frontend smoke test после deploy?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Внешний запрос получает актуальный HTML, основные chunks загружаются без `404`, runtime config валиден, критичный API доступен и один основной сценарий завершается. Для защищённого приложения используют отдельную тестовую учётную запись с минимальными правами. Smoke test короткий и стабильный; полную регрессию выполняют раньше.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие данные frontend можно отправлять в logs и error tracking?</summary>
+<summary><strong>Какие данные frontend можно отправлять в logs и error tracking?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Release, environment, route pattern, тип ошибки, browser, длительность, request или correlation id. Токены, cookies, пароли, полные URL с чувствительными query и содержимое форм удаляют. User id при необходимости псевдонимизируют и обрабатывают по политике продукта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как связать ошибку браузера с backend logs?</summary>
+<summary><strong>Как связать ошибку браузера с backend logs?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Edge или backend создаёт безопасный идентификатор запроса и возвращает его в header. Frontend прикладывает id к событию error tracking и показывает его в сообщении поддержки. Тогда серверная команда находит тот же запрос без передачи body или токена. Для цепочки сервисов id распространяют дальше или используют trace id.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Симптом | Первый слой проверки |
-> | --- | --- |
-> | Страница не открывается | DNS, TLS, CDN, Nginx и HTML status |
-> | Белый экран | Chunks, MIME-тип, Console и source maps |
-> | `ChunkLoadError` | HTML/assets version, CDN и atomic deploy |
-> | API `401` или CORS | Cookies, origin, credentials и runtime config |
-> | Только часть пользователей | Release, browser, region, flag и service worker |
-> | Rollback не помог | Digest, config, cache и backend compatibility |
+| Симптом | Первый слой проверки |
+| --- | --- |
+| Страница не открывается | DNS, TLS, CDN, Nginx и HTML status |
+| Белый экран | Chunks, MIME-тип, Console и source maps |
+| `ChunkLoadError` | HTML/assets version, CDN и atomic deploy |
+| API `401` или CORS | Cookies, origin, credentials и runtime config |
+| Только часть пользователей | Release, browser, region, flag и service worker |
+| Rollback не помог | Digest, config, cache и backend compatibility |
 
 ## Связанные темы
 

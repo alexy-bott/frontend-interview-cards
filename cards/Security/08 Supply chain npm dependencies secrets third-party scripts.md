@@ -1,4 +1,4 @@
-# 08 Supply chain npm dependencies secrets third-party scripts
+# Supply chain npm dependencies secrets third-party scripts
 
 <!-- CARD-NAV-TOP:START -->
 [← 07 Auth permissions frontend backend responsibility](<./07 Auth permissions frontend backend responsibility.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 WebSocket security auth origin reconnect →](<./09 WebSocket security auth origin reconnect.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Какие supply chain риски есть во frontend и как защищать npm dependencies, сборку, secrets и third-party scripts?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Какие supply chain риски есть во frontend и как защищать npm dependencies, сборку, secrets и third-party scripts?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 **Supply chain attack**, или атака через цепочку поставки, затрагивает приложение не через его исходный код, а через инструменты и компоненты, которым команда доверяет: npm-пакет, транзитивную зависимость (зависимость установленного пакета), реестр пакетов (registry), аккаунт сопровождающего (maintainer), скрипт установки, задачу CI (CI action), CDN или внешний script.
 
@@ -38,126 +43,265 @@ Lock-файл фиксирует точное дерево версий и ко�
 
 Автоматический scanner уязвимостей показывает известные проблемы по версиям, но не определяет полный риск. Он может не знать о новой атаке, не понимать достижимость уязвимого пути или сообщать о пакете, который используется только при сборке. Результат нужно классифицировать, а не игнорировать или исправлять бесконтрольным обновлением major version.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно гарантирует lock-файл?</summary>
+<summary><strong>Что именно гарантирует lock-файл?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он описывает выбранные версии прямых и транзитивных зависимостей, источники архивов и значения `integrity`. При неизменном registry и поддерживаемом менеджере пакетов это позволяет повторить одно дерево. Lock-файл не проводит аудит содержимого, не гарантирует отсутствие вредоносного кода и требует такой же проверки, как другой исполняемый вход проекта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>npm ci</code> отличается от <code>npm install</code>?</summary>
+<summary><strong>Чем <code>npm ci</code> отличается от <code>npm install</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `npm ci` предназначен для воспроизводимой чистой установки: требует lock-файл, удаляет существующий `node_modules`, устанавливает зафиксированное дерево и не переписывает `package.json` или lock-файл. `npm install` разрешает зависимости и может обновить lock в соответствии с ranges. Поэтому в CI обычно используют `npm ci`, а изменение зависимостей выполняют осознанно локально.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему недостаточно зафиксировать версии только в <code>package.json</code>?</summary>
+<summary><strong>Почему недостаточно зафиксировать версии только в <code>package.json</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Диапазон вроде `^1.4.0` разрешает более новые версии, а транзитивные зависимости часто вообще не перечислены в корневом `package.json`. Две установки в разное время могут получить разные деревья. Lock-файл фиксирует фактически выбранные версии всего дерева.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как сделать версии Node.js и package manager одинаковыми в команде и CI?</summary>
+<summary><strong>Как сделать версии Node.js и package manager одинаковыми в команде и CI?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Версию Node фиксируют файлом менеджера окружения, например `.nvmrc` или `.node-version`, и тем же образом задают ее в образе CI. Поле `engines` документирует допустимый диапазон, а `packageManager` в `package.json` фиксирует manager и версию для процесса с Corepack. CI должен проверять версии и использовать lock-файл, иначе локальная договоренность остается необязательной.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем опасны npm lifecycle scripts?</summary>
+<summary><strong>Чем опасны npm lifecycle scripts?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Пакет может выполнить `preinstall`, `install` или `postinstall` во время установки. Такой код видит файлы проекта, окружение и доступные учетные данные CI. Установку запускают с минимальными правами, не передают лишние secrets и проверяют пакеты со scripts. `--ignore-scripts` снижает риск, но способен сломать зависимости, которым script нужен для сборки native module или загрузки бинарного файла.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое dependency confusion?</summary>
+<summary><strong>Что такое dependency confusion?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Менеджер пакетов выбирает публичный package с именем, совпадающим с внутренним, вместо private package компании. Атакующий публикует такое имя в общедоступном registry и рассчитывает на неверный порядок разрешения или более высокую версию. Защита - private scopes, явная настройка registry для scope, контроль конфигурации и запрет случайной публикации внутренних имен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое typosquatting?</summary>
+<summary><strong>Что такое typosquatting?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это публикация вредоносного пакета с именем, похожим на популярный: переставленная буква, дефис или другой scope. Разработчик ошибается при установке, и пакет получает возможность выполнить install script или попасть в bundle. Имя и владельца новой зависимости проверяют до установки и commit.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему devDependency тоже может быть риском безопасности?</summary>
+<summary><strong>Почему devDependency тоже может быть риском безопасности?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 DevDependency выполняется на машине разработчика и в CI, читает исходный код и участвует в сборке production bundle. Скомпрометированный plugin для bundler может внедрить код в артефакт или украсть CI token, даже если сам пакет не отправляется браузеру отдельным модулем.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что проверять при добавлении новой зависимости?</summary>
+<summary><strong>Что проверять при добавлении новой зависимости?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала подтверждают, что задача не закрывается уже установленным API или небольшим локальным кодом. Затем смотрят владельцев, repository и историю релизов, число и качество dependencies, lifecycle scripts, влияние на browser bundle, лицензию и политику обновлений. После установки review включает `package.json`, lock-файл и результат сборки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делать при сообщении об уязвимости в зависимости?</summary>
+<summary><strong>Что делать при сообщении об уязвимости в зависимости?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Определить затронутые версии, путь зависимости и достижимость уязвимого кода в конкретной среде. Затем выбрать минимальное безопасное обновление, override, удаление функции или замену пакета, прогнать тесты и проверить bundle. Риск зависимости production runtime, инструмента сборки и неиспользуемого optional package оценивается по-разному, но решение фиксируется, а не откладывается без срока.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>npm audit fix --force</code> нельзя запускать вслепую?</summary>
+<summary><strong>Почему <code>npm audit fix --force</code> нельзя запускать вслепую?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Команда может установить новые major versions и изменить поведение приложения, не доказав, что исходная уязвимость была достижима или что обновление безопасно. Автоматический отчет является входом для анализа. Исправление проходит обычный review, тесты, сборку и при необходимости ручную миграцию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое package provenance?</summary>
+<summary><strong>Что такое package provenance?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Provenance связывает опубликованный package с конкретным source repository и CI workflow с помощью проверяемого подтверждения происхождения (attestation). Это помогает подтвердить источник артефакта и затрудняет незаметную ручную публикацию из другого места. Provenance не доказывает безопасность исходного кода и не заменяет review владельцев и изменений.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему frontend environment variables не являются secrets?</summary>
+<summary><strong>Почему frontend environment variables не являются secrets?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Bundler заменяет используемые переменные значениями при сборке или код получает их из публичной runtime-конфигурации. Пользователь может прочитать bundle, Network panel и память страницы. Настоящие пароли баз данных, private API keys и ключи подписи хранятся на backend или в хранилище секретов CI и никогда не передаются браузеру.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли публичный API key находиться во frontend?</summary>
+<summary><strong>Может ли публичный API key находиться во frontend?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Иногда да, если провайдер специально создал browser key как идентификатор проекта, а не как доказательство доверия. Его ограничивают допустимыми origins, API, квотой и минимальными permissions. Backend не должен принимать такой key как единственное подтверждение личности или права на чувствительную операцию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем опасен third-party script?</summary>
+<summary><strong>Чем опасен third-party script?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычный `<script>` выполняется в origin страницы и может читать DOM, перехватывать ввод, обращаться к доступному storage и отправлять запросы. Browser sandbox разделяет разные origins, но не изолирует script системы аналитики от кода той же страницы. Поэтому каждый внешний script становится доверенной частью threat model и требует владельца, цели, минимального доступа и плана удаления.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое Subresource Integrity?</summary>
+<summary><strong>Что такое Subresource Integrity?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Атрибут `integrity` содержит криптографический hash ожидаемого внешнего script или style. Браузер выполняет ресурс только при совпадении содержимого. SRI подходит для неизменяемого URL с зафиксированной версией; при каждом обновлении файла hash нужно обновлять. Для cross-origin ресурса также требуется корректная CORS-настройка и обычно атрибут `crossorigin`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Достаточно ли CSP для безопасного third-party script?</summary>
+<summary><strong>Достаточно ли CSP для безопасного third-party script?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. CSP разрешает загрузку источника, но доверенный script после загрузки получает широкие возможности страницы. CSP помогает запретить неожиданные domains и исходящие соединения, SRI фиксирует содержимое конкретного файла, а iframe с `sandbox` может изолировать отдельный виджет. Главная мера - не подключать ненужный код в основной контекст выполнения страницы.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

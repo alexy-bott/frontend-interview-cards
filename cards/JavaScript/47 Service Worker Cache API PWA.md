@@ -1,4 +1,4 @@
-# 47 Service Worker Cache API PWA
+# Service Worker Cache API PWA
 
 <!-- CARD-NAV-TOP:START -->
 [← 46 Streams API ReadableStream](<./46 Streams API ReadableStream.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [48 WebSocket EventSource realtime →](<./48 WebSocket EventSource realtime.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает Service Worker? Как его lifecycle, Cache Storage и стратегии обновления влияют на PWA?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает Service Worker? Как его lifecycle, Cache Storage и стратегии обновления влияют на PWA?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Service Worker является event-driven worker между страницей и network. Он может перехватывать requests контролируемого scope через `fetch` event, отвечать из Cache Storage, поддерживать offline, принимать push и выполнять некоторые фоновые события. У него нет DOM и гарантированно постоянно работающего процесса.
 
@@ -36,54 +41,109 @@ Cache Storage хранит пары `Request`/`Response` под управлен
 
 PWA шире Service Worker. Для устанавливаемого приложения также нужны web app manifest, подходящий HTTPS deployment, icons и корректный пользовательский опыт offline/update.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что делают <code>install</code> и <code>activate</code>?</summary>
+<summary><strong>Что делают <code>install</code> и <code>activate</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В `install` обычно pre-cache-ят минимальный app shell и вызывают `event.waitUntil(cachePromise)`; rejection делает установку неуспешной. В `activate` удаляют caches старых версий и выполняют миграцию. Нельзя без разбора удалять cache, которым ещё пользуется старая активная версия в другой вкладке.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему новая версия может долго оставаться waiting?</summary>
+<summary><strong>Почему новая версия может долго оставаться waiting?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Пока открытая страница контролируется старым worker, browser сохраняет его, чтобы одна вкладка не сменила сетевую модель посреди работы. Новая версия активируется после закрытия или navigation старых clients. UI может обнаружить `registration.waiting`, предложить обновление и после согласия послать worker команду на `skipWaiting`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужно ли всегда вызывать <code>skipWaiting()</code> и <code>clients.claim()</code>?</summary>
+<summary><strong>Нужно ли всегда вызывать <code>skipWaiting()</code> и <code>clients.claim()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. `skipWaiting` принудительно активирует новую версию, а `clients.claim` начинает контролировать уже открытые страницы. Это ускоряет update, но старый JavaScript document может неожиданно начать получать responses новой cache schema. Стратегия требует совместимости версий и обычно координируется с UI reload.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему первая загрузка после регистрации может не перехватываться?</summary>
+<summary><strong>Почему первая загрузка после регистрации может не перехватываться?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Текущий document уже загрузился до активации и ещё не обязательно controlled. Worker начинает контролировать следующую navigation или client после `clients.claim()`. Свойство `navigator.serviceWorker.controller` показывает текущего controller.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие стратегии кеширования используют?</summary>
+<summary><strong>Какие стратегии кеширования используют?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Cache-first быстро отдаёт редко меняющиеся versioned assets. Network-first подходит HTML/navigation и данным, где важна свежесть с offline fallback. Stale-while-revalidate немедленно отдаёт cache и в фоне обновляет его. Network-only и cache-only полезны для явно выделенных ресурсов. Стратегия выбирается по типу request, а не одна для всего origin.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя cache-first для HTML и API без ограничений?</summary>
+<summary><strong>Почему нельзя cache-first для HTML и API без ограничений?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Старый HTML может ссылаться на уже удалённые chunks, а cached API содержать устаревшие или персональные данные. Для navigation обычно нужен network-first или carefully versioned app shell; для API учитывают auth, TTL, invalidation, cache key, quota и offline semantics. Mutation requests обычно не кешируют как обычный GET.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем клонировать Response перед <code>cache.put</code>?</summary>
+<summary><strong>Зачем клонировать Response перед <code>cache.put</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Response body является одноразовым stream. Если один экземпляр передать cache и одновременно вернуть странице, один consumer disturb-ит body для другого. `response.clone()` создаёт вторую ветвь до чтения. Для очень больших responses нужно учитывать возможную буферизацию медленной ветви.
 
@@ -94,54 +154,114 @@ await cache.put(request, response.clone());
 return response;
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Применяет ли Cache API HTTP cache headers?</summary>
+<summary><strong>Применяет ли Cache API HTTP cache headers?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Cache Storage сохраняет Response по команде приложения и сам не выполняет обычную revalidation по `Cache-Control`, `ETag` и age. Fetch до записи может использовать HTTP cache, но после `cache.match` свежесть определяет service worker strategy. Нужно явно решить version, TTL и revalidation.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>respondWith</code>?</summary>
+<summary><strong>Что делает <code>respondWith</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Во время `fetch` event он передаёт browser Promise с Response, который заменит обычный network handling. Вызвать `respondWith` нужно синхронно во время dispatch события, хотя переданный Promise может завершиться позже. Если он rejected или возвращает неподходящий response, request завершается network error.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как Worker не завершить до фонового обновления cache?</summary>
+<summary><strong>Как Worker не завершить до фонового обновления cache?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Передать Promise в `event.waitUntil`. Например, stale-while-revalidate возвращает cached response через `respondWith`, а network update добавляет в `waitUntil`. Без этого browser вправе остановить worker после завершения основного event handler.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли Cache Storage быть очищен?</summary>
+<summary><strong>Может ли Cache Storage быть очищен?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. Он учитывается в origin quota и может быть удалён пользователем или browser eviction policy, особенно при нехватке места. Offline mode должен уметь показать отсутствие ресурса. Старые named caches нужно удалять, иначе они растут бессрочно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие security-риски создаёт Service Worker?</summary>
+<summary><strong>Какие security-риски создаёт Service Worker?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он имеет мощный network scope и может долго влиять на приложение, поэтому script доставляется только через HTTPS, CSP и supply-chain защита важны. Нельзя кешировать персональные responses под общим ключом, отдавать authenticated data после logout или хранить чувствительный response без threat analysis. XSS, способный зарегистрировать worker в широком scope, особенно опасен.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Гарантированы ли Background Sync и push?</summary>
+<summary><strong>Гарантированы ли Background Sync и push?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Поддержка, permissions, энергосбережение и browser policy различаются, а событие может быть задержано или не произойти. Background Sync используют как улучшение, но данные сохраняют, операции делают идемпотентными и предоставляют обычный путь retry при открытом приложении.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Service Worker отличается от Web Worker?</summary>
+<summary><strong>Чем Service Worker отличается от Web Worker?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Web Worker принадлежит странице и предназначен для параллельных вычислений. Service Worker принадлежит origin/scope, запускается событиями и управляет network/offline между разными clients. Долгое CPU-вычисление плохо соответствует прерываемому lifecycle Service Worker.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -164,9 +284,17 @@ self.addEventListener("fetch", (event) => {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему это ещё не production-ready универсальная стратегия?</summary>
+<summary><strong>Почему это ещё не production-ready универсальная стратегия?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Она кеширует любой GET без проверки origin, response status, типа ресурса, auth, размера и политики свежести; cache никогда не очищается. Для HTML и API cache-first может отдавать устаревшие данные. Production worker задаёт allowlist routes и отдельную стратегию каждого класса ресурсов.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

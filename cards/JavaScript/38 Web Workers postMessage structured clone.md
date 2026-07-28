@@ -1,4 +1,4 @@
-# 38 Web Workers postMessage structured clone
+# Web Workers postMessage structured clone
 
 <!-- CARD-NAV-TOP:START -->
 [← 37 URL URLSearchParams History API](<./37 URL URLSearchParams History API.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [39 Cookies document.cookie SameSite credentials →](<./39 Cookies document.cookie SameSite credentials.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает Web Worker? Как передаются данные и когда отдельный поток действительно помогает UI?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает Web Worker? Как передаются данные и когда отдельный поток действительно помогает UI?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Dedicated Web Worker запускает JavaScript в отдельном worker thread. У него собственные global scope, call stack и event loop. Поэтому CPU-heavy вычисление может выполняться параллельно JavaScript страницы, оставляя main thread свободнее для input, React updates и rendering.
 
@@ -39,91 +44,190 @@ Worker не имеет доступа к DOM, `window` и React state. Он им
 
 Worker выгоден, когда стоимость вычисления и блокировка main thread больше стоимости запуска, сообщений и подготовки данных. Для короткой операции или огромной объектной модели, которую нужно постоянно копировать, overhead может превысить выигрыш.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Worker отличается от <code>setTimeout</code> и <code>async/await</code>?</summary>
+<summary><strong>Чем Worker отличается от <code>setTimeout</code> и <code>async/await</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Таймер только переносит callback в будущую task main thread, а `await` откладывает продолжение функции через Promise. Тяжёлый callback после них всё равно блокирует UI. Worker выполняет JavaScript на другом thread. Main thread нужен лишь для обмена сообщениями и применения результата.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему Worker не может менять DOM?</summary>
+<summary><strong>Почему Worker не может менять DOM?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 DOM и rendering pipeline принадлежат main thread. Прямой конкурентный доступ нескольких потоков потребовал бы сложной синхронизации и создавал races вокруг layout и событий. Worker обрабатывает данные, а страница преобразует результат в DOM update. Для canvas часть работы можно передать через `OffscreenCanvas`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что structured clone сохраняет, а что теряет?</summary>
+<summary><strong>Что structured clone сохраняет, а что теряет?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он сохраняет структуру графа и поддерживаемые встроенные типы, включая циклические ссылки. Но не копирует functions, property descriptors, getters/setters и prototype chain пользовательского класса как полноценное поведение. Экземпляр прикладного класса обычно нужно передавать как data transfer object и явно восстанавливать модель.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем transferable отличается от clone?</summary>
+<summary><strong>Чем transferable отличается от clone?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Clone создаёт независимое значение у получателя и оставляет исходное доступным. Transfer перемещает владение transferable resource; для `ArrayBuffer` исходный объект detaches. Это быстро для больших бинарных данных, но отправитель обязан больше не использовать buffer. Сам объект нужно указать и в сообщении, и в transfer list.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>SharedArrayBuffer</code> отличается от transfer?</summary>
+<summary><strong>Чем <code>SharedArrayBuffer</code> отличается от transfer?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он предоставляет нескольким agents общую память вместо копирования или перемещения владения. Для согласования доступа нужны `Atomics`, иначе возникают data races. В браузере SharedArrayBuffer требует cross-origin isolation через подходящие COOP/COEP headers из-за рисков side-channel атак. Это сложный инструмент для узких задач.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие типы workers существуют?</summary>
+<summary><strong>Какие типы workers существуют?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Dedicated Worker принадлежит одному создающему context. Shared Worker может обслуживать несколько same-origin окон через ports, но имеет ограничения поддержки и lifecycle. Service Worker живёт отдельно от страницы, перехватывает network requests, управляет cache/offline и может просыпаться по событиям. Worklet предназначен для специализированной части rendering/audio pipeline с жёсткими ограничениями.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как подключить module worker в Vite или Webpack?</summary>
+<summary><strong>Как подключить module worker в Vite или Webpack?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Распространённый стандартный паттерн: `new Worker(new URL("./worker.js", import.meta.url), { type: "module" })`. Статически видимый `new URL` позволяет bundler создать отдельный chunk и корректный production URL. Динамически склеенный путь инструмент может не обнаружить. Нужно также учитывать CSP и origin worker script.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как обработать ошибки Worker?</summary>
+<summary><strong>Как обработать ошибки Worker?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Подписаться на `error` для ошибки выполнения или загрузки и на `messageerror`, если сообщение не удалось десериализовать. При request-response протоколе каждое сообщение получает `id`, а pending Promise на main thread завершается success/error ответом или отменой. Просто `console.error` внутри worker не возвращает ошибку вызывающему коду.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как отменить конкретную задачу Worker?</summary>
+<summary><strong>Как отменить конкретную задачу Worker?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `worker.terminate()` немедленно останавливает весь dedicated worker и все его задачи. Для одной операции проектируют протокол `{ type: "cancel", id }`, а вычисление периодически проверяет флаг отмены. Можно создать worker на одну крупную задачу и terminate его, но повторный startup имеет цену.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Сколько workers создавать?</summary>
+<summary><strong>Сколько workers создавать?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Не по одному на каждый элемент. Каждый worker потребляет память и CPU, а слишком много потоков конкурируют между собой и main thread. Для потока задач используют небольшой pool с очередью, ориентируясь на `navigator.hardwareConcurrency`, профиль нагрузки и измерения, а не принимая число logical cores как прямую рекомендацию.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как избежать устаревшего результата Worker в React?</summary>
+<summary><strong>Как избежать устаревшего результата Worker в React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Помечать запрос `id` и проверять актуальность перед `setState`, либо отправлять cancel для предыдущей задачи. Cleanup компонента снимает listeners и завершает принадлежащий ему worker. Если worker общий для приложения, компонент удаляет только свою subscription, а ownership `terminate` остаётся у общего сервиса.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Всегда ли Worker ускоряет задачу?</summary>
+<summary><strong>Всегда ли Worker ускоряет задачу?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Само вычисление может выполняться столько же или дольше, а startup и serialization добавляют расходы. Пользовательский выигрыш часто состоит не в меньшем total time, а в отсутствии long task на main thread. Решение подтверждают профилированием input responsiveness и временем передачи.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -138,9 +242,17 @@ console.log(buffer.byteLength);
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и почему?</summary>
+<summary><strong>Что будет выведено и почему?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `0`. Buffer указан в transfer list, поэтому его backing memory передана worker, а исходный `ArrayBuffer` стал detached. Без transfer list structured clone создал бы отдельную копию, и исходный buffer сохранил бы длину.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

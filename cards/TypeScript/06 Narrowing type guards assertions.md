@@ -1,4 +1,4 @@
-# 06 Narrowing type guards assertions
+# Narrowing type guards assertions
 
 <!-- CARD-NAV-TOP:START -->
 [← 05 Union intersection discriminated unions](<./05 Union intersection discriminated unions.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Generics →](<./07 Generics.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое сужение типа, `type guard`, `type predicate` и утверждающая функция в TypeScript?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое сужение типа, `type guard`, `type predicate` и утверждающая функция в TypeScript?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Сужение типа (`narrowing`) уточняет широкий тип на основании проверок и потока выполнения. TypeScript отслеживает условия, ранние `return`, присваивания и дискриминаторы, чтобы определить возможный тип в каждой точке программы.
 
@@ -67,56 +72,115 @@ function assertElement(
 
 Type assertion, или утверждение типа, `value as User` устроен иначе: он не выполняет проверку и не создаёт код в JavaScript. Assertion используют, когда разработчик действительно знает больше компилятора, а type guard или схема нужны, когда значение может быть неправильным во время выполнения.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Как TypeScript учитывает ранний <code>return</code>?</summary>
+<summary><strong>Как TypeScript учитывает ранний <code>return</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если ветка с `null` завершается через `return` или `throw`, ниже она больше недостижима. TypeScript исключает `null` из оставшегося типа. Это часть анализа потока управления, а не особое правило только для `if`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Type predicate сам валидирует данные?</summary>
+<summary><strong>Type predicate сам валидирует данные?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. `value is User` только описывает смысл результата функции для компилятора. Реальную валидацию выполняют условия внутри. Предикат должен проверять все свойства, на которые последующий код полагается, иначе он создаёт ложную типобезопасность.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда использовать оператор <code>in</code>?</summary>
+<summary><strong>Когда использовать оператор <code>in</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для сужения объектов по наличию свойства, например `"error" in result`. Сначала нужно убедиться, что значение является объектом и не равно `null`. Оператор видит свойства в цепочке прототипов, а необязательное свойство может присутствовать в нескольких вариантах union, поэтому не каждое применение полностью определяет вариант.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>typeof null === "object"</code> важно для guard?</summary>
+<summary><strong>Почему <code>typeof null === "object"</code> важно для guard?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это историческое поведение JavaScript. Проверки `typeof value === "object"` недостаточно перед оператором `in` или чтением полей, потому что она пропускает `null`. Обычно условие выглядит как `typeof value === "object" && value !== null`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем guard лучше <code>as User</code>?</summary>
+<summary><strong>Чем guard лучше <code>as User</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Type guard выполняет проверку во время выполнения и сужает тип только при успехе. `as User` безусловно меняет статическое представление значения. На границе API, storage, URL или сообщений guard либо схема защищают от фактических неправильных данных, а assertion только скрывает ошибку компилятора.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>if (value)</code> иногда является неправильным сужением?</summary>
+<summary><strong>Почему <code>if (value)</code> иногда является неправильным сужением?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Проверка на truthiness, то есть на логическую истинность, исключает все falsy-значения, которые преобразуются в `false`: `null`, `undefined`, `0`, `""`, `false` и `NaN`. Если ноль или пустая строка допустимы, условие теряет реальные данные. Для отсутствия значения проверяют `value == null` либо отдельно `null` и `undefined`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужна assertion function?</summary>
+<summary><strong>Когда нужна assertion function?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда продолжение программы без выполненного условия является ошибкой: обязательная конфигурация отсутствует, DOM-узел не найден или данные не прошли проверку на системной границе. Если ожидается обычная альтернативная ветка интерфейса, лучше вернуть boolean или типизированный результат ошибки, а не бросать исключение.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -134,9 +198,17 @@ function hasId(value: unknown): value is { id: string } {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему недостаточно проверки <code>"id" in value</code>?</summary>
+<summary><strong>Почему недостаточно проверки <code>"id" in value</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала оператору нужен непримитивный объект, поэтому исключаются примитивы и `null`. Затем наличие свойства не гарантирует его тип: `id` может быть числом или `undefined`. Код проверяет и существование, и строковый тип значения.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

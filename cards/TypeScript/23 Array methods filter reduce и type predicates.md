@@ -1,4 +1,4 @@
-# 23 Array methods filter reduce и type predicates
+# Array methods filter reduce и type predicates
 
 <!-- CARD-NAV-TOP:START -->
 [← 22 Template literal types и branded types](<./22 Template literal types и branded types.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [24 Async Promise Awaited и catch unknown →](<./24 Async Promise Awaited и catch unknown.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как TypeScript типизирует `map`, `filter`, `find`, `reduce` и `flatMap`? Когда нужен предикат типа (`type predicate`)?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как TypeScript типизирует `map`, `filter`, `find`, `reduce` и `flatMap`? Когда нужен предикат типа (`type predicate`)?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Тип результата метода массива зависит от сигнатуры функции обратного вызова и начального типа элементов.
 
@@ -78,63 +83,130 @@ const usersById = users.reduce<Record<string, User>>(
 
 Предикат типа является обещанием разработчика, которое TypeScript не проверяет полностью. Ветка `true` должна означать заявленный тип, а ветка `false` все остальные варианты. Проверку «является маленьким числом» нельзя объявлять как `value is number` для `string | number`, потому что `false` может означать не только строку, но и большое число.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>filter(Boolean)</code> может быть ошибкой даже без TypeScript?</summary>
+<summary><strong>Почему <code>filter(Boolean)</code> может быть ошибкой даже без TypeScript?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он удаляет все ложные (`falsy`) значения. Для массива цен `0` является допустимым, для текстовых полей пустая строка может обозначать введённое состояние, а `false` может быть значимым флагом. Условие должно описывать конкретную цель, например удалять только `null` и `undefined`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда TypeScript 5.5 выводит предикат типа автоматически?</summary>
+<summary><strong>Когда TypeScript 5.5 выводит предикат типа автоматически?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для функции без явно указанного возвращаемого типа, с одним `return`, без изменения параметра и с логическим выражением, которое однозначно сужает тип. Примеры: `x !== undefined`, `x != null`, `typeof x === "string"`. Условие `Boolean(x)` не всегда доказывает нужный тип, а функция с несколькими ветками может потребовать явную сигнатуру.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему неправильный предикат типа опаснее обычного <code>boolean</code>?</summary>
+<summary><strong>Почему неправильный предикат типа опаснее обычного <code>boolean</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 TypeScript доверяет заявлению `value is User` и сужает тип для последующего кода. Если функция проверила только `id`, но пообещала полный `User`, код начнёт читать отсутствующие поля без ошибок компилятора. Предикат должен проверять весь заявленный контракт либо возвращать более узкое и точное утверждение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему предикат должен правильно описывать и ветку <code>false</code>?</summary>
+<summary><strong>Почему предикат должен правильно описывать и ветку <code>false</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 При `if/else`, `filter` и особенно разделении массива TypeScript считает, что `false` исключает заявленный тип. Функция `isSmallNumber(x): x is number`, проверяющая `typeof x === "number" && x < 10`, даёт ложное обещание: большое число тоже возвращает `false`. Такую проверку лучше оставить обычным логическим условием после отдельного сужения до `number`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>reduce</code> с <code>{}</code> не знает будущие свойства?</summary>
+<summary><strong>Почему <code>reduce</code> с <code>{}</code> не знает будущие свойства?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Начальное значение выводится как пустой объект без индексной сигнатуры, описывающей доступ по ключу. Функция `reduce` не должна произвольно менять уже выбранный тип результата. Явный `reduce<Record<Id, User>>`, аннотированная переменная или `new Map<Id, User>()` задают настоящий контракт аккумулятора.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда <code>Map</code> лучше <code>Record</code> для результата группировки?</summary>
+<summary><strong>Когда <code>Map</code> лучше <code>Record</code> для результата группировки?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Map` поддерживает ключи любого типа, имеет явные `get`/`has`, не наследует свойства объекта и естественно выражает отсутствие значения. `Record<FiniteUnion, T>` лучше, когда набор ключей конечный и каждый ключ обязателен. `Record<string, T>` может создать ложное впечатление, что значение есть по любой строке.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем <code>noUncheckedIndexedAccess</code>, если методы массива уже типизированы?</summary>
+<summary><strong>Зачем <code>noUncheckedIndexedAccess</code>, если методы массива уже типизированы?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `find` явно возвращает `undefined`, но обычный доступ `items[0]` исторически имеет тип `T`, хотя массив может быть пуст. Флаг делает такой результат `T | undefined` и учитывает ту же возможность отсутствия значения при чтении из открытых словарей.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>flatMap</code> может заменить <code>map(...).filter(...)</code>?</summary>
+<summary><strong>Чем <code>flatMap</code> может заменить <code>map(...).filter(...)</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Функция возвращает `[value]` для нужного результата и `[]` для пропуска. Итоговый тип часто выводится без промежуточного массива со значениями `null` или `undefined`. Но если условие является важной отдельной проверкой типа, последовательные `filter(isType).map(...)` могут быть понятнее.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -158,9 +230,17 @@ const byId = users.reduce<Record<string, User>>(
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что доказывает предикат и чего не гарантирует <code>Record&lt;string, User&gt;</code>?</summary>
+<summary><strong>Что доказывает предикат и чего не гарантирует <code>Record&lt;string, User&gt;</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Предикат удаляет `null`, поэтому функция `reduce` получает `User`. `Record<string, User>` описывает значение по произвольной строке, но объект содержит только фактически добавленные `id`. При чтении неизвестного ключа нужен `noUncheckedIndexedAccess`, `Map` или явная проверка.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

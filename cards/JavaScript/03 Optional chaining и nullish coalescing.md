@@ -1,4 +1,4 @@
-# 03 Optional chaining и nullish coalescing
+# Optional chaining и nullish coalescing
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 Сравнение и приведение типов](<./02 Сравнение и приведение типов.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 var let const и область видимости →](<./04 var let const и область видимости.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают optional chaining `?.` и nullish coalescing `??`? Чем `??` отличается от `||`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают optional chaining `?.` и nullish coalescing `??`? Чем `??` отличается от `||`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Оператор optional chaining `?.`, или опциональная цепочка, останавливает доступ к свойству или вызов, если значение слева равно `null` или `undefined`. Вместо ошибки выражение возвращает `undefined`.
 
@@ -49,28 +54,51 @@ const title = response.title ?? "Без названия";
 
 Правый операнд `??` вычисляется лениво, только если слева действительно `null` или `undefined`. Это позволяет безопасно вызывать функцию создания значения по умолчанию: `cached ?? createValue()`.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем nullish-значения отличаются от falsy-значений?</summary>
+<summary><strong>Чем nullish-значения отличаются от falsy-значений?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Nullish означает только `null` или `undefined`. Ложными являются также `false`, `0`, `-0`, `0n`, `""` и `NaN`. Поэтому `??` подходит, когда `0`, пустая строка или `false` являются допустимыми данными, а `||` подходит, когда любое ложное значение действительно нужно заменить.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем отличаются <code>object?.method()</code>, <code>object.method?.()</code> и <code>object?.method?.()</code>?</summary>
+<summary><strong>Чем отличаются <code>object?.method()</code>, <code>object.method?.()</code> и <code>object?.method?.()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `object?.method()` проверяет только `object`; если объект существует, но метода нет, вызов завершится ошибкой. `object.method?.()` предполагает существование объекта, но пропускает вызов отсутствующего метода. `object?.method?.()` проверяет оба значения.
 
 В форме `object.method?.()` вызов сохраняет `object` как `this`. Если значение существует, но не является функцией, оператор не спасёт от `TypeError`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Всегда ли опциональная цепочка продолжается до конца выражения?</summary>
+<summary><strong>Всегда ли опциональная цепочка продолжается до конца выражения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Только пока цепочка остаётся непрерывной. Скобки могут её прервать:
 
@@ -81,33 +109,69 @@ user?.profile?.name;  // безопасно
 
 Во втором выражении результат `user?.profile` сначала вычисляется отдельно, а затем обычный доступ `.name` выполняется уже без защиты.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли использовать <code>?.</code> с необъявленной переменной или слева от присваивания?</summary>
+<summary><strong>Можно ли использовать <code>?.</code> с необъявленной переменной или слева от присваивания?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. `missingVariable?.name` выбросит `ReferenceError`, если идентификатор вообще не объявлен. Оператор проверяет значение, но не отменяет поиск переменной в области видимости. Запись `user?.name = "Ada"` также недопустима, потому что опциональная цепочка не может быть целью присваивания.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда optional chaining может скрыть ошибку?</summary>
+<summary><strong>Когда optional chaining может скрыть ошибку?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда свойство обязательно по контракту. Запись `user?.profile?.name` превращает нарушение обязательной структуры в тихий `undefined`, после чего ошибка проявляется в другом месте. `?.` следует использовать для действительно необязательных данных, а внешний ответ API сначала проверять на соответствие контракту.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли смешивать <code>??</code> с <code>||</code> и <code>&amp;&amp;</code>?</summary>
+<summary><strong>Можно ли смешивать <code>??</code> с <code>||</code> и <code>&amp;&amp;</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Без скобок нельзя: выражение вроде `a ?? b || c` является синтаксической ошибкой. Нужно явно указать порядок, например `(a ?? b) || c` или `a ?? (b || c)`. Эти варианты имеют разный смысл, поэтому скобки являются частью контракта выражения, а не только оформления.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает оператор <code>??=</code>?</summary>
+<summary><strong>Что делает оператор <code>??=</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `value ??= fallback` присваивает значение справа только тогда, когда текущее значение равно `null` или `undefined`. Левая часть вычисляется один раз. Это отличается от `value ||= fallback`, который также заменит `0`, `false` и пустую строку.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -127,9 +191,17 @@ console.log(settings.onSave?.());
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и почему вызов <code>onSave</code> не завершится ошибкой?</summary>
+<summary><strong>Что будет выведено и почему вызов <code>onSave</code> не завершится ошибкой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Результат: `50`, `0`, `"Untitled"`, пустая строка и `undefined`. Оператор `||` заменяет ложные значения, а `??` сохраняет `0` и `""`. Вызов `settings.onSave?.()` пропускается, потому что свойство равно `undefined`, поэтому всё выражение возвращает `undefined`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

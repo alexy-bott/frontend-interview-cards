@@ -1,4 +1,4 @@
-# 26 Promise
+# Promise
 
 <!-- CARD-NAV-TOP:START -->
 [← 25 Timers setTimeout setInterval](<./25 Timers setTimeout setInterval.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [27 Promise combinators →](<./27 Promise combinators.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое Promise? Как формируется результат цепочки `then`, `catch` и `finally`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое Promise? Как формируется результат цепочки `then`, `catch` и `finally`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `Promise` является объектом, который представляет будущий результат операции. Он отделяет момент запуска работы от момента, когда код сможет обработать успешное значение или причину ошибки.
 
@@ -49,33 +54,64 @@ Thenable означает объект с вызываемым методом `t
 
 `catch(onRejected)` является сокращением для `.then(undefined, onRejected)`. `finally(onFinally)` выполняет общий завершающий шаг и обычно пропускает исходное значение или ошибку дальше.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Executor выполняется сразу или позже?</summary>
+<summary><strong>Executor выполняется сразу или позже?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сразу, синхронно внутри конструктора. Асинхронными являются будущая операция и реакции `.then`, а не сам вызов executor. Поэтому тяжёлый цикл внутри `new Promise` заблокирует main thread ещё до возврата объекта Promise.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>resolved</code> отличается от <code>fulfilled</code>?</summary>
+<summary><strong>Чем <code>resolved</code> отличается от <code>fulfilled</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `Fulfilled` означает окончательный успешный результат. `Resolved` означает, что дальнейшая судьба Promise уже зафиксирована. Если выполнить `resolve(innerPromise)`, внешний Promise будет следовать за `innerPromise`: он уже resolved, но может оставаться `pending`, пока внутренний Promise не завершится.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет при нескольких вызовах <code>resolve</code> и <code>reject</code>?</summary>
+<summary><strong>Что будет при нескольких вызовах <code>resolve</code> и <code>reject</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Влияет только первый вызов, который фиксирует результат или связывает Promise с другим значением. Последующие вызовы игнорируются. Если executor синхронно выбросил ошибку до завершения, Promise станет rejected; если ошибка выброшена после успешного `resolve`, уже зафиксированный результат не меняется.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Ловит ли Promise ошибку, выброшенную позже внутри таймера executor?</summary>
+<summary><strong>Ловит ли Promise ошибку, выброшенную позже внутри таймера executor?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Конструктор превращает в rejection только синхронную ошибку самого executor. Callback `setTimeout` выполняется в другом call stack. В нём нужно явно вызвать `reject(error)` или обернуть опасный код своим `try/catch`.
 
@@ -91,10 +127,18 @@ new Promise((resolve, reject) => {
 });
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему забытый <code>return</code> внутри <code>.then()</code> является ошибкой?</summary>
+<summary><strong>Почему забытый <code>return</code> внутри <code>.then()</code> является ошибкой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Без `return` callback завершается `undefined`, и следующий Promise сразу становится fulfilled с `undefined`. Вложенная асинхронная операция продолжает жить отдельно: цепочка её не ждёт и ближайший `catch` может не получить её rejection.
 
@@ -104,54 +148,114 @@ loadUser().then((user) => {
 });
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем второй аргумент <code>.then(success, failure)</code> отличается от следующего <code>.catch()</code>?</summary>
+<summary><strong>Чем второй аргумент <code>.then(success, failure)</code> отличается от следующего <code>.catch()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Второй аргумент обрабатывает rejection исходного Promise, но не ошибку, выброшенную соседним `success`, потому что эта ошибка относится уже к Promise, возвращённому `.then`. Следующий `.catch()` обрабатывает и исходный rejection, и ошибку любого предыдущего success callback, поэтому обычно создаёт более понятную общую границу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>catch</code> может восстановить цепочку?</summary>
+<summary><strong>Как <code>catch</code> может восстановить цепочку?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если `catch` вернул обычное значение, следующий Promise становится fulfilled этим значением. Если восстановиться нельзя, обработчик должен снова выполнить `throw` или вернуть rejected Promise. Молчаливый `catch`, который ничего не возвращает и ничего не показывает, превращает ошибку в успешный `undefined`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как работает <code>finally</code>?</summary>
+<summary><strong>Как работает <code>finally</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Callback не получает успешное значение или причину ошибки, потому что предназначен для общего cleanup. Если он завершился успешно, исходный результат проходит дальше. Возвращённое обычное значение не заменяет его. Если callback выбросил ошибку или вернул rejected Promise, цепочка становится rejected уже с новой причиной.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>new Promise(async (resolve, reject) =&gt; ...)</code> считается антипаттерном?</summary>
+<summary><strong>Почему <code>new Promise(async (resolve, reject) =&gt; ...)</code> считается антипаттерном?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Конструктор ожидает синхронный executor и не использует Promise, который возвращает `async`-функция. Ошибка после первого `await` отклонит внутренний, никем не наблюдаемый Promise и может не вызвать внешний `reject`. Если API уже возвращает Promise, дополнительный конструктор не нужен; используют обычную `async`-функцию. Конструктор нужен прежде всего для адаптации callback API.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Promise является ленивым?</summary>
+<summary><strong>Promise является ленивым?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычно нет. Executor запускается при создании, а `fetch()` начинает запрос при вызове. Добавление `.then` только подписывается на уже запущенный результат. Если нужен ленивый запуск, хранят функцию `() => createPromise()` и вызывают её в нужный момент.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли отменить любой Promise?</summary>
+<summary><strong>Можно ли отменить любой Promise?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Универсального метода отмены Promise нет. Отменяется исходная операция через её собственный протокол, например `AbortSignal` у `fetch`. После отмены Promise лишь сообщает соответствующий результат. Игнорирование результата и реальная остановка работы являются разными действиями.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли синхронно узнать состояние Promise?</summary>
+<summary><strong>Можно ли синхронно узнать состояние Promise?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Стандартного публичного метода нет. Результат получают через `then` или `await`, а инструменты разработчика могут показывать внутреннее состояние только для отладки. Код не должен ветвиться на основе нестандартной инспекции Promise.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -167,9 +271,17 @@ Promise.resolve(2)
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено?</summary>
+<summary><strong>Что будет выведено?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `undefined`. Первый callback возвращает `4`. Второй создаёт fulfilled Promise со значением `8`, но не возвращает его, поэтому сам callback завершается `undefined`. Следующее звено не связано с созданным Promise и получает `undefined`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

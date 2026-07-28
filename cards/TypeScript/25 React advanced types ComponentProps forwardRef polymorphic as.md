@@ -1,4 +1,4 @@
-# 25 React advanced types ComponentProps forwardRef polymorphic as
+# React advanced types ComponentProps forwardRef polymorphic as
 
 <!-- CARD-NAV-TOP:START -->
 [← 24 Async Promise Awaited и catch unknown](<./24 Async Promise Awaited и catch unknown.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [26 tsconfig target lib moduleResolution paths jsx →](<./26 tsconfig target lib moduleResolution paths jsx.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают `ComponentProps`, типизация `ref`, `forwardRef` и полиморфные компоненты со свойством `as` в React 18 и 19?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают `ComponentProps`, типизация `ref`, `forwardRef` и полиморфные компоненты со свойством `as` в React 18 и 19?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `React.ComponentProps<T>` извлекает тип публичных свойств React-компонента или встроенного JSX-тега (`intrinsic element`):
 
@@ -89,70 +94,145 @@ type TextProps<Element extends React.ElementType> =
 
 Radix UI часто использует не `as`, а `asChild`: примитив Radix не создаёт собственный DOM-узел, а передаёт свойства и поведение дочернему элементу. Это уменьшает вложенность, но не гарантирует правильную HTML-семантику. Если `Dialog.Trigger asChild` получает неподходящий элемент, код приложения должен обеспечить управление с клавиатуры, передачу `ref` и доступное имя для вспомогательных технологий.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Когда использовать <code>ComponentProps&lt;typeof Component&gt;</code>?</summary>
+<summary><strong>Когда использовать <code>ComponentProps&lt;typeof Component&gt;</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для компонента-обёртки, тестовой вспомогательной функции или адаптера, который должен следовать публичному контракту существующего компонента. Если новый компонент предоставляет отдельный API, экспортируемый именованный тип свойств обычно понятнее и меньше связывает его с деталями чужой реализации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>ComponentPropsWithoutRef</code> отличается от <code>ComponentPropsWithRef</code>?</summary>
+<summary><strong>Чем <code>ComponentPropsWithoutRef</code> отличается от <code>ComponentPropsWithRef</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Первый исключает специальное свойство `ref` и подходит обёртке, которая не передаёт ссылку. Второй добавляет `ref` правильного узла или экземпляра. Обещать `ref` в типах можно только тогда, когда реализация действительно присоединяет его к нужному элементу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему порядок параметров типов у <code>forwardRef</code> легко перепутать?</summary>
+<summary><strong>Почему порядок параметров типов у <code>forwardRef</code> легко перепутать?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В параметрах типов сначала указан `ref`, затем `props`: `forwardRef<HTMLButtonElement, ButtonProps>`. У функции рендера порядок обычный: `(props, ref)`. Если параметры типов не задать, TypeScript может вывести для `ref` недостаточно точный тип.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что изменилось для <code>ref</code> в React 19?</summary>
+<summary><strong>Что изменилось для <code>ref</code> в React 19?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Функциональный компонент может объявить и прочитать `ref` как обычное свойство, поэтому `forwardRef` не нужен новому коду только ради передачи ссылки. В React 18 это не работает. React 19 также разрешает callback ref, то есть ссылке-функции, вернуть функцию очистки. Поэтому такую функцию с присваиванием лучше записывать с фигурными скобками без неявного `return`, иначе React может принять возвращённое присваиванием значение за функцию очистки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужен <code>useImperativeHandle</code>?</summary>
+<summary><strong>Когда нужен <code>useImperativeHandle</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда родителю нужно предоставить не весь DOM-узел, а небольшой императивный API, например `{ focus(); clear() }`. Компонент создаёт объект доступных методов через `useImperativeHandle(ref, ...)` и типизирует `ref` этим интерфейсом. Для состояния вроде `open` предпочтительнее обычное свойство, потому что оно сохраняет декларативный поток данных.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему полиморфное свойство <code>as</code> сложно типизировать?</summary>
+<summary><strong>Почему полиморфное свойство <code>as</code> сложно типизировать?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Из выбранного элемента нужно получить его свойства, удалить конфликты с собственными свойствами, сохранить обязательные поля, вывести тип `ref` и не потерять параметр типа в обёртке или `forwardRef`. TypeScript также должен выдавать понятные ошибки для объединения элементов. В дизайн-системе эту логику можно вынести в одну проверенную вспомогательную типизацию, а прикладному коду обычно понятнее отдельные `Button` и `Link`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как типизировать <code>ref</code> полиморфного компонента?</summary>
+<summary><strong>Как типизировать <code>ref</code> полиморфного компонента?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Тип ссылки получают из `React.ComponentPropsWithRef<Element>["ref"]` или через `ComponentRef<Element>`. Но обобщённая функция и `forwardRef` в React 18 плохо соединяются без отдельного вспомогательного типа или контролируемого утверждения. Эту типизацию проверяют статическими тестами: `as="a"` принимает `ref` ссылки, `as="button"` принимает `ref` кнопки, а неверная комбинация не компилируется.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>asChild</code> Radix отличается от <code>as</code>?</summary>
+<summary><strong>Чем <code>asChild</code> Radix отличается от <code>as</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `as` позволяет компоненту выбрать тип создаваемого элемента. `asChild` передаёт поведение примитива Radix существующему дочернему элементу через композицию и клонирование. Дочерний компонент должен принять переданные свойства и `ref`. TypeScript может проверить часть контракта, но не доказывает правильную HTML-семантику и доступность результата.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли через типы потребовать только конкретный JSX-компонент в <code>children</code>?</summary>
+<summary><strong>Можно ли через типы потребовать только конкретный JSX-компонент в <code>children</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Надёжно нет. После проверки JSX элементы имеют общий тип `ReactElement`, и TypeScript не сохраняет строгую идентичность исходного компонента так, как часто ожидают. Для обязательной структуры лучше использовать явные свойства, составные компоненты (`compound components`) с проверкой во время выполнения или API на основе данных.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -181,9 +261,17 @@ const IconButton = React.forwardRef<
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем исключены <code>children</code> и <code>aria-label</code>?</summary>
+<summary><strong>Зачем исключены <code>children</code> и <code>aria-label</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Компонент намеренно выводит только иконку из своей реализации, а доступное имя задаёт обязательное свойство `label`. `Omit` не позволяет потребителю обойти этот контракт через нативные свойства. Остальные атрибуты кнопки и правильный `ref` сохраняются.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

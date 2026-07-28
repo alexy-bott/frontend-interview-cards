@@ -1,4 +1,4 @@
-# 05 HTML формы labels validation disabled readonly
+# HTML формы labels validation disabled readonly
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 Accessibility ARIA accessible name keyboard](<./04 Accessibility ARIA accessible name keyboard.md>) · [↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Head meta SEO Open Graph resource hints →](<./06 Head meta SEO Open Graph resource hints.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что важно знать про HTML-формы: `label`, валидацию, `disabled`, `readonly` и отправку?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что важно знать про HTML-формы: `label`, валидацию, `disabled`, `readonly` и отправку?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `<form>` объединяет поля и задаёт нативный сценарий отправки данных. Браузер умеет отправлять форму по кнопке или Enter, проверять ограничения полей, создавать `FormData` и сообщать об отправке событием `submit`. В React обработчик обычно перехватывает это событие через `preventDefault()`, но сама семантика и поведение формы остаются браузерными.
 
@@ -23,70 +28,128 @@
 
 Кнопка внутри формы без `type` по умолчанию может отправлять форму. Поэтому для обычных кнопок внутри формы часто явно пишут `type="button"`, а для отправки - `type="submit"`.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему placeholder не заменяет label?</summary>
+<summary><strong>Почему placeholder не заменяет label?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он исчезает при вводе, может быть плохо контрастным и не является постоянным названием поля. Видимый `<label>` остаётся на экране, даёт полю доступное имя и увеличивает область нажатия.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему поле не попало в <code>FormData</code>?</summary>
+<summary><strong>Почему поле не попало в <code>FormData</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сначала нужно проверить `name`: без него у значения нет ключа для отправки. Поля с `disabled`, невыбранные checkbox/radio и некоторые другие неактивные элементы тоже не включаются. У нажатой submit-кнопки собственные `name` и `value`, наоборот, могут попасть в данные и показать, каким действием отправили форму.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему кнопка внутри формы внезапно отправляет форму?</summary>
+<summary><strong>Почему кнопка внутри формы внезапно отправляет форму?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 У `<button>` внутри формы тип по умолчанию - `submit`. Если кнопка нужна для открытия меню или добавления поля без отправки формы, нужно указать `type="button"`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Заменяет ли нативная валидация серверную?</summary>
+<summary><strong>Заменяет ли нативная валидация серверную?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Нативная и JavaScript-валидация быстро показывают ошибки пользователю, но запрос можно отправить без интерфейса или изменить в DevTools. Сервер должен заново проверить формат, обязательность, права доступа и бизнес-правила.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как добавить собственную ошибку к нативной валидации?</summary>
+<summary><strong>Как добавить собственную ошибку к нативной валидации?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Вызвать у поля `setCustomValidity('Текст ошибки')`. Непустая строка делает поле невалидным, а после исправления ошибку нужно сбросить вызовом `setCustomValidity('')`. `checkValidity()` только проверяет состояние, а `reportValidity()` дополнительно просит браузер показать сообщение.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли кнопка вне <code>&lt;form&gt;</code> отправить эту форму?</summary>
+<summary><strong>Может ли кнопка вне <code>&lt;form&gt;</code> отправить эту форму?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. Форме задают `id`, а кнопке - `type="submit"` и атрибут `form` со значением этого `id`. Так кнопка остаётся связанной с формой, даже если расположена вне неё в DOM, например в нижней панели модального окна.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>disabled</code>, <code>readonly</code> и <code>aria-disabled</code> отличаются друг от друга?</summary>
+<summary><strong>Чем <code>disabled</code>, <code>readonly</code> и <code>aria-disabled</code> отличаются друг от друга?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `disabled` выключает нативный контрол и исключает его из отправки. `readonly` сохраняет фокус и отправку значения, но запрещает редактирование поддерживаемого поля. `aria-disabled="true"` только сообщает вспомогательным технологиям, что элемент недоступен: оно само не блокирует клики, клавиатуру и отправку, поэтому это поведение должен реализовать код.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Элемент | Что важно |
-> | --- | --- |
-> | Поле ввода | `label`, `name`, `type` |
-> | Кнопка отправки | `type="submit"` |
-> | Вторичная кнопка | `type="button"` |
-> | Поле с `disabled` | Не отправляется |
-> | Поле с `readonly` | Не редактируется, может отправляться |
-> | Текст ошибки | Связать с полем через `aria-describedby`, состояние обозначить `aria-invalid` |
+| Элемент | Что важно |
+| --- | --- |
+| Поле ввода | `label`, `name`, `type` |
+| Кнопка отправки | `type="submit"` |
+| Вторичная кнопка | `type="button"` |
+| Поле с `disabled` | Не отправляется |
+| Поле с `readonly` | Не редактируется, может отправляться |
+| Текст ошибки | Связать с полем через `aria-describedby`, состояние обозначить `aria-invalid` |
 
 ## Связанные темы
 

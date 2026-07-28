@@ -1,4 +1,4 @@
-# 20 Формы события refs и DOM типы
+# Формы события refs и DOM типы
 
 <!-- CARD-NAV-TOP:START -->
 [← 19 React TypeScript типизация](<./19 React TypeScript типизация.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [21 Redux Toolkit RTK Query и typed hooks →](<./21 Redux Toolkit RTK Query и typed hooks.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как типизировать формы, React-события, ссылки `ref` и DOM-элементы? Какие ограничения во время выполнения TypeScript не решает?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как типизировать формы, React-события, ссылки `ref` и DOM-элементы? Какие ограничения во время выполнения TypeScript не решает?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 React предоставляет обобщённые типы событий. Их параметр указывает, на каком элементе установлен обработчик:
 
@@ -65,63 +70,130 @@ function focusInput() {
 
 React Hook Form связывает имена полей и значения через `useForm<FormValues>()`, но параметр типа не преобразует DOM-строку в число и не проверяет ответ backend. Для преобразования используются `valueAsNumber`, `setValueAs` или resolver, который подключает библиотечную схему валидации. Если схема преобразует входные значения, важно различать исходный тип полей и итоговый тип после разбора.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему обычно читают <code>currentTarget</code>, а не <code>target</code>?</summary>
+<summary><strong>Почему обычно читают <code>currentTarget</code>, а не <code>target</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `currentTarget` является элементом, на котором зарегистрирован текущий обработчик, поэтому `React.ChangeEvent<HTMLInputElement>` гарантирует ему свойства `input`. `target` является исходным участником события и при всплытии может быть дочерним узлом. При делегировании событий тип `target` проверяют отдельно через `instanceof` или функцию проверки типа.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое <code>SyntheticEvent</code>?</summary>
+<summary><strong>Что такое <code>SyntheticEvent</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это React-обёртка над браузерным событием с единым интерфейсом для поддерживаемых платформ. Исходное событие доступно как `nativeEvent`, но зависеть от его конкретного типа обычно не нужно. До React 17 объекты событий переиспользовались через пул (`event pooling`) и очищались после обработчика. Начиная с React 17 веб-события больше не очищаются, поэтому `event.persist()` для сохранения объекта не требуется.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>type="number"</code> всё равно требует преобразования значения?</summary>
+<summary><strong>Почему <code>type="number"</code> всё равно требует преобразования значения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HTML позволяет промежуточное состояние ввода, которое ещё не является корректным числом, включая пустую строку. `Number("")` даёт `0`, что часто неверно по смыслу, а `valueAsNumber` даёт `NaN`. Сначала определяют модель пустого поля, затем проверяют число через `Number.isFinite` и диапазон бизнес-правил.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем контролируемая форма отличается от неконтролируемой с точки зрения типов?</summary>
+<summary><strong>Чем контролируемая форма отличается от неконтролируемой с точки зрения типов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В контролируемом поле (`controlled input`) текущее значение хранится в состоянии React, а `onChange` обновляет его. В неконтролируемом поле (`uncontrolled input`) значение остаётся в DOM и читается через `ref`, `FormData` или библиотеку вроде React Hook Form. TypeScript может описать оба подхода, но только контролируемое состояние постоянно содержит актуальное значение в модели React.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как типизировать <code>FormData</code> безопаснее?</summary>
+<summary><strong>Как типизировать <code>FormData</code> безопаснее?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Создать отдельную функцию преобразования `FormData -> FormValues`, которая проверяет каждый ключ, `null`, `File` и формат строки. Приведение `Object.fromEntries(formData) as FormValues` скрывает отсутствие полей, повторяющиеся имена и файлы. Для большой формы эту роль может выполнять парсер на основе схемы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие формы <code>ref</code> бывают в React?</summary>
+<summary><strong>Какие формы <code>ref</code> бывают в React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Объектный `ref` хранит значение в `.current`; callback ref, то есть ссылка-функция, получает узел при подключении и `null` при отключении; передаваемый `ref` проходит через компонент к внутреннему узлу. Общий принимаемый тип обычно записывается как `React.Ref<T>`, а объектный как `React.RefObject<T | null>`. Callback ref полезен, когда на появление узла нужно сразу отреагировать.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как передать ref через свой компонент в React 18 и React 19?</summary>
+<summary><strong>Как передать ref через свой компонент в React 18 и React 19?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В React 18 функциональный компонент оборачивают в `forwardRef` и типизируют DOM-узел и свойства компонента. В React 19 `ref` можно принять как обычное свойство, например через `ComponentPropsWithRef<"input">`. В обоих случаях компонент обязан действительно присоединить `ref` к DOM-узлу или передать дальше.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что гарантирует параметр типа в <code>useForm&lt;FormValues&gt;()</code>?</summary>
+<summary><strong>Что гарантирует параметр типа в <code>useForm&lt;FormValues&gt;()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он проверяет имена полей и типы операций библиотеки: `register`, `setValue`, `watch`, `handleSubmit`. Он не доказывает, что DOM или внешняя схема вернули именно такие значения. Если resolver преобразует значения, входной и выходной типы должны соответствовать его реальному контракту.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -158,9 +230,17 @@ function AgeForm() {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему здесь недостаточно написать <code>Number(data.get("age"))</code>?</summary>
+<summary><strong>Почему здесь недостаточно написать <code>Number(data.get("age"))</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Поля может не быть, значением может быть `File`, пустая строка превратится в `0`, а произвольный текст в `NaN`. Последовательные проверки отделяют форму DOM от допустимого доменного возраста.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

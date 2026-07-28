@@ -1,4 +1,4 @@
-# 15 enum const enum и literal unions
+# enum const enum и literal unions
 
 <!-- CARD-NAV-TOP:START -->
 [← 14 as const satisfies и type assertions](<./14 as const satisfies и type assertions.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [16 tsconfig strict mode →](<./16 tsconfig strict mode.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Чем отличаются `enum`, `const enum`, literal union и объект `as const`? Что выбирать во frontend?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Чем отличаются `enum`, `const enum`, literal union и объект `as const`? Что выбирать во frontend?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Все четыре подхода могут описывать конечный набор значений, но дают разный код во время выполнения и разный способ использовать значения.
 
@@ -80,47 +85,94 @@ type Status = (typeof Status)[keyof typeof Status];
 
 Этот вариант генерирует обычный понятный JavaScript-объект, не требует специальной поддержки enum и позволяет вывести тип из единственного источника значений.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему во frontend часто выбирают literal union вместо <code>enum</code>?</summary>
+<summary><strong>Почему во frontend часто выбирают literal union вместо <code>enum</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Union не создаёт дополнительный код, естественно работает со строками из props и JSON и хорошо поддерживает исчерпывающую проверку. Если реальный объект не нужен, enum не даёт обязательного преимущества. Однако существующий проект или публичный API может обоснованно использовать enum ради пространства имён и единого набора значений.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем numeric enum отличается от string enum?</summary>
+<summary><strong>Чем numeric enum отличается от string enum?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Числовой enum умеет автоматически нумеровать элементы и создаёт обратное отображение, или reverse mapping, от числа к имени. Строковый требует указать значения явно и не имеет такого отображения. В API строковые значения обычно безопаснее для чтения и стабильнее при перестановке элементов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>const enum</code> может сломаться между пакетами?</summary>
+<summary><strong>Почему <code>const enum</code> может сломаться между пакетами?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Значение встраивается в код потребителя во время его компиляции. Если декларации взяты из одной версии пакета, а выполняемый код загружен из другой, встроенное старое число или строка может не совпасть с новой логикой. Кроме того, транспилятор, обрабатывающий файлы изолированно, не всегда имеет информацию для безопасного инлайнинга чужого enum.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>preserveConstEnums</code>?</summary>
+<summary><strong>Что делает <code>preserveConstEnums</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Настройка запрещает полностью удалять объявление обычного `const enum` из сгенерированного JavaScript и создаёт объект, похожий на обычный `enum`. Значения внутри того же проекта всё ещё могут подставляться. TypeScript использует такой подход при собственной сборке деклараций, чтобы не публиковать опасный внешний `const enum`, объявленный только в `.d.ts` (`ambient const enum`).
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда объект <code>as const</code> удобнее literal union?</summary>
+<summary><strong>Когда объект <code>as const</code> удобнее literal union?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда значения нужны во время выполнения: передать их в Select, получить `Object.values`, использовать как ключи отображения или экспортировать единый набор констант. Union сам по себе существует только для компилятора, а объект даёт и реальные значения, и выводимый из них тип.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как проверить обработку всех вариантов?</summary>
+<summary><strong>Как проверить обработку всех вариантов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сузить конечный union в `switch`, а после всех `case` проверить остаток как `never`:
 
@@ -143,12 +195,24 @@ function getLabel(status: Status): string {
 
 После добавления нового статуса TypeScript укажет на необработанный вариант.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как синхронизировать статусы с backend?</summary>
+<summary><strong>Как синхронизировать статусы с backend?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Не поддерживать независимую копию вручную, если контракт уже описан в OpenAPI. Типы и клиент можно генерировать, а во время выполнения всё равно проверять несовместимый внешний ответ там, где это критично. Если генерации нет, один экспортируемый массив или объект должен быть источником и значений, и union-типа.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

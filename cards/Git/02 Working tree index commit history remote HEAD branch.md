@@ -1,4 +1,4 @@
-# 02 Working tree index commit history remote HEAD branch
+# Working tree index commit history remote HEAD branch
 
 <!-- CARD-NAV-TOP:START -->
 [← 01 Что такое Git и зачем он frontend разработчику](<./01 Что такое Git и зачем он frontend разработчику.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Branching strategy feature branch main trunk git flow →](<./03 Branching strategy feature branch main trunk git flow.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое working tree, index, commit, `HEAD`, branch и remote в Git? Как изменение проходит между ними?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое working tree, index, commit, `HEAD`, branch и remote в Git? Как изменение проходит между ними?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 При обычной работе Git сравнивает три состояния проекта: снимок в текущем commit, подготовленное состояние в index и файлы в working tree. Понимание этих трёх слоёв объясняет поведение `status`, `diff`, `add`, `commit`, `restore` и `reset`.
 
@@ -33,82 +38,156 @@ HEAD -> main -> commit C
              working tree -> текущие правки
 ```
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что показывает <code>git status</code>?</summary>
+<summary><strong>Что показывает <code>git status</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Команда сопоставляет состояние `HEAD`, index и working tree. Изменения между `HEAD` и index показываются как staged, между index и working tree - как not staged. Отдельно выводятся untracked-файлы, которых ещё нет в index и текущем commit.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем отличаются <code>git diff</code> и <code>git diff --staged</code>?</summary>
+<summary><strong>Чем отличаются <code>git diff</code> и <code>git diff --staged</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `git diff` показывает unstaged-разницу между working tree и index. `git diff --staged`, также доступный как `--cached`, показывает разницу между index и `HEAD`, то есть содержимое будущего commit. Для полной проверки перед commit полезно посмотреть обе команды.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>git add</code>?</summary>
+<summary><strong>Что делает <code>git add</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `git add` записывает текущее содержимое выбранных файлов в index. Команда не просто помечает файл галочкой: index хранит конкретную подготовленную версию. `git add -p` позволяет добавить не весь файл, а выбранные фрагменты diff, чтобы разделить изменения на логические commits.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит при <code>git commit</code>?</summary>
+<summary><strong>Что происходит при <code>git commit</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Git создаёт commit из снимка в index, связывает его с текущим `HEAD` как с родителем и передвигает текущую ветку на новый commit. Unstaged-изменения из working tree в него не попадут.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое detached HEAD?</summary>
+<summary><strong>Что такое detached HEAD?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В этом состоянии `HEAD` указывает прямо на commit, а не на ветку. Новые commits создавать можно, но обычная ветка не будет автоматически двигаться вместе с ними. Чтобы не потерять доступ к такой линии после переключения, от нужного commit создают ветку, например `git switch -c experiment`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем локальная ветка <code>main</code> отличается от <code>origin/main</code>?</summary>
+<summary><strong>Чем локальная ветка <code>main</code> отличается от <code>origin/main</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `main` - изменяемая локальная ветка. `origin/main` - remote-tracking branch, то есть локальное представление последнего полученного состояния ветки `main` на remote `origin`. Она обновляется при `fetch` и не обязана совпадать ни с локальной `main`, ни с текущим состоянием сервера до следующего обмена.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>fetch</code> отличается от <code>pull</code>?</summary>
+<summary><strong>Чем <code>fetch</code> отличается от <code>pull</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `git fetch` получает недостающие данные истории и обновляет remote-tracking branches, не интегрируя их в текущую ветку. `git pull` сначала выполняет fetch, а затем интегрирует полученную ветку через merge или rebase в зависимости от аргументов и конфигурации. Поэтому `fetch` удобен, когда результат сначала нужно посмотреть.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое upstream branch?</summary>
+<summary><strong>Что такое upstream branch?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это ветка, с которой локальная ветка связана для операций без явного указания источника или назначения. Например, локальная `main` часто отслеживает `origin/main`; тогда `git status` показывает, насколько она впереди или позади, а `pull` и `push` понимают целевую ветку по настройке.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>.gitignore</code> не игнорирует уже отслеживаемый файл?</summary>
+<summary><strong>Почему <code>.gitignore</code> не игнорирует уже отслеживаемый файл?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `.gitignore` влияет на поиск неотслеживаемых файлов. Если файл уже есть в index и commits, Git продолжает видеть его изменения. Чтобы прекратить отслеживание, файл нужно удалить из index отдельной операцией, например `git rm --cached`, и зафиксировать это изменение.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Ситуация | Что важно понимать |
-> |---|---|
-> | Частичный commit | Через `git add -p` можно отделить исправление компонента от несвязанного форматирования. |
-> | Проверка перед commit | `git diff` показывает незапланированные правки, а `git diff --staged` - будущий commit. |
-> | Обновление ветки | `fetch` позволяет сначала сравнить локальную ветку с `origin/main`, не меняя рабочие файлы. |
-> | Случайно добавленный `.env` | Добавление в `.gitignore` не убирает уже отслеживаемый файл и не удаляет секрет из истории. |
+| Ситуация | Что важно понимать |
+|---|---|
+| Частичный commit | Через `git add -p` можно отделить исправление компонента от несвязанного форматирования. |
+| Проверка перед commit | `git diff` показывает незапланированные правки, а `git diff --staged` - будущий commit. |
+| Обновление ветки | `fetch` позволяет сначала сравнить локальную ветку с `origin/main`, не меняя рабочие файлы. |
+| Случайно добавленный `.env` | Добавление в `.gitignore` не убирает уже отслеживаемый файл и не удаляет секрет из истории. |
 
 ## Связанные темы
 

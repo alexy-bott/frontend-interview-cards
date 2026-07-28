@@ -1,4 +1,4 @@
-# 04 URL origin domain path query fragment
+# URL origin domain path query fragment
 
 <!-- CARD-NAV-TOP:START -->
 [← 03 HTTP vs HTTPS TLS certificates](<./03 HTTP vs HTTPS TLS certificates.md>) · [↑ Web Basics](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 REST API resource model →](<./05 REST API resource model.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Из каких частей состоит URL? Чем host, domain, origin и site отличаются друг от друга?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Из каких частей состоит URL? Чем host, domain, origin и site отличаются друг от друга?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 URL, или Uniform Resource Locator (унифицированный указатель ресурса), определяет адрес ресурса и способ обращения к нему. Браузер разбирает URL по правилам стандарта, нормализует отдельные части и использует результат для навигации, HTTP, same-origin policy, cookies, браузерных хранилищ и ключей кэша.
 
@@ -47,130 +52,228 @@ url.searchParams.append('role', 'editor');
 history.pushState(null, '', url);
 ```
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем URL отличается от URI?</summary>
+<summary><strong>Чем URL отличается от URI?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URI, или Uniform Resource Identifier (унифицированный идентификатор ресурса), - общее понятие идентификатора ресурса. URL является URI, который также описывает способ найти ресурс через схему и местоположение. В современной web-разработке почти всегда работают именно с URL и стандартным `URL` API.
 
 URN, или Uniform Resource Name (унифицированное имя ресурса), относится к именованию без обязательного указания местоположения. В прикладном frontend-коде чаще используется URL, потому что он нужен для навигации и сетевых запросов.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем host отличается от domain и subdomain?</summary>
+<summary><strong>Чем host отличается от domain и subdomain?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Host - значение сетевого узла в конкретном URL: доменное имя вроде `api.example.com`, IPv4- или IPv6-адрес. Domain - имя в DNS-иерархии. `api` является поддоменом относительно `example.com`, но весь `api.example.com` остаётся доменным именем и host.
 
 Registrable domain определяют по Public Suffix List, а не простым количеством частей. Например, публичным суффиксом может быть `co.uk`, поэтому регистрируемым доменом будет `example.co.uk`, а `app.example.co.uk` является поддоменом.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему явный port <code>443</code> не создаёт новый origin для HTTPS?</summary>
+<summary><strong>Почему явный port <code>443</code> не создаёт новый origin для HTTPS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URL parser знает порт по умолчанию для каждой специальной scheme и нормализует его. Поэтому `new URL('https://example.com:443').origin` вернёт `https://example.com`. Port `8443` не является стандартным для HTTPS и останется частью origin.
 
 Для HTTP порт по умолчанию равен `80`. Отсутствующий и явно указанный стандартный порт эквивалентны при сравнении origin, хотя исходная строка URL могла выглядеть иначе.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем origin отличается от site?</summary>
+<summary><strong>Чем origin отличается от site?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Origin сравнивает схему, host и port. Site в современной schemeful same-site модели использует схему и registrable domain. Поэтому `https://app.example.com` и `https://api.example.com` являются cross-origin, но остаются same-site.
 
 Это различие объясняет, почему запрос может быть same-site для cookies, но всё равно требовать CORS для чтения ответа из JavaScript. Подмена этих понятий приводит к ошибкам в настройках аутентификации и безопасности.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Отправляется ли fragment на сервер?</summary>
+<summary><strong>Отправляется ли fragment на сервер?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Fragment начинается с `#` и не входит в цель HTTP-запроса. Он используется браузером для перехода к элементу по `id`, Text Fragment или маршруту клиентского router. Сервер, reverse proxy и система аналитики на уровне HTTP его не получают.
 
 Hash routing использует fragment, чтобы менять экран без загрузки нового документа. History API позволяет SPA работать с обычными путями, но требует настройки server fallback, возвращающей HTML приложения при прямом открытии маршрута.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое percent-encoding?</summary>
+<summary><strong>Что такое percent-encoding?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URL допускает ограниченный набор символов в разных компонентах. Остальные кодируются как байты UTF-8 и записываются последовательностями `%HH`. Например, кириллица и символ `#` внутри значения query должны быть закодированы, иначе `#` начнёт fragment.
 
 Набор символов, требующих кодирования, зависит от компонента URL. Поэтому безопаснее использовать `URL`, `URLSearchParams` и `encodeURIComponent` для отдельного значения, а не заменять символы вручную.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>URLSearchParams</code> иногда превращает пробел в <code>+</code>?</summary>
+<summary><strong>Почему <code>URLSearchParams</code> иногда превращает пробел в <code>+</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сериализация query-параметров следует формату `application/x-www-form-urlencoded`, где пробел записывается как `+`, а сам символ плюса должен быть закодирован как `%2B`. При чтении `URLSearchParams` выполняет обратное преобразование.
 
 Поэтому base64, содержащий `+`, нельзя бездумно вставлять в уже собранную query string: плюс превратится в пробел. Значение нужно передать через API параметров либо использовать URL-safe encoding, безопасный для URL вариант кодирования.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как передать несколько значений одного query-параметра?</summary>
+<summary><strong>Как передать несколько значений одного query-параметра?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URL допускает повторяющиеся ключи: `?role=admin&role=editor`. `URLSearchParams.get('role')` вернёт первое значение, а `getAll('role')` - массив всех. Метод `append` добавляет значение, `set` заменяет существующие.
 
 Другие форматы, например `role=admin,editor` или `role[]=admin`, являются соглашением API. Frontend и backend должны документировать одинаковый способ сериализации.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как вычисляется relative URL, или относительный URL?</summary>
+<summary><strong>Как вычисляется relative URL, или относительный URL?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Относительный URL вычисляется относительно base URL, то есть базового адреса. В `new URL('../avatar', 'https://example.com/users/42/')` результатом будет `https://example.com/users/avatar`. Начальный `/` задаёт путь от корня origin, а `//host/path` наследует схему.
 
 В документе базовый адрес обычно берётся из URL документа, но элемент `<base>` может его изменить. Для предсказуемого кода полезно явно передавать base в `new URL`, особенно на сервере и в тестах.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли хранить token или password в URL?</summary>
+<summary><strong>Можно ли хранить token или password в URL?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Не следует. Полный URL попадает в историю браузера, закладки, журналы сервера и прокси, снимки экрана и системы аналитики, а также может утечь при копировании ссылки. Fragment не отправляется серверу, но остается доступным скриптам страницы и расширениям, поэтому не становится безопасным хранилищем.
 
 Одноразовый OAuth authorization code по правилам протокола может вернуться через URL. Приложение должно обменять его на tokens и очистить адрес. Параметр `state` связывает ответ с начатым входом и защищает flow от подмены, а PKCE связывает authorization code с клиентом, который начал обмен. Постоянные credentials, то есть учетные данные, в query или userinfo недопустимы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему состояние в URL полезно, но не заменяет всё состояние приложения?</summary>
+<summary><strong>Почему состояние в URL полезно, но не заменяет всё состояние приложения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 URL подходит для состояния представления, которое пользователь ожидает восстановить или передать: фильтров, страницы, сортировки и выбранной сущности. Он является внешним контрактом экрана, поэтому входные параметры нужно проверять и дополнять значениями по умолчанию.
 
 Черновик формы, состояние временного tooltip и access token обычно не должны попадать в URL. Большие или чувствительные данные хранят в подходящем состоянии или браузерном хранилище, а URL оставляют компактным и понятным.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как same-origin policy связана с CORS?</summary>
+<summary><strong>Как same-origin policy связана с CORS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Same-origin policy ограничивает доступ скрипта одного origin к данным другого origin. Сам cross-origin запрос во многих случаях отправляется, но JavaScript не получает ответ, если сервер не разрешил origin через CORS-заголовки.
 
 CORS является протоколом ослабления ограничения для Fetch/XHR, а не firewall и не механизмом аутентификации. Он не запрещает запросы между серверами и не защищает endpoint от CSRF.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Сценарий | Значимая часть URL |
-> |---|---|
-> | SPA routing | path, query, fragment и History API |
-> | Таблица | фильтры, сортировка и пагинация в query-параметрах |
-> | CORS | сравнение origin страницы и API |
-> | SameSite cookie | сравнение site, а не полного origin |
-> | Прямая ссылка | воспроизводимое состояние экрана в URL |
-> | OAuth callback | одноразовый authorization code, проверка `state` и очистка URL |
-> | API-клиент | безопасная сборка адреса через `URL` и `URLSearchParams` |
+| Сценарий | Значимая часть URL |
+|---|---|
+| SPA routing | path, query, fragment и History API |
+| Таблица | фильтры, сортировка и пагинация в query-параметрах |
+| CORS | сравнение origin страницы и API |
+| SameSite cookie | сравнение site, а не полного origin |
+| Прямая ссылка | воспроизводимое состояние экрана в URL |
+| OAuth callback | одноразовый authorization code, проверка `state` и очистка URL |
+| API-клиент | безопасная сборка адреса через `URL` и `URLSearchParams` |
 
 ## Связанные темы
 

@@ -1,4 +1,4 @@
-# 16 tsconfig strict mode
+# tsconfig strict mode
 
 <!-- CARD-NAV-TOP:START -->
 [← 15 enum const enum и literal unions](<./15 enum const enum и literal unions.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [17 import type isolatedModules declaration files →](<./17 import type isolatedModules declaration files.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-За что отвечает `tsconfig.json`? Что включает `strict` и какие настройки особенно важны во frontend-проекте?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **За что отвечает `tsconfig.json`? Что включает `strict` и какие настройки особенно важны во frontend-проекте?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `tsconfig.json` описывает TypeScript-проект: какие файлы входят в программу, по каким правилам они проверяются, как разрешаются импорты и должен ли `tsc` генерировать JavaScript или только проверять типы.
 
@@ -68,63 +73,130 @@ tsc --noEmit
 
 `skipLibCheck` пропускает полную проверку `.d.ts` зависимостей и может ускорить сборку или временно обойти конфликт библиотечных деклараций. Он не отключает проверку собственного кода, но способен скрыть несовместимость деклараций. Сначала лучше устранить дублирующиеся версии типов или обновить зависимости, а уже затем принимать этот компромисс осознанно.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>strictNullChecks</code> критичен во frontend?</summary>
+<summary><strong>Почему <code>strictNullChecks</code> критичен во frontend?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Данные часто отсутствуют до загрузки, параметр URL может не существовать, ссылка `ref` сначала равна `null`, а поиск в массиве возвращает `undefined`. С выключенным флагом эти состояния незаметно совместимы с обычными значениями. С включённым код должен проверить отсутствие или выразить его в модели состояния.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>noImplicitAny</code>?</summary>
+<summary><strong>Что делает <code>noImplicitAny</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он запрещает неявный `any`, когда TypeScript не смог вывести тип параметра или объявления. Явный `any` остаётся разрешённым, потому что иногда нужен на плохо типизированной границе. Польза флага в том, что каждая такая потеря проверки становится заметным решением разработчика.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужен <code>noUncheckedIndexedAccess</code>?</summary>
+<summary><strong>Зачем нужен <code>noUncheckedIndexedAccess</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Доступ `items[0]` или `dictionary[key]` не гарантирует, что значение существует во время выполнения программы. Флаг добавляет к типу результата `undefined`, если наличие элемента не доказано. После этого код должен проверить результат, задать значение по умолчанию или использовать структуру с конечным набором обязательных ключей.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что меняет <code>exactOptionalPropertyTypes</code>?</summary>
+<summary><strong>Что меняет <code>exactOptionalPropertyTypes</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Без него `value?: string` обычно разрешает и отсутствие свойства, и явное `value: undefined`. С флагом запись `undefined` разрешена только тогда, когда `undefined` явно входит в тип. Это важно для тела `PATCH`-запроса, перечисления свойств через `Object.keys`, копирования через spread-синтаксис и API, где «не передано» отличается от «передано пустое значение».
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем запускать <code>tsc --noEmit</code>, если Vite успешно собирает проект?</summary>
+<summary><strong>Зачем запускать <code>tsc --noEmit</code>, если Vite успешно собирает проект?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Vite обычно быстро удаляет типы через esbuild и передаёт модули дальше, но не строит полную TypeScript-программу для проверки всех связей. `tsc --noEmit` выполняет проверку типов и не создаёт выходные файлы. В CI нужны обе команды: сборка проверяет весь процесс создания приложения и обработку ресурсов, а `tsc` проверяет статические контракты.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что выбрать для постепенного перевода JavaScript-проекта?</summary>
+<summary><strong>Что выбрать для постепенного перевода JavaScript-проекта?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Можно включить `allowJs`, затем `checkJs` для выбранных файлов или использовать `// @ts-check`. Ошибки устраняют по директориям, новые модули пишут строго, а временные подавления оставляют локальными через `@ts-expect-error` с причиной. Глобальное ослабление `strict` закрепляет старые проблемы во всём проекте.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>@ts-expect-error</code> лучше <code>@ts-ignore</code>?</summary>
+<summary><strong>Чем <code>@ts-expect-error</code> лучше <code>@ts-ignore</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `@ts-expect-error` сам станет ошибкой, когда следующая строка перестанет содержать ожидаемую проблему. Значит, временное подавление можно обнаружить и удалить после обновления типов. `@ts-ignore` продолжает молча скрывать строку даже тогда, когда исходная причина исчезла.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужны ссылки между TypeScript-проектами (<code>project references</code>)?</summary>
+<summary><strong>Когда нужны ссылки между TypeScript-проектами (<code>project references</code>)?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В monorepo или большой кодовой базе, где пакеты имеют отдельные `tsconfig`, явные зависимости и собственные артефакты. `references` вместе с `composite` позволяют `tsc -b` строить проекты в правильном порядке и переиспользовать результаты. Для одного небольшого приложения это обычно лишняя сложность.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

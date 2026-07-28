@@ -1,4 +1,4 @@
-# 05 Union intersection discriminated unions
+# Union intersection discriminated unions
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 type vs interface](<./04 type vs interface.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Narrowing type guards assertions →](<./06 Narrowing type guards assertions.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое union, intersection и discriminated union? Как с их помощью моделировать frontend-состояния?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое union, intersection и discriminated union? Как с их помощью моделировать frontend-состояния?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Union `A | B`, или объединение типов, означает, что значение соответствует хотя бы одному из перечисленных вариантов. Пока конкретный вариант не определён, TypeScript разрешает только операции, безопасные для всех частей union.
 
@@ -56,56 +61,115 @@ function renderUsers(state: RequestState<User[]>): string {
 
 Во frontend эта модель полезна для состояния запроса, шагов формы, модальных окон, `props` с взаимоисключающими вариантами, Redux actions, или действий, и событий предметной области. Новый вариант можно связать с проверкой `never`, чтобы компилятор потребовал обработать его во всех важных местах.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему у значения <code>A | B</code> нельзя сразу читать любое поле?</summary>
+<summary><strong>Почему у значения <code>A | B</code> нельзя сразу читать любое поле?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Во время выполнения значение может оказаться любой частью union. TypeScript разрешает без проверки только общие безопасные свойства. Поле `data`, существующее лишь у `success`, доступно после проверки `state.status === "success"` или другого корректного сужения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему discriminated union лучше набора optional-полей?</summary>
+<summary><strong>Почему discriminated union лучше набора optional-полей?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Optional-поля описывают каждое свойство отдельно и не запрещают противоречивые сочетания. Discriminated union описывает состояние целиком: `data` существует только при `success`, а `message` только при `error`. Код рендера получает точные поля после проверки дискриминатора.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Каким должен быть дискриминатор?</summary>
+<summary><strong>Каким должен быть дискриминатор?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Общим свойством с различными литеральными значениями, например `status`, `type` или `kind`. Если объявить его как свободный `string`, TypeScript не сможет связать конкретное значение с остальными полями варианта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как проверить исчерпывающую обработку вариантов?</summary>
+<summary><strong>Как проверить исчерпывающую обработку вариантов?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В остаточной ветке передают значение функции `assertNever(value: never)`. Пока все варианты обработаны, остаток имеет тип `never`. После добавления нового варианта TypeScript покажет ошибку в каждом `switch`, где отсутствует новый `case`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Intersection является аналогом object spread?</summary>
+<summary><strong>Intersection является аналогом object spread?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. Spread создаёт новый JavaScript-объект и более позднее поле может перезаписать раннее. Intersection существует только в системе типов и требует одновременно выполнить оба контракта. Несовместимые поля не перезаписываются, а образуют невозможное требование.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как описать взаимоисключающие React props?</summary>
+<summary><strong>Как описать взаимоисключающие React props?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Через union объектов с дискриминатором или полями `never`. Например, link-вариант требует `href` и запрещает `onClick`, а button-вариант требует `onClick` и запрещает `href`. Это не позволяет создать компонент с обоими контрактами сразу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда intersection полезен?</summary>
+<summary><strong>Когда intersection полезен?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Для добавления сквозного свойства к существующему контракту, сочетания независимых возможностей и композиции обобщённых типов, например `T & { requestId: string }`. Перед объединением нужно проверить, что одинаковые свойства совместимы и результат остаётся читаемым.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -130,9 +194,17 @@ function getActionLabel(action: Action): string {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему поле <code>users</code> доступно только в ветке <code>loaded</code>?</summary>
+<summary><strong>Почему поле <code>users</code> доступно только в ветке <code>loaded</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Проверка `action.type` сужает union до объекта с соответствующим литеральным дискриминатором. Только вариант `loaded` объявляет `users`, поэтому вне этой ветки чтение поля было бы небезопасным.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

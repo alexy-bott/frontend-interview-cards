@@ -1,4 +1,4 @@
-# 24 HOC render props PureComponent Component lifecycle
+# HOC render props PureComponent Component lifecycle
 
 <!-- CARD-NAV-TOP:START -->
 [← 23 JSX SyntheticEvent и декларативность](<./23 JSX SyntheticEvent и декларативность.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [25 Advanced hooks useId useSyncExternalStore useOptimistic use →](<./25 Advanced hooks useId useSyncExternalStore useOptimistic use.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое HOC, render props, `PureComponent` и жизненный цикл классовых компонентов? Где они встречаются в современном React?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое HOC, render props, `PureComponent` и жизненный цикл классовых компонентов? Где они встречаются в современном React?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 HOC и render props являются паттернами переиспользования поведения, популярными до появления хуков. `Component` и `PureComponent` являются API классовых компонентов React. Новый прикладной код обычно использует функциональные компоненты и пользовательские хуки, но эти темы встречаются в зрелых проектах, старых библиотеках, `connect`, Error Boundaries и коде при постепенной миграции.
 
@@ -55,56 +60,115 @@ Render prop является функцией в `props`, которая пол�
 
 `useEffect` не является механическим объединением `componentDidMount`, `componentDidUpdate` и `componentWillUnmount`. Эффект описывает одну внешнюю синхронизацию и её очистку. При миграции код одного метода жизненного цикла часто разделяется на несколько независимых эффектов, а вычисляемые данные переносятся прямо в рендер или обработчик события.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем HOC отличается от пользовательского хука?</summary>
+<summary><strong>Чем HOC отличается от пользовательского хука?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 HOC создаёт внешний компонент, способен добавить границу интерфейса и дополнительные `props`. Пользовательский хук вызывается внутри функционального компонента и возвращает данные или функции без дополнительного узла дерева. Хук обычно проще типизировать и комбинировать, но HOC остаётся полезным для API библиотеки или обёртки целого компонента.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие проблемы создаёт цепочка HOC?</summary>
+<summary><strong>Какие проблемы создаёт цепочка HOC?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В DevTools появляется несколько обёрток, источники добавленных `props` становятся неочевидными, имена могут конфликтовать, `ref` не проходит автоматически, а статические поля исходного компонента теряются без явного переноса. Каждый HOC также усложняет TypeScript-тип исключаемых и добавляемых `props`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое render prop?</summary>
+<summary><strong>Что такое render prop?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это функция, которой компонент делегирует создание интерфейса, передавая своё состояние или действия. Потребитель получает явные аргументы и решает разметку. До хуков так часто переиспользовали подписки, координаты мыши и состояние формы; сегодня паттерн остаётся в API компонентов без собственной разметки и там, где граница рендера является частью контракта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда <code>PureComponent</code> пропустит нужное обновление?</summary>
+<summary><strong>Когда <code>PureComponent</code> пропустит нужное обновление?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда объект или массив изменили на месте и оставили прежнюю ссылку. Поверхностное сравнение считает prop равным. Нужно иммутабельно создать новую ссылку на изменившемся пути. `PureComponent` не выполняет глубокое сравнение автоматически.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие методы жизненного цикла соответствуют <code>useEffect</code>?</summary>
+<summary><strong>Какие методы жизненного цикла соответствуют <code>useEffect</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сценарии после монтирования, обновления и при очистке напоминают `componentDidMount`, `componentDidUpdate` и `componentWillUnmount`, но соответствия один к одному нет. Эффект объединяет запуск и очистку одной внешней системы, а массив зависимостей определяет реактивные входные значения. Код класса сначала разбирают по обязанностям.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем нужен <code>getSnapshotBeforeUpdate</code>?</summary>
+<summary><strong>Зачем нужен <code>getSnapshotBeforeUpdate</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он выполняется перед изменением DOM и возвращает снимок, который получает `componentDidUpdate`. Классический пример: измерить высоту списка и прежнюю позицию прокрутки до добавления сообщений, а после commit восстановить визуальное положение. Это редкий API классовых компонентов без прямого аналога среди хуков.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему Error Boundary всё ещё основан на классе?</summary>
+<summary><strong>Почему Error Boundary всё ещё основан на классе?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Публичный низкоуровневый API использует `getDerivedStateFromError` и `componentDidCatch`. Функциональные компоненты применяют готовую классовую границу через библиотеку или компонент-обёртку. Поэтому чтение жизненного цикла классов остаётся нужным даже в проекте на хуках.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -121,9 +185,17 @@ class Users extends PureComponent<{ items: User[] }> {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Почему список может не обновиться после <code>items.push(newUser)</code>?</summary>
+<summary><strong>Почему список может не обновиться после <code>items.push(newUser)</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Мутация сохранила ссылку массива. `PureComponent` сравнит прежний и новый `items` как одинаковый prop и может пропустить рендер. Родитель должен создать новый массив, например `setItems((items) => [...items, newUser])`.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

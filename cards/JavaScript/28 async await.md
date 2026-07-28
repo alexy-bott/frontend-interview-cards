@@ -1,4 +1,4 @@
-# 28 async await
+# async await
 
 <!-- CARD-NAV-TOP:START -->
 [← 27 Promise combinators](<./27 Promise combinators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [29 Fetch AbortController и ошибки API →](<./29 Fetch AbortController и ошибки API.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает `async/await`? Что именно приостанавливает `await` и как не сделать независимые операции последовательными?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает `async/await`? Что именно приостанавливает `await` и как не сделать независимые операции последовательными?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `async/await` является синтаксисом работы с Promise. Вызов `async`-функции сразу возвращает Promise. Код функции начинает выполняться синхронно и идёт до первого встреченного `await` или до завершения функции.
 
@@ -36,19 +41,34 @@ console.log("D");
 
 `async/await` не делает CPU-heavy код фоновым и не запускает независимые операции одновременно. Параллельность ожидания зависит от того, когда были созданы Promise.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что приостанавливает <code>await</code>: функцию или весь поток?</summary>
+<summary><strong>Что приостанавливает <code>await</code>: функцию или весь поток?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Только продолжение конкретной `async`-функции. Она сохраняет необходимые локальные значения и возвращает управление вызывающему коду. Main thread не блокируется самим ожиданием, но синхронный код до `await` и после возобновления выполняется на нём как обычно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как запустить независимые запросы одновременно?</summary>
+<summary><strong>Как запустить независимые запросы одновременно?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Создать оба Promise до ожидания и агрегировать их через `Promise.all`:
 
@@ -61,75 +81,159 @@ const [user, posts] = await Promise.all([
 
 При двух строках `await loadUser(); await loadPosts();` второй вызов начинается только после первого результата. Последовательность правильна, если второй запрос зависит от первого; иначе она добавляет лишнее время.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что возвращает <code>array.map(async callback)</code>?</summary>
+<summary><strong>Что возвращает <code>array.map(async callback)</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Новый массив Promise, потому что каждый вызов `async callback` возвращает Promise. `await` самого массива ничего не ждёт: массив является обычным значением. Для всех результатов используют `await Promise.all(items.map(async ...))`, а для частичных ошибок выбирают `allSettled`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>forEach(async callback)</code> обычно является ошибкой?</summary>
+<summary><strong>Почему <code>forEach(async callback)</code> обычно является ошибкой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `forEach` игнорирует возвращаемые callback значения и завершается сразу после синхронного запуска всех функций. Внешний `await items.forEach(...)` получает `undefined`, не ждёт операции и не собирает их ошибки. Для последовательной обработки используют `for...of`, для одновременной используют `Promise.all` с `map`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как выбрать границу <code>try/catch</code>?</summary>
+<summary><strong>Как выбрать границу <code>try/catch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Она должна охватывать операции, ошибки которых этот уровень умеет осмысленно обработать. Один огромный `try` может ошибочно принять баг render-логики за сетевую ошибку. Слишком узкий `catch` заставляет повторять cleanup. Обычно отдельно получают и проверяют данные, затем обновляют UI, а `finally` оставляют для общего завершения состояния загрузки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Нужен ли <code>return await promise</code>?</summary>
+<summary><strong>Нужен ли <code>return await promise</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В большинстве случаев `return promise` достаточно: Promise `async`-функции усвоит его результат. Но внутри `try/catch` нужен `return await promise`, если локальный `catch` должен перехватить его rejection. Без `await` функция вернёт pending Promise и покинет `try` до его будущей ошибки. Современные движки оптимизируют этот паттерн, поэтому считать `return await` всегда лишним неверно.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое top-level <code>await</code>?</summary>
+<summary><strong>Что такое top-level <code>await</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это `await` непосредственно в теле ES module. Он делает evaluation модуля асинхронным, и импортирующие его модули ждут завершения. Это полезно для обязательной инициализации, но медленный запрос или ошибка задерживают целую ветвь module graph, поэтому top-level await не стоит использовать для необязательной загрузки UI.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему результат после <code>await</code> может устареть?</summary>
+<summary><strong>Почему результат после <code>await</code> может устареть?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Пока функция ждала, пользователь мог изменить поисковую строку, перейти на другую страницу или отправить новый запрос. Старый ответ может завершиться позже и перезаписать новое состояние. Решения: отмена через `AbortController`, сравнение request id или параметров, cleanup владельца и библиотека server state, которая управляет конкурентными запросами.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли передать <code>async</code> callback прямо в <code>useEffect</code>?</summary>
+<summary><strong>Можно ли передать <code>async</code> callback прямо в <code>useEffect</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. React ожидает, что callback эффекта вернёт либо cleanup-функцию, либо ничего, а `async`-функция всегда возвращает Promise. Асинхронную функцию объявляют внутри эффекта и вызывают, а сам effect синхронно возвращает cleanup для отмены или пометки результата неактуальным.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Поможет ли <code>await</code> разбить тяжёлый цикл?</summary>
+<summary><strong>Поможет ли <code>await</code> разбить тяжёлый цикл?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Само объявление функции `async` не помогает. `await` уже готового Promise уступает управление microtasks, но длинная цепочка microtasks всё равно может задержать rendering и ввод. CPU-heavy работу дробят с осознанной уступкой scheduler-у или следующей task, оптимизируют либо переносят в Web Worker.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как отменить ожидание <code>await</code>?</summary>
+<summary><strong>Как отменить ожидание <code>await</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `await` не имеет собственной команды отмены. Нужно передать сигнал исходной операции, например `AbortSignal` в `fetch`, и обработать её результат отмены. Если операция не поддерживает cancel, можно прекратить использовать результат, но сама работа продолжится.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли сделать constructor класса асинхронным?</summary>
+<summary><strong>Можно ли сделать constructor класса асинхронным?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет, constructor должен синхронно вернуть экземпляр. Для асинхронной инициализации используют статическую factory-функцию вроде `await User.create()`, отдельный метод `init` с явным состоянием или передают уже загруженные зависимости в constructor.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -148,9 +252,17 @@ getValue().then(console.log).catch((error) => console.log(error.message));
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и как изменить функцию, чтобы сработал локальный <code>catch</code>?</summary>
+<summary><strong>Что будет выведено и как изменить функцию, чтобы сработал локальный <code>catch</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Будет выведено `"failed"` внешним `catch`. Функция вернула Promise и покинула блок `try` до его rejection. Нужно написать `return await Promise.reject(...)`; тогда rejection будет выброшен внутри `try`, локальный `catch` вернёт `"fallback"`, и внешний `.then` выведет его.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

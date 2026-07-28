@@ -1,4 +1,4 @@
-# 23 JSX SyntheticEvent и декларативность
+# JSX SyntheticEvent и декларативность
 
 <!-- CARD-NAV-TOP:START -->
 [← 22 Performance profiling и оптимизация React](<./22 Performance profiling и оптимизация React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [24 HOC render props PureComponent Component lifecycle →](<./24 HOC render props PureComponent Component lifecycle.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое JSX и SyntheticEvent? Как React обрабатывает события декларативного интерфейса?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое JSX и SyntheticEvent? Как React обрабатывает события декларативного интерфейса?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 JSX является расширением синтаксиса JavaScript для описания React-элементов. Он похож на HTML, но не является строкой разметки и не обрабатывается браузером напрямую. Инструмент сборки применяет современное преобразование JSX и создаёт вызовы служебных функций React. Результатом становятся объекты с типом, `props` и дочерними элементами.
 
@@ -40,63 +45,130 @@ React устанавливает общие слушатели событий н
 
 Portal сохраняет React-родительство, поэтому события React всплывают через владельцев Portal, хотя DOM расположен в другом контейнере. Нативный слушатель вне соответствующего корневого узла React следует фактическому DOM-пути, что важно при смешивании React и стороннего императивного кода.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Обязателен ли JSX для React?</summary>
+<summary><strong>Обязателен ли JSX для React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нет. React-элементы можно создавать через `createElement` или служебные функции JSX напрямую. JSX делает вложенное дерево и `props` читаемее. В production-сборке браузер получает преобразованный JavaScript, а не исходный JSX.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему обычный <code>if</code> нельзя написать внутри <code>{}</code>?</summary>
+<summary><strong>Почему обычный <code>if</code> нельзя написать внутри <code>{}</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В фигурных скобках JSX ожидается выражение, то есть конструкция со значением. `if` является инструкцией: он управляет выполнением, но не возвращает значение. Условие выполняют до `return`, используют тернарный оператор или выделяют отдельный компонент. Длинная цепочка `&&` и тернарных операторов читается хуже, чем ясная переменная.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем SyntheticEvent отличается от нативного события?</summary>
+<summary><strong>Чем SyntheticEvent отличается от нативного события?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нативное событие создаёт браузер, например `PointerEvent` или `SubmitEvent`. SyntheticEvent создаёт React для JSX-обработчика и предоставляет согласованный интерфейс, связанный с React-деревом. Исходный объект доступен через `event.nativeEvent`, но соответствие типов событий не всегда один к одному.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как работают фазы перехвата и всплытия в React?</summary>
+<summary><strong>Как работают фазы перехвата и всплытия в React?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `onClickCapture` вызывается при движении события сверху вниз по React-дереву до `target`. Затем обработчик целевого элемента и `onClick` родителей вызываются снизу вверх. Фаза перехвата полезна для общей диагностики или инфраструктуры, но прикладные обработчики обычно используют фазу всплытия.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>target</code> отличается от <code>currentTarget</code>?</summary>
+<summary><strong>Чем <code>target</code> отличается от <code>currentTarget</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `target` указывает на самый глубокий элемент, где началось событие, и остаётся тем же при всплытии. `currentTarget` меняется и указывает на элемент текущего обработчика. Для значения формы часто читают `currentTarget`, если обработчик назначен непосредственно полю или форме.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>preventDefault()</code> отличается от <code>stopPropagation()</code>?</summary>
+<summary><strong>Чем <code>preventDefault()</code> отличается от <code>stopPropagation()</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Первый отменяет действие браузера, но событие продолжает всплывать. Второй останавливает переход к следующим обработчикам, но браузерное действие может выполниться. Иногда нужны оба вызова, но каждый должен соответствовать конкретному поведению.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Защищает ли JSX от XSS?</summary>
+<summary><strong>Защищает ли JSX от XSS?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React экранирует строковые значения в JSX, поэтому `<script>` из строки отображается как текст. Это не защищает `dangerouslySetInnerHTML`, опасный URL, прямую DOM-инъекцию или уязвимость стороннего виджета. Непроверенный HTML санитизируют, а не считают безопасным из-за JSX.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему событие Portal доходит до React-родителя?</summary>
+<summary><strong>Почему событие Portal доходит до React-родителя?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 React хранит Portal в прежнем React-дереве и вызывает обработчики по этой иерархии. DOM-предки при этом другие. Поэтому всплывающий компонент не является изолированным и должен учитывать родительские JSX-обработчики.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -121,9 +193,17 @@ function Form() {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что означают <code>target</code> и <code>currentTarget</code>, если нажать на текст внутри <code>span</code>?</summary>
+<summary><strong>Что означают <code>target</code> и <code>currentTarget</code>, если нажать на текст внутри <code>span</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Точный нативный `target` может быть `span` или вложенным узлом, на котором началось событие. `currentTarget` в `handleSubmit` всегда является `<form>`, потому что обработчик `submit` назначен форме. `preventDefault()` отменит стандартную отправку, но не остановит всплытие события.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

@@ -1,4 +1,4 @@
-# 03 React Hook Form register handleSubmit formState
+# React Hook Form register handleSubmit formState
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 Controlled uncontrolled и FormData](<./02 Controlled uncontrolled и FormData.md>) · [↑ Forms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Controller и кастомные компоненты →](<./04 Controller и кастомные компоненты.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает React Hook Form? Что делают `register`, `handleSubmit` и `formState`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает React Hook Form? Что делают `register`, `handleSubmit` и `formState`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 React Hook Form (RHF) - библиотека управления формой через реестр полей и точечные подписки. Нативное uncontrolled-поле, то есть неуправляемое поле, продолжает хранить значение в DOM. RHF подключает к нему обработчики, читает значение и ведёт ошибки, изменённость (`dirty`), посещённость (`touched`) и состояние отправки. Поэтому изменение одного поля не обязано вызывать рендер всего компонента формы.
 
@@ -23,73 +28,131 @@ React Hook Form (RHF) - библиотека управления формой �
 
 RHF не заменяет нативные правила формы, серверную валидацию и доступность. Он организует клиентское состояние и уменьшает служебный код, но структура данных, момент проверки, отображение ошибок и контракт API остаются решениями приложения.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему у поля должен быть <code>name</code>?</summary>
+<summary><strong>Почему у поля должен быть <code>name</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `name` задаёт путь значения и ошибки в объекте формы, например `user.email` или `items.0.title`. По этому пути работают `register`, `setValue`, `getValues`, `setError` и TypeScript-тип `FieldPath`. Имя должно оставаться стабильным для одного логического поля.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему в RHF важны <code>defaultValues</code>?</summary>
+<summary><strong>Почему в RHF важны <code>defaultValues</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они задают начальные значения и базу, с которой RHF сравнивает `isDirty` и `dirtyFields`. Они также участвуют в `reset` и по умолчанию включаются в результат отправки. `defaultValues` кэшируются, поэтому изменение обычного prop после рендера не означает автоматическую замену значений формы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему не стоит бездумно читать весь <code>formState</code>?</summary>
+<summary><strong>Почему не стоит бездумно читать весь <code>formState</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 RHF использует подписки, чтобы обновлять только нужные части. Если компонент читает много полей `formState`, он подписывается на больше изменений и может чаще ререндериться.
 
 Например, кнопке отправки нужен `isSubmitting`, а полю email - `errors.email`. Чем ближе подписка к месту использования, тем меньше компонентов обновится. Для глубокой изоляции используют `useFormState({ name, exact })`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему RHF часто быстрее controlled форм?</summary>
+<summary><strong>Почему RHF часто быстрее controlled форм?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Нативное поле, подключённое через `register`, обновляет DOM-значение без обязательного рендера родительской формы. RHF уведомляет только подписчиков значения, ошибки или другого изменившегося состояния. Преимущество заметно на больших формах, но управляемое поле само по себе не является проблемой: важен размер дерева, которое обновляется вместе с ним.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда <code>register</code> не подходит и нужен <code>Controller</code>?</summary>
+<summary><strong>Когда <code>register</code> не подходит и нужен <code>Controller</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `register` подходит нативному неуправляемому полю, которое принимает `ref`, `name`, `onChange` и `onBlur`. `Controller` или `useController` нужен для управляемого компонента с другим контрактом, например `value`/`onValueChange` у `Select` или значением `Date | null` у `DatePicker`.
 
 Адаптер передаёт компоненту текущее значение и переводит его событие обратно в значение RHF. Одновременно применять к одному полю и `Controller`, и `register` нельзя: получится двойная регистрация и конкурирующие обработчики.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как преобразовать строку из <code>&lt;input&gt;</code> в число?</summary>
+<summary><strong>Как преобразовать строку из <code>&lt;input&gt;</code> в число?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В `register` можно задать `valueAsNumber: true`, тогда преобразование произойдёт до валидации. Пустое или некорректное значение может дать `NaN`, поэтому схема валидации и контракт API должны учитывать этот случай. Для собственного преобразования используют `setValueAs`; форматирование отображения и преобразование данных для API лучше разделять.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда нужны <code>FormProvider</code> и <code>useFormContext</code>?</summary>
+<summary><strong>Когда нужны <code>FormProvider</code> и <code>useFormContext</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Они нужны, когда поля находятся глубоко в дереве и передавать `register`, `control` и ошибки через каждый уровень неудобно. `FormProvider` публикует один экземпляр методов формы через React Context, а `useFormContext` получает его в дочернем поле. Это не означает, что каждый компонент должен читать весь `formState`: точечные подписки всё равно важны.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Сценарий | RHF часть |
-> | --- | --- |
-> | Подключить поле | `register("email")` |
-> | Отправить форму | `handleSubmit(onValid, onInvalid)` |
-> | Показать ошибку поля | `formState.errors.email` |
-> | Заблокировать кнопку | `formState.isSubmitting` |
-> | Начальные значения | `defaultValues` |
+| Сценарий | RHF часть |
+| --- | --- |
+| Подключить поле | `register("email")` |
+| Отправить форму | `handleSubmit(onValid, onInvalid)` |
+| Показать ошибку поля | `formState.errors.email` |
+| Заблокировать кнопку | `formState.isSubmitting` |
+| Начальные значения | `defaultValues` |
 
 ## Связанные темы
 

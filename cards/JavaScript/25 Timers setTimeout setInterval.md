@@ -1,4 +1,4 @@
-# 25 Timers setTimeout setInterval
+# Timers setTimeout setInterval
 
 <!-- CARD-NAV-TOP:START -->
 [← 24 Event Loop](<./24 Event Loop.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [26 Promise →](<./26 Promise.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работают `setTimeout` и `setInterval`? Почему указанная задержка не гарантирует точное время выполнения?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работают `setTimeout` и `setInterval`? Почему указанная задержка не гарантирует точное время выполнения?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Таймеры являются API среды выполнения, а не частью самого языка JavaScript. `setTimeout(callback, delay)` просит браузер сделать callback доступным для выполнения не раньше указанной задержки. После этого callback должен дождаться свободного main thread и выбора своей task event loop.
 
@@ -27,33 +32,64 @@ clearTimeout(timerId);
 
 Для отмены используют идентификатор, возвращённый `setTimeout` или `setInterval`. Очистка не прерывает callback, который уже начал выполняться, а предотвращает будущий запуск.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>setTimeout(callback, 0)</code> не выполняется сразу?</summary>
+<summary><strong>Почему <code>setTimeout(callback, 0)</code> не выполняется сразу?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он планирует отдельную task с минимально допустимой задержкой. Сначала завершается текущий script, затем среда очищает microtasks, и только после этого event loop может выбрать timer task. Ноль означает «не ждать дополнительное запрошенное время», а не «вызвать синхронно».
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Существует ли минимальная задержка таймера?</summary>
+<summary><strong>Существует ли минимальная задержка таймера?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. По HTML Standard после нескольких вложенных таймеров задержка меньше 4 миллисекунд ограничивается примерно 4 миллисекундами. Браузеры могут применять более сильное throttling, то есть ограничение частоты, для фоновых вкладок, неактивных страниц и энергосберегающих режимов. Поэтому таймер не подходит как высокоточные часы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что такое timer drift?</summary>
+<summary><strong>Что такое timer drift?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Это разница между ожидаемым и фактическим временем запусков. Она возникает из-за занятости main thread, длительности callback и ограничений браузера. Если интерфейс показывает обратный отсчёт, нельзя просто уменьшать число на единицу при каждом tick: нужно вычислять остаток из `deadline - Date.now()`, тогда задержка одного callback не накапливает ошибку значения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда recursive <code>setTimeout</code> лучше <code>setInterval</code>?</summary>
+<summary><strong>Когда recursive <code>setTimeout</code> лучше <code>setInterval</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда следующую итерацию нужно планировать только после окончания предыдущей. Это типично для polling: дождаться ответа, учесть ошибку или backoff и затем поставить следующий timeout. `setInterval` не ожидает async callback и может создать несколько одновременных запросов.
 
@@ -69,47 +105,99 @@ async function poll() {
 }
 ```
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как сделать polling устойчивым?</summary>
+<summary><strong>Как сделать polling устойчивым?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Помимо последовательного запуска, нужны отмена текущего запроса через `AbortController`, остановка при уходе со страницы, обработка offline-состояния, ограничение числа ошибок и backoff, то есть увеличение паузы после сбоев. На вкладке в фоне частота таймеров снижается, поэтому серверное время и состояние нельзя выводить только из числа локальных ticks.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему для анимации лучше <code>requestAnimationFrame</code>?</summary>
+<summary><strong>Почему для анимации лучше <code>requestAnimationFrame</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 rAF вызывается перед rendering opportunity и синхронизирован с частотой кадров. Браузер может приостановить его на скрытой вкладке и передаёт timestamp кадра. Interval не знает, когда будет paint, поэтому может менять DOM между кадрами, создавать лишнюю работу или давать рывки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что происходит с <code>this</code>, если передать метод прямо в таймер?</summary>
+<summary><strong>Что происходит с <code>this</code>, если передать метод прямо в таймер?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Таймер получает функцию без исходного call-site объекта, поэтому метод теряет ожидаемый receiver. Нельзя рассчитывать, что `this` останется экземпляром. Передают wrapper `() => object.method()` или заранее связанный `object.method.bind(object)`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему timers нужно очищать в React effect?</summary>
+<summary><strong>Почему timers нужно очищать в React effect?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Effect может выполниться повторно или компонент может размонтироваться. Без cleanup старый callback продолжит работать с замкнутыми значениями, создаст дублирующий interval или запустит устаревший сценарий. Cleanup вызывает `clearTimeout` или `clearInterval` для идентификатора этой конкретной установки.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли таймер удерживать память?</summary>
+<summary><strong>Может ли таймер удерживать память?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Пока timer зарегистрирован, браузеру нужен его callback, а callback через замыкание может удерживать объекты и DOM-узлы. Однократный timeout освободит ссылки после запуска, если они больше нигде не нужны. Бесконечный interval или постоянно переносимый timeout требует явной остановки вместе с жизненным циклом владельца.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему нельзя передавать строку вместо callback?</summary>
+<summary><strong>Почему нельзя передавать строку вместо callback?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `setTimeout("code", delay)` компилирует строку подобно `eval`, работает в глобальном контексте, ухудшает отладку и создаёт риск выполнения внедрённого кода. Следует передавать функцию и обычные аргументы.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
@@ -129,9 +217,17 @@ while (Date.now() < end) {
 ```
 
 <details>
-<summary><strong>Вопрос:</strong> Что будет выведено и примерно когда выполнится callback?</summary>
+<summary><strong>Что будет выведено и примерно когда выполнится callback?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Будет выведено `true`. Callback не может выполниться через 50 миллисекунд, потому что main thread около 100 миллисекунд занят циклом. После освобождения стека timer task получит возможность запуститься, поэтому фактическая задержка будет не меньше примерно 100 миллисекунд.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

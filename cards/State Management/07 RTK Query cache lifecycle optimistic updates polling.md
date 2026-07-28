@@ -1,4 +1,4 @@
-# 07 RTK Query cache lifecycle optimistic updates polling
+# RTK Query cache lifecycle optimistic updates polling
 
 <!-- CARD-NAV-TOP:START -->
 [← 06 RTK Query createApi query mutation tags](<./06 RTK Query createApi query mutation tags.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 Zustand store selectors middleware persist →](<./08 Zustand store selectors middleware persist.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как в RTK Query устроены время жизни кэша, optimistic updates, polling и обновления через WebSocket?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как в RTK Query устроены время жизни кэша, optimistic updates, polling и обновления через WebSocket?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 RTK Query хранит результат по ключу endpoint и сериализованных аргументов. Каждый компонент, использующий query, создаёт подписку на эту запись кэша. Пока есть хотя бы один подписчик, данные остаются в кэше. После исчезновения последнего подписчика начинается таймер `keepUnusedDataFor`; по умолчанию запись удаляется через 60 секунд.
 
@@ -31,84 +36,175 @@ Pessimistic update, или обновление после подтвержде�
 
 `transformResponse` преобразует ответ до помещения в кэш: извлекает данные из обёртки ответа, приводит объект передачи данных (DTO) к форме frontend или нормализует коллекцию. Преобразование должно быть предсказуемым; сложные доменные правила удобнее вынести в отдельную тестируемую функцию.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>keepUnusedDataFor</code>?</summary>
+<summary><strong>Что делает <code>keepUnusedDataFor</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Он задаёт время между исчезновением последнего подписчика и удалением записи кэша. Значение по умолчанию равно 60 секундам. Если пользователь вернулся раньше, компонент сразу получит сохранённые данные. Слишком маленькое значение увеличивает количество запросов, а слишком большое дольше удерживает память и потенциально устаревшие данные.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем хранение кэша отличается от его свежести?</summary>
+<summary><strong>Чем хранение кэша отличается от его свежести?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Хранение отвечает на вопрос, есть ли данные в памяти. Свежесть отвечает, следует ли считать их актуальными и когда запросить заново. Запись может оставаться в кэше и одновременно обновляться в фоне. В RTK Query эти решения задаются `keepUnusedDataFor`, invalidation и параметрами refetch независимо.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как работает optimistic update?</summary>
+<summary><strong>Как работает optimistic update?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Mutation в `onQueryStarted` сразу изменяет существующую запись кэша через `updateQueryData`. Пользователь видит результат без ожидания сети. Затем код ждёт `queryFulfilled`: при успехе изменение сохраняется, при ошибке выполняется `undo` или invalidation с повторным запросом.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда откат через <code>undo</code> может быть опасен?</summary>
+<summary><strong>Когда откат через <code>undo</code> может быть опасен?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если несколько optimistic mutations одной записи выполняются параллельно, обратные изменения (inverse patches) старой операции могут затронуть более новое состояние. Для таких гонок проще пометить соответствующие tags как устаревшие при ошибке и получить авторитетные данные с сервера. Другой вариант состоит в последовательном выполнении операций или явном учёте их порядка.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем pessimistic update отличается от optimistic?</summary>
+<summary><strong>Чем pessimistic update отличается от optimistic?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Optimistic update меняет UI до ответа и требует отката при ошибке. Pessimistic update ждёт успешный ответ и только потом записывает возвращённые данные в кэш. Второй подход медленнее визуально, но надёжнее, если окончательный результат определяет сервер.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Чем <code>onQueryStarted</code> отличается от <code>onCacheEntryAdded</code>?</summary>
+<summary><strong>Чем <code>onQueryStarted</code> отличается от <code>onCacheEntryAdded</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `onQueryStarted` относится к одному запуску запроса или mutation и выполняется каждый раз. `onCacheEntryAdded` относится к периоду существования записи кэша и может пережить несколько повторных запросов. Первый hook удобен для обновления вокруг Promise запроса, второй для соединения, которое нужно открыть один раз и закрыть после удаления записи.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как организовать WebSocket вместе с RTK Query?</summary>
+<summary><strong>Как организовать WebSocket вместе с RTK Query?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычный query получает начальные данные. В `onCacheEntryAdded` код ждёт `cacheDataLoaded`, открывает WebSocket, проверяет входящие сообщения и применяет их через `updateCachedData`. После выполнения `cacheEntryRemoved` нужно удалить обработчики событий и закрыть соединение. Серверное сообщение также следует валидировать перед записью в store.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда polling лучше WebSocket?</summary>
+<summary><strong>Когда polling лучше WebSocket?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Polling проще, хорошо работает поверх обычного HTTP и подходит, если задержка в несколько секунд допустима, а изменения редкие. WebSocket лучше для частых событий с малой задержкой, но требует управления соединением, переподключением, авторизацией и порядком сообщений. Выбор зависит от требований к актуальности, а не только от наличия технологии.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что требуется для повторной загрузки при фокусе и восстановлении сети?</summary>
+<summary><strong>Что требуется для повторной загрузки при фокусе и восстановлении сети?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В `createApi` или конкретном hook включают `refetchOnFocus` и `refetchOnReconnect`, а при стандартной настройке вызывают `setupListeners(store.dispatch)`. Без listeners RTK Query не получает нужные события браузера.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как использовать RTK Query с Next.js App Router и SSR?</summary>
+<summary><strong>Как использовать RTK Query с Next.js App Router и SSR?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В актуальной рекомендации Redux Toolkit store создают отдельно для каждого запроса через фабрику, а компоненты, которые читают или изменяют Redux, остаются клиентскими компонентами (Client Components). React Server Components не должны обращаться к Redux store. Для получения данных внутри RSC рекомендуют серверный `fetch`, а RTK Query использовать для клиентской загрузки и кэша. Подход с предварительным запуском endpoints и последующим восстановлением кэша (rehydration) относится прежде всего к Pages Router и `getServerSideProps` или `getStaticProps`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда лучше invalidation, а когда ручное обновление кэша?</summary>
+<summary><strong>Когда лучше invalidation, а когда ручное обновление кэша?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Invalidation проще и безопаснее: сервер снова возвращает авторитетный результат. Ручное обновление полезно, когда нужен мгновенный UI или повторная загрузка слишком дорогая. Чем сложнее серверные правила и больше связанных записей кэша, тем выше риск ошибиться в ручных изменениях.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 

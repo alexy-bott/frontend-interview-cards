@@ -1,4 +1,4 @@
-# 05 Compound Components и Headless UI
+# Compound Components и Headless UI
 
 <!-- CARD-NAV-TOP:START -->
 [← 04 Observer PubSub EventTarget events](<./04 Observer PubSub EventTarget events.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Factory Singleton lifecycle →](<./06 Factory Singleton lifecycle.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Что такое Compound Components и Headless UI? Как эти подходы применяются в React?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Что такое Compound Components и Headless UI? Как эти подходы применяются в React?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Compound Components, или составные компоненты, - паттерн для UI, который состоит из нескольких связанных частей с общей моделью поведения. Пользователь библиотеки сам собирает структуру, например `Tabs.Root`, `Tabs.List`, `Tabs.Trigger` и `Tabs.Content`, а части согласованно работают через state и контекст владельца.
 
@@ -30,90 +35,172 @@ Headless UI - подход к библиотеке компонентов, пр�
 
 Подход полезен для design system, когда одной проверенной логике нужны разные визуальные варианты. Цена гибкости - более сложный API, неявная связь частей, дополнительные rerenders через Context и необходимость обрабатывать неправильную композицию. Для Dialog, Select и Menu часто разумнее использовать проверенную библиотеку вроде Radix Primitives, чем самостоятельно реализовывать все правила focus и клавиатуры.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Чем Compound Components лучше одного компонента с множеством props?</summary>
+<summary><strong>Чем Compound Components лучше одного компонента с множеством props?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Когда допустимо много вариантов разметки, props вида `showHeader`, `renderFooter`, `triggerPosition` и `contentProps` начинают описывать дерево косвенно. Составной API позволяет записать нужное дерево напрямую. Для небольшого компонента со стабильной структурой один компонент с несколькими props остаётся проще.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как части Compound Component находят друг друга?</summary>
+<summary><strong>Как части Compound Component находят друг друга?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычно `Root` предоставляет через Context состояние, методы изменения, IDs и refs. Вариант с `cloneElement` передаёт props только непосредственным children и хуже переносит обёртки. Context позволяет вставлять промежуточную разметку, но требует проверять, что часть используется внутри правильного `Root`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как обрабатывать часть, использованную вне <code>Root</code>?</summary>
+<summary><strong>Как обрабатывать часть, использованную вне <code>Root</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Custom hook чтения Context должен проверить значение и выбросить понятную ошибку разработки, например `Tabs.Trigger must be used within Tabs.Root`. Молчаливое резервное значение скрывает неправильную композицию и приводит к ошибке далеко от причины.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что означают controlled и uncontrolled режимы?</summary>
+<summary><strong>Что означают controlled и uncontrolled режимы?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 В controlled-режиме состояние хранит внешний компонент и передаёт `value` вместе с `onValueChange`. В uncontrolled-режиме primitive хранит состояние сам, а начальное значение получает через `defaultValue`. Компонент не должен незаметно переключаться между режимами во время жизни.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Может ли Context вызвать лишние rerenders?</summary>
+<summary><strong>Может ли Context вызвать лишние rerenders?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Да. Если `value` у Provider изменился по сравнению через `Object.is`, React повторно рендерит компоненты, которые читают этот Context. В сложном primitive редко меняющиеся методы и часто меняющееся состояние можно вынести в разные contexts или стабилизировать объект `value`. Сначала проблему измеряют через Profiler, а не усложняют API заранее.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что именно даёт headless-библиотека?</summary>
+<summary><strong>Что именно даёт headless-библиотека?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Обычно библиотека предоставляет машину состояний компонента, обработчики мыши, touch-событий и клавиатуры, ARIA-роли и атрибуты, управление focus, Portal и controlled/uncontrolled API. Конкретный набор зависит от primitive. Библиотека не выбирает визуальный дизайн и не знает предметные подписи или тексты приложения.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему headless primitive не гарантирует доступность итогового интерфейса?</summary>
+<summary><strong>Почему headless primitive не гарантирует доступность итогового интерфейса?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Проект может заменить подходящий `button` на неинтерактивный `div`, не передать доступную подпись, нарушить порядок частей, скрыть индикатор focus или создать недостаточный контраст. Библиотека покрывает механику известного паттерна, но правильная семантика контента и визуальное использование остаются ответственностью проекта.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что делает <code>asChild</code> в Radix?</summary>
+<summary><strong>Что делает <code>asChild</code> в Radix?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Radix не создаёт свой DOM-элемент, а передаёт props, обработчики событий и иногда ref единственному дочернему компоненту. Дочерний компонент должен передать полученные props и ref реальному DOM-узлу. Разработчик также отвечает за подходящий тип элемента: замена кнопки на `div` ломает нативную клавиатурную семантику.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Зачем Dialog использует Portal и управляет focus?</summary>
+<summary><strong>Зачем Dialog использует Portal и управляет focus?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Portal рендерит содержимое в другом DOM-контейнере, обычно рядом с корнем документа. Благодаря этому Overlay, то есть перекрывающий страницу слой Dialog, не обрезается родителем с `overflow` и его проще разместить поверх страницы. При открытии focus должен перейти внутрь Dialog, оставаться в допустимой области модального окна и после закрытия вернуться к trigger. Эти правила нужны пользователям клавиатуры и вспомогательных технологий, поэтому их трудно надёжно реализовать случайным набором обработчиков.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Какие проблемы возможны при SSR и hydration?</summary>
+<summary><strong>Какие проблемы возможны при SSR и hydration?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Сервер и браузер должны создать совместимое дерево, значения состояния и IDs, связывающие trigger с content. Доступ к `window` во время server render и случайные значения в render приводят к несовпадению при hydration, когда React подключает поведение к серверному HTML. Современный React предоставляет `useId` для стабильных IDs, а библиотеку нужно использовать в поддерживаемой ею SSR-конфигурации.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Компонент | Связанные части |
-> |---|---|
-> | Tabs | `Root`, `List`, `Trigger`, `Content` |
-> | Dialog | `Root`, `Trigger`, `Portal`, `Overlay`, `Content`, `Title` |
-> | Select | `Trigger`, `Value`, `Content`, `Item` и управление focus |
-> | Accordion | Несколько `Item`, у каждого `Trigger` и `Content` |
-> | Design system | Headless primitive получает проектные стили, design tokens, или переменные дизайн-системы, и API для контента |
+| Компонент | Связанные части |
+|---|---|
+| Tabs | `Root`, `List`, `Trigger`, `Content` |
+| Dialog | `Root`, `Trigger`, `Portal`, `Overlay`, `Content`, `Title` |
+| Select | `Trigger`, `Value`, `Content`, `Item` и управление focus |
+| Accordion | Несколько `Item`, у каждого `Trigger` и `Content` |
+| Design system | Headless primitive получает проектные стили, design tokens, или переменные дизайн-системы, и API для контента |
 
 ## Связанные темы
 
