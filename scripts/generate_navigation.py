@@ -431,16 +431,32 @@ def format_pilot_card(content: str) -> str:
 
     followup_answer = re.compile(
         r"(?ms)(<details>\n<summary><strong>.*?</strong></summary>)\n\n"
-        r"(?:<br>\n\n)?"
-        r"(?P<answer>.*?)"
-        r"(?:\n\n<br>)?\n\n"
+        r"(?P<body>.*?)\n\n"
         r"</details>"
     )
 
     def normalize_followup_answer(match: re.Match[str]) -> str:
-        answer = re.sub(r"\A<br>\s*|\s*<br>\Z", "", match.group("answer").strip())
+        body = match.group("body").strip()
+        wrapped = re.fullmatch(
+            r"(?ms)<dl>\n<dd>\n<h2></h2>\n\n"
+            r"(?P<answer>.*?)\n\n"
+            r"<h2></h2>\n</dd>\n</dl>",
+            body,
+        )
+        answer = wrapped.group("answer").strip() if wrapped else body
+        answer = re.sub(r"\A<br>\s*|\s*<br>\Z", "", answer)
         answer = re.sub(r"(?m)^> ?", "", answer)
-        return f"{match.group(1)}\n\n<br>\n\n{answer}\n\n</details>"
+        return (
+            f"{match.group(1)}\n\n"
+            "<dl>\n"
+            "<dd>\n"
+            "<h2></h2>\n\n"
+            f"{answer}\n\n"
+            "<h2></h2>\n"
+            "</dd>\n"
+            "</dl>\n\n"
+            "</details>"
+        )
 
     content = followup_answer.sub(normalize_followup_answer, content)
     content = content.replace("\n## Встречные вопросы\n", "\n## Дополнительные вопросы\n")
@@ -630,7 +646,7 @@ def validate() -> list[str]:
                     issues.append(f"{card.relative_to(ROOT)}: pilot main answer is still collapsed")
                 if re.search(r"(?m)^## Ответ\s*$", content_without_code):
                     issues.append(f"{card.relative_to(ROOT)}: pilot has a redundant answer heading")
-                if not re.search(r"(?m)^> \*\*.+\*\*$", content_without_code):
+                if not re.search(r"(?m)^ 💬 \*\*.+\*\*$", content_without_code):
                     issues.append(f"{card.relative_to(ROOT)}: pilot question is not emphasized")
                 if not content.startswith(f"# {PILOT_CARD_TITLES[relative_card]}\n"):
                     issues.append(f"{card.relative_to(ROOT)}: pilot title is not reader-friendly")
@@ -638,16 +654,27 @@ def validate() -> list[str]:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
                 if not re.search(
-                    r"(?ms)^## Вопрос\s*\n\n> \*\*.+\*\*\n\n"
-                    r"<h2></h2>\n\n",
+                    r"(?ms)^## Вопрос\n\n<br>\n\n 💬 \*\*.+\*\*\n\n"
+                    r"<h2></h2>\n\n<br>\n<dl>\n<dd>\n\n.+?\n\n"
+                    r"</dd>\n</dl>\n<br>\n\n\n## Дополнительные вопросы",
                     content_without_code,
                 ):
-                    issues.append(f"{card.relative_to(ROOT)}: pilot main separator is missing")
-                if content_without_code.count("<br>") != followup_count:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot main layout is inconsistent")
+                if content_without_code.count("<br>") != 3:
                     issues.append(f"{card.relative_to(ROOT)}: pilot vertical spacing is inconsistent")
-                spaced_followups = len(re.findall(r"</summary>\n\n<br>\n\n", content_without_code))
-                if spaced_followups != followup_count:
+                followup_layouts = len(
+                    re.findall(
+                        r"(?ms)</summary>\n\n<dl>\n<dd>\n<h2></h2>\n\n"
+                        r".*?\n\n<h2></h2>\n</dd>\n</dl>\n\n</details>",
+                        content_without_code,
+                    )
+                )
+                if followup_layouts != followup_count:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer style is inconsistent")
+                if content_without_code.count("<dl>") != 1 + followup_count:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot answer indentation is inconsistent")
+                if content_without_code.count("<h2></h2>") != 1 + 2 * followup_count:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot separator count is inconsistent")
                 if re.search(r"</summary>\n\n>", content_without_code):
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer is still quoted")
                 if "> [!NOTE]" in content_without_code:
