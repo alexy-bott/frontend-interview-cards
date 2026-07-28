@@ -18,6 +18,52 @@ LEGACY_CARDS_DIR = ROOT / "Мок-собесы для ведущего"
 PILOT_VISIBLE_ANSWER_CARDS = {
     "CSS/15 CSS selectors pseudo-classes pseudo-elements.md",
 }
+PILOT_CARD_TITLES = {
+    "CSS/15 CSS selectors pseudo-classes pseudo-elements.md": (
+        "CSS-селекторы, псевдоклассы и псевдоэлементы"
+    ),
+}
+SECTION_GROUPS = (
+    (
+        "Основы веб-платформы",
+        (
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "TypeScript",
+            "Web Basics",
+            "Web API",
+            "Browser Internals",
+            "Accessibility",
+            "Algorithms",
+        ),
+    ),
+    (
+        "Приложения и фреймворки",
+        (
+            "React",
+            "Next.js",
+            "State Management",
+            "Forms",
+            "Performance",
+            "Security",
+            "Testing",
+        ),
+    ),
+    (
+        "Инженерная практика",
+        (
+            "Architecture",
+            "Frontend System Design",
+            "Patterns",
+            "Principles",
+            "Tooling",
+            "DevOps",
+            "Git",
+            "Workflow",
+        ),
+    ),
+)
 WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\((<[^>]+>|[^)]+)\)")
 GENERATED_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(<([^>]+)>\)")
@@ -366,10 +412,11 @@ def format_pilot_card(content: str) -> str:
             f"{match.group(1)}"
             f"<summary><strong>{match.group('question')}</strong></summary>\n\n"
             "<br>\n\n"
-            "<strong>Ответ</strong>\n\n"
         ),
         content,
     )
+    content = content.replace("<br>\n\n<strong>Ответ</strong>\n\n", "<br>\n\n")
+    content = content.replace("\n## Встречные вопросы\n", "\n## Дополнительные вопросы\n")
     return content
 
 
@@ -384,6 +431,12 @@ def generate_card(path: Path, topic: Path, previous: Path | None, following: Pat
     relative_card = path.relative_to(CARDS_DIR).as_posix()
     if relative_card in PILOT_VISIBLE_ANSWER_CARDS:
         content = format_pilot_card(content)
+        content = re.sub(
+            r"(?m)\A# .+$",
+            f"# {PILOT_CARD_TITLES[relative_card]}",
+            content,
+            count=1,
+        )
 
     if not re.match(r"^#\s+", content):
         content = f"# {card_title(path)}\n\n{content}"
@@ -405,66 +458,51 @@ def generate_card(path: Path, topic: Path, previous: Path | None, following: Pat
 
 
 def generate_root_readme(topics: list[Path]) -> None:
-    rows: list[str] = []
-    total = 0
-    for topic in topics:
-        cards = card_files(topic)
-        total += len(cards)
-        section_link = markdown_destination(ROOT / "README.md", topic / "README.md")
-        start_link = markdown_destination(ROOT / "README.md", cards[0]) if cards else section_link
-        rows.append(
-            f"| [{markdown_label(topic.name)}]({section_link}) "
-            f"| {len(cards)} | [Открыть →]({start_link}) |"
-        )
+    topics_by_name = {topic.name: topic for topic in topics}
+    total = sum(len(card_files(topic)) for topic in topics)
+    grouped_names = {name for _, names in SECTION_GROUPS for name in names}
+    groups = list(SECTION_GROUPS)
+    uncategorized = tuple(
+        topic.name for topic in topics if topic.name not in grouped_names
+    )
+    if uncategorized:
+        groups.append(("Другие разделы", uncategorized))
 
-    audit = CARDS_DIR / "00 Аудит покрытия Базовые вопросы 200.md"
-    service_section = ""
-    if audit.exists():
-        service_section = (
-            "\n\n## Служебные материалы\n\n"
-            f"- [Аудит покрытия базы вопросов]"
-            f"({markdown_destination(ROOT / 'README.md', audit)})"
-        )
+    group_tables: list[str] = []
+    for group_title, topic_names in groups:
+        rows: list[str] = []
+        for topic_name in topic_names:
+            topic = topics_by_name.get(topic_name)
+            if topic is None:
+                continue
+            section_link = markdown_destination(ROOT / "README.md", topic / "README.md")
+            rows.append(
+                f"| [{markdown_label(topic.name)}]({section_link}) | {len(card_files(topic))} |"
+            )
+        if rows:
+            group_tables.append(
+                f"### {group_title}\n\n"
+                "| Раздел | Карточки |\n"
+                "| --- | ---: |\n"
+                + "\n".join(rows)
+            )
+    section_tables = "\n\n".join(group_tables)
 
     content = f"""# Карточки для frontend-собеседований
 
-База из **{total} карточек** по frontend-разработке. Материалы подходят для проведения мок-собеседований и самостоятельной подготовки.
+База из **{total} карточек** для мок-собеседований по frontend-разработке и самостоятельной подготовки.
 
 ## Как пользоваться
 
-1. Выберите раздел в таблице ниже.
-2. Откройте первую карточку или нужный вопрос из оглавления раздела.
-3. Сформулируйте ответ самостоятельно и раскройте блок **Показать ответ**.
-4. Перемещайтесь кнопками **←**, **↑** и **→** в начале или конце карточки.
-5. Для поиска по всей базе используйте поиск GitHub по репозиторию.
+1. Выберите раздел и откройте нужную карточку из его оглавления.
+2. Изучите основной ответ и раскрывайте дополнительные вопросы по необходимости.
+3. Перемещайтесь кнопками **←**, **↑** и **→** в начале или конце карточки.
 
-Пример поискового запроса:
-
-```text
-repo:alexy-bott/frontend-interview-cards generics
-```
+[Поиск по всей базе →](https://github.com/search?q=repo%3Aalexy-bott%2Ffrontend-interview-cards&type=code)
 
 ## Разделы
 
-| Раздел | Карточки | Быстрый старт |
-| --- | ---: | --- |
-{chr(10).join(rows)}
-
-## Структура карточки
-
-Каждая карточка содержит основной вопрос и эталонный ответ. В зависимости от темы также могут присутствовать встречные вопросы, мини-задача, практические сценарии, связанные темы и источники.
-
-Навигация и оглавления генерируются командой:
-
-```bash
-python scripts/generate_navigation.py
-```
-
-Проверить ссылки и структуру без изменения файлов:
-
-```bash
-python scripts/generate_navigation.py --check
-```{service_section}
+{section_tables}
 """
     write_text(ROOT / "README.md", content)
 
@@ -538,9 +576,15 @@ def validate() -> list[str]:
                     issues.append(f"{card.relative_to(ROOT)}: visible pilot answer is missing or duplicated")
                 if not re.search(r"(?m)^> \*\*.+\*\*$", content_without_code):
                     issues.append(f"{card.relative_to(ROOT)}: pilot question is not emphasized")
+                if not content.startswith(f"# {PILOT_CARD_TITLES[relative_card]}\n"):
+                    issues.append(f"{card.relative_to(ROOT)}: pilot title is not reader-friendly")
+                if len(re.findall(r"(?m)^## Дополнительные вопросы\s*$", content_without_code)) != 1:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
-                if content_without_code.count("<br>\n\n<strong>Ответ</strong>") != followup_count:
+                if content_without_code.count("<br>") != followup_count:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up spacing is inconsistent")
+                if "<strong>Ответ</strong>" in content_without_code:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up has a redundant answer label")
                 if "<summary><strong>Вопрос:</strong>" in content_without_code:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up still has a redundant label")
             elif content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 1:
