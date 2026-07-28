@@ -15,10 +15,8 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 CARDS_DIR = ROOT / "cards"
 LEGACY_CARDS_DIR = ROOT / "Мок-собесы для ведущего"
-PILOT_VISIBLE_ANSWER_CARDS = {
-    "CSS/15 CSS selectors pseudo-classes pseudo-elements.md",
-}
-PILOT_CARD_TITLES = {
+STYLED_CARD_TOPICS = {"CSS"}
+STYLED_CARD_TITLES = {
     "CSS/15 CSS selectors pseudo-classes pseudo-elements.md": (
         "CSS-селекторы, псевдоклассы и псевдоэлементы"
     ),
@@ -379,7 +377,7 @@ def format_card_for_github(content: str) -> str:
     return content
 
 
-def format_pilot_card(content: str) -> str:
+def format_styled_card(content: str) -> str:
     main_answer = re.compile(
         r"(?ms)^<details>\n"
         r"<summary><strong>Показать ответ</strong></summary>\n\n"
@@ -412,6 +410,59 @@ def format_pilot_card(content: str) -> str:
         r"(?m)(^> \*\*.+\*\*\n\n)"
         r"(?:<br>|---|## <!-- ANSWER-SEPARATOR -->)[ \t]*$",
         r"\1<h2></h2>",
+        content,
+        count=1,
+    )
+
+    main_layout = re.compile(
+        r"(?ms)^## Вопрос\s*\n\n"
+        r"(?P<body>.*?)"
+        r"\n\n^## (?:Встречные|Дополнительные) вопросы[ \t]*$"
+    )
+
+    def normalize_main_layout(match: re.Match[str]) -> str:
+        body = match.group("body").strip()
+        desired = re.fullmatch(
+            r"(?ms)<br>\n\n 💬 \*\*(?P<question>.*?)\*\*\n\n"
+            r"<h2></h2>\n\n<br>\n<dl>\n<dd>\n\n"
+            r"(?P<answer>.*?)\n\n</dd>\n</dl>\n<br>",
+            body,
+        )
+        if desired:
+            question_text = desired.group("question").strip()
+            answer = desired.group("answer").strip()
+        else:
+            standard = re.fullmatch(
+                r"(?ms)(?:<br>\n\n)?(?:> )?(?:💬 )?"
+                r"\*\*(?P<question>.*?)\*\*\n\n"
+                r"(?:<h2></h2>|---|<br>)\n\n"
+                r"(?P<answer>.*)",
+                body,
+            )
+            if standard is None:
+                return match.group(0)
+            question_text = standard.group("question").strip()
+            answer = standard.group("answer").strip()
+
+        return (
+            "## Вопрос\n\n"
+            "<br>\n\n"
+            f" 💬 **{question_text}**\n\n"
+            "<h2></h2>\n\n"
+            "<br>\n"
+            "<dl>\n"
+            "<dd>\n\n"
+            f"{answer}\n\n"
+            "</dd>\n"
+            "</dl>\n"
+            "<br>\n\n\n"
+            "## Дополнительные вопросы"
+        )
+
+    content = main_layout.sub(normalize_main_layout, content, count=1)
+    content = re.sub(
+        r"(?m)(^## Дополнительные вопросы[ \t]*$\n)(?!\n)",
+        r"\1\n",
         content,
         count=1,
     )
@@ -465,17 +516,7 @@ def format_pilot_card(content: str) -> str:
         lambda match: re.sub(r"(?m)^> ?", "", match.group("table")).rstrip() + "\n\n",
         content,
     )
-    content = re.sub(r"(?m)(^\|.*\|\n)(?=## )", r"\1\n", content)
-    content = re.sub(
-        r"(?ms)(^## Связанные темы\n\n).*?(?=\n\n^## Источники)",
-        r"\1"
-        r"- [Каскад, наследование и специфичность]"
-        r"(<./01 Что такое CSS cascade inheritance specificity.md>)\n"
-        r"- [Валидация форм]"
-        r"(<../Forms/05 Валидация форм schema resolver async validation.md>)",
-        content,
-        count=1,
-    )
+    content = re.sub(r"(?m)(^\|.*\|)\n+(?=## )", r"\1\n\n", content)
     canonical_sources = {
         "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors": (
             "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors"
@@ -501,11 +542,15 @@ def generate_card(path: Path, topic: Path, previous: Path | None, following: Pat
     content = repair_generated_links(path, content)
     content = format_card_for_github(content)
     relative_card = path.relative_to(CARDS_DIR).as_posix()
-    if relative_card in PILOT_VISIBLE_ANSWER_CARDS:
-        content = format_pilot_card(content)
+    if topic.name in STYLED_CARD_TOPICS:
+        content = format_styled_card(content)
+        styled_title = STYLED_CARD_TITLES.get(
+            relative_card,
+            re.sub(r"^\d+\s+", "", path.stem),
+        )
         content = re.sub(
             r"(?m)\A# .+$",
-            f"# {PILOT_CARD_TITLES[relative_card]}",
+            f"# {styled_title}",
             content,
             count=1,
         )
@@ -632,7 +677,7 @@ def validate() -> list[str]:
             content = read_text(card)
             content_without_code = without_code(content)
             relative_card = card.relative_to(CARDS_DIR).as_posix()
-            is_pilot = relative_card in PILOT_VISIBLE_ANSWER_CARDS
+            is_styled = card.parent.name in STYLED_CARD_TOPICS
             if not content.startswith("# "):
                 issues.append(f"{card.relative_to(ROOT)}: H1 title is missing")
             if content.count("<!-- CARD-NAV-TOP:START -->") != 1:
@@ -641,17 +686,21 @@ def validate() -> list[str]:
                 issues.append(f"{card.relative_to(ROOT)}: bottom navigation is missing or duplicated")
             if len(re.findall(r"(?m)^## Вопрос\s*$", content_without_code)) != 1:
                 issues.append(f"{card.relative_to(ROOT)}: H2 question heading is missing or duplicated")
-            if is_pilot:
+            if is_styled:
                 if content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 0:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot main answer is still collapsed")
+                    issues.append(f"{card.relative_to(ROOT)}: styled main answer is still collapsed")
                 if re.search(r"(?m)^## Ответ\s*$", content_without_code):
-                    issues.append(f"{card.relative_to(ROOT)}: pilot has a redundant answer heading")
+                    issues.append(f"{card.relative_to(ROOT)}: styled card has a redundant answer heading")
                 if not re.search(r"(?m)^ 💬 \*\*.+\*\*$", content_without_code):
-                    issues.append(f"{card.relative_to(ROOT)}: pilot question is not emphasized")
-                if not content.startswith(f"# {PILOT_CARD_TITLES[relative_card]}\n"):
-                    issues.append(f"{card.relative_to(ROOT)}: pilot title is not reader-friendly")
+                    issues.append(f"{card.relative_to(ROOT)}: styled question is not emphasized")
+                expected_title = STYLED_CARD_TITLES.get(
+                    relative_card,
+                    re.sub(r"^\d+\s+", "", card.stem),
+                )
+                if not content.startswith(f"# {expected_title}\n"):
+                    issues.append(f"{card.relative_to(ROOT)}: styled title is not reader-friendly")
                 if len(re.findall(r"(?m)^## Дополнительные вопросы\s*$", content_without_code)) != 1:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
+                    issues.append(f"{card.relative_to(ROOT)}: styled follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
                 if not re.search(
                     r"(?ms)^## Вопрос\n\n<br>\n\n 💬 \*\*.+\*\*\n\n"
@@ -659,9 +708,9 @@ def validate() -> list[str]:
                     r"</dd>\n</dl>\n<br>\n\n\n## Дополнительные вопросы",
                     content_without_code,
                 ):
-                    issues.append(f"{card.relative_to(ROOT)}: pilot main layout is inconsistent")
+                    issues.append(f"{card.relative_to(ROOT)}: styled main layout is inconsistent")
                 if content_without_code.count("<br>") != 3:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot vertical spacing is inconsistent")
+                    issues.append(f"{card.relative_to(ROOT)}: styled vertical spacing is inconsistent")
                 followup_layouts = len(
                     re.findall(
                         r"(?ms)</summary>\n\n<dl>\n<dd>\n<h2></h2>\n\n"
@@ -670,19 +719,19 @@ def validate() -> list[str]:
                     )
                 )
                 if followup_layouts != followup_count:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer style is inconsistent")
+                    issues.append(f"{card.relative_to(ROOT)}: styled follow-up answer style is inconsistent")
                 if content_without_code.count("<dl>") != 1 + followup_count:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot answer indentation is inconsistent")
+                    issues.append(f"{card.relative_to(ROOT)}: styled answer indentation is inconsistent")
                 if content_without_code.count("<h2></h2>") != 1 + 2 * followup_count:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot separator count is inconsistent")
+                    issues.append(f"{card.relative_to(ROOT)}: styled separator count is inconsistent")
                 if re.search(r"</summary>\n\n>", content_without_code):
-                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer is still quoted")
+                    issues.append(f"{card.relative_to(ROOT)}: styled follow-up answer is still quoted")
                 if "> [!NOTE]" in content_without_code:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot table is still wrapped in a note")
+                    issues.append(f"{card.relative_to(ROOT)}: styled table is still wrapped in a note")
                 if "<strong>Ответ</strong>" in content_without_code:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up has a redundant answer label")
+                    issues.append(f"{card.relative_to(ROOT)}: styled follow-up has a redundant answer label")
                 if "<summary><strong>Вопрос:</strong>" in content_without_code:
-                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up still has a redundant label")
+                    issues.append(f"{card.relative_to(ROOT)}: styled follow-up still has a redundant label")
             elif content_without_code.count("<summary><strong>Показать ответ</strong></summary>") != 1:
                 issues.append(f"{card.relative_to(ROOT)}: collapsible main answer is missing or duplicated")
             if re.search(r"(?m)^#{4,6}\s+", content_without_code):

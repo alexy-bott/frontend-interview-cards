@@ -1,4 +1,4 @@
-# 03 Flexbox оси выравнивание перенос
+# Flexbox оси выравнивание перенос
 
 <!-- CARD-NAV-TOP:START -->
 [← 02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 CSS Grid tracks areas auto-fit minmax →](<./04 CSS Grid tracks areas auto-fit minmax.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает Flexbox? Что важно понимать про оси, `justify-content`, `align-items`, `flex-grow/shrink/basis`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает Flexbox? Что важно понимать про оси, `justify-content`, `align-items`, `flex-grow/shrink/basis`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Flexbox - одномерная модель раскладки. Она распределяет прямых детей flex-контейнера прежде всего вдоль одной, главной оси, а затем выравнивает их по поперечной оси. Контейнер создаётся через `display: flex` или `inline-flex`.
 
@@ -29,62 +34,104 @@ Flexbox - одномерная модель раскладки. Она расп�
 
 Flexbox подходит для навигации, панели действий, вертикальной структуры карточки и других случаев, где важна одна ось. Когда нужно одновременно контролировать строки и колонки общей сетки, обычно удобнее CSS Grid.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>justify-content</code> иногда выравнивает вертикально?</summary>
+<summary><strong>Почему <code>justify-content</code> иногда выравнивает вертикально?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Потому что `justify-content` работает по главной оси. Если `flex-direction: column`, главная ось вертикальная, значит `justify-content` управляет вертикальным распределением.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что примерно означает <code>flex: 1</code>?</summary>
+<summary><strong>Что примерно означает <code>flex: 1</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Запись `flex: 1` обычно означает `flex-grow: 1`, `flex-shrink: 1` и `flex-basis: 0%`. Несколько таких элементов начинают с одинаковой нулевой базы и делят свободное место в равных долях, если этому не мешают минимальные размеры и содержимое.
 
 Если поведение непонятно, в DevTools проверяют вычисленные значения `flex-grow`, `flex-shrink`, `flex-basis` и `min-width`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему во flex иногда нужен <code>min-width: 0</code>?</summary>
+<summary><strong>Почему во flex иногда нужен <code>min-width: 0</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 У flex-элемента по умолчанию `min-width: auto`. Во многих случаях это даёт минимальный размер на основе содержимого: например, длинное неразрывное слово не позволяет элементу стать уже. `min-width: 0` снимает это ограничение и разрешает сжатие.
 
 Это часто нужно для строк с текстом и кнопками: текст должен обрезаться через `overflow: hidden; text-overflow: ellipsis`, а не расталкивать всю раскладку.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Когда flex, а когда grid?</summary>
+<summary><strong>Когда flex, а когда grid?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Flexbox удобен для одной оси: ряда или колонки. Grid удобен для двумерной структуры, где строки и колонки образуют общую сетку, например для макета страницы или выровненных карточек.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему во flex часто используют <code>margin-left: auto</code>?</summary>
+<summary><strong>Почему во flex часто используют <code>margin-left: auto</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Автоматический внешний отступ flex-элемента забирает доступное свободное место по своей оси. Например, `margin-left: auto` у правой группы кнопок в верхней панели отодвинет её к правому краю.
 
 Это часто проще, чем подбирать `justify-content`, если нужно оттолкнуть один конкретный элемент или группу.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Задача | Flexbox |
-> | --- | --- |
-> | Центрировать кнопку | `display:flex; align-items:center; justify-content:center` |
-> | Навигационная панель | Строка + `gap` |
-> | Боковая панель внутри блока | Колонка + flex-элементы |
-> | Кнопки справа | `margin-left:auto` или justify |
-> | Карточка с footer внизу | Column + `margin-top:auto` |
-> | Текст расталкивает строку | `min-width: 0` + ellipsis |
+| Задача | Flexbox |
+| --- | --- |
+| Центрировать кнопку | `display:flex; align-items:center; justify-content:center` |
+| Навигационная панель | Строка + `gap` |
+| Боковая панель внутри блока | Колонка + flex-элементы |
+| Кнопки справа | `margin-left:auto` или justify |
+| Карточка с footer внизу | Column + `margin-top:auto` |
+| Текст расталкивает строку | `min-width: 0` + ellipsis |
 
 ## Связанные темы
 

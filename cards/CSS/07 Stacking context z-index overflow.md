@@ -1,4 +1,4 @@
-# 07 Stacking context z-index overflow
+# Stacking context z-index overflow
 
 <!-- CARD-NAV-TOP:START -->
 [← 06 Position sticky fixed absolute relative](<./06 Position sticky fixed absolute relative.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 Responsive design media container queries units →](<./08 Responsive design media container queries units.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Почему `z-index` иногда не работает? Что такое stacking context?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Почему `z-index` иногда не работает? Что такое stacking context?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 Stacking context, или контекст наложения, - локальная система слоёв. Элементы внутри неё рисуются в установленном порядке, а затем весь контекст участвует во внешнем наложении как единое целое. Поэтому потомок с `z-index: 9999` не может оказаться выше соседнего контекста, если его собственный родительский контекст расположен ниже.
 
@@ -23,62 +28,104 @@ Stacking context, или контекст наложения, - локальна
 
 При диагностике сначала различают две причины: элемент либо обрезан предком, либо нарисован под другим слоем. Затем по цепочке родителей проверяют `position`, `z-index`, `transform`, `opacity`, `overflow` и `contain`, находят ближайшие stacking contexts у обоих элементов и смотрят, куда рендерится Portal. В приложении также полезна единая шкала слоёв для выпадающих меню, прилипающей верхней панели, модальных окон и уведомлений.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>z-index</code> на обычном static элементе не работает?</summary>
+<summary><strong>Почему <code>z-index</code> на обычном static элементе не работает?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `z-index` управляет уровнем позиционированного элемента, то есть элемента с `position` не `static`, а также flex- и grid-элемента. Для обычного `static`-блока вне Flexbox или Grid это свойство не даёт ожидаемого эффекта.
 
 Поэтому сначала проверяют, есть ли у элемента `position` не `static`, является ли он flex- или grid-элементом и не находится ли внутри другого stacking context.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как <code>transform</code> влияет на всплывающий слой?</summary>
+<summary><strong>Как <code>transform</code> влияет на всплывающий слой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `transform` создаёт новый stacking context и containing block для некоторых позиционированных потомков. Это может ограничить всплывающий слой внутри локального контекста.
 
 Например, обёртка с `transform: translateZ(0)` создаёт новый контекст. Выпадающее меню внутри неё не сможет перекрыть модальный слой из более высокого родительского контекста, сколько бы ни увеличивался его собственный `z-index`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему выпадающее меню обрезается, хотя <code>z-index</code> большой?</summary>
+<summary><strong>Почему выпадающее меню обрезается, хотя <code>z-index</code> большой?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если предок имеет `overflow: hidden/auto/scroll`, содержимое может обрезаться. `z-index` не отменяет обрезку. Решения: изменить `overflow`/раскладку или рендерить выпадающее меню через Portal.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Как React Portal помогает с z-index?</summary>
+<summary><strong>Как React Portal помогает с z-index?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Portal рендерит DOM-узел всплывающего слоя в другой контейнер, часто рядом с `body`, и тем самым позволяет выйти из области обрезки или stacking context исходного DOM-предка. При этом компонент остаётся в прежнем React-дереве: он получает тот же Context, а события всплывают по React-иерархии.
 
 Но Portal не решает всё автоматически: всё ещё нужно правильно рассчитать позицию, управлять фокусом, закрытием по Escape и клику вне элемента, а также согласовать общую шкалу `z-index`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Можно ли перекрыть открытый <code>&lt;dialog&gt;</code> очень большим <code>z-index</code>?</summary>
+<summary><strong>Можно ли перекрыть открытый <code>&lt;dialog&gt;</code> очень большим <code>z-index</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Если диалог открыт через `showModal()`, браузер помещает его в top layer поверх обычных stacking contexts. Элемент из документа не сможет оказаться выше только за счёт `z-index`. Порядок нескольких элементов в top layer определяется порядком их добавления в этот слой.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | Проблема | Что проверить |
-> | --- | --- |
-> | Модальное окно под верхней панелью | Родительские stacking contexts |
-> | Tooltip обрезан | `overflow` у предков |
-> | Выпадающее меню под блоком с `transform` | `transform` создал контекст |
-> | `z-index: 9999` не помог | Родительский контекст ниже |
-> | Библиотека всплывающих слоёв | Portal-контейнер и шкала `z-index` |
-> | Несколько всплывающих слоёв | Единая шкала `z-index` и порядок Portal-контейнеров |
+| Проблема | Что проверить |
+| --- | --- |
+| Модальное окно под верхней панелью | Родительские stacking contexts |
+| Tooltip обрезан | `overflow` у предков |
+| Выпадающее меню под блоком с `transform` | `transform` создал контекст |
+| `z-index: 9999` не помог | Родительский контекст ниже |
+| Библиотека всплывающих слоёв | Portal-контейнер и шкала `z-index` |
+| Несколько всплывающих слоёв | Единая шкала `z-index` и порядок Portal-контейнеров |
 
 ## Связанные темы
 

@@ -1,4 +1,4 @@
-# 06 Position sticky fixed absolute relative
+# Position sticky fixed absolute relative
 
 <!-- CARD-NAV-TOP:START -->
 [← 05 Центрирование в CSS](<./05 Центрирование в CSS.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Stacking context z-index overflow →](<./07 Stacking context z-index overflow.md>)
@@ -6,10 +6,15 @@
 
 ## Вопрос
 
-Как работает `position`: `static`, `relative`, `absolute`, `fixed`, `sticky`?
+<br>
 
-<details>
-<summary><strong>Показать ответ</strong></summary>
+ 💬 **Как работает `position`: `static`, `relative`, `absolute`, `fixed`, `sticky`?**
+
+<h2></h2>
+
+<br>
+<dl>
+<dd>
 
 `position` выбирает схему позиционирования элемента и область, относительно которой работают свойства смещения `top`, `right`, `bottom`, `left` или их короткая запись `inset`.
 
@@ -27,53 +32,87 @@
 
 На нужной оси у sticky должен быть задан хотя бы один порог: без `top`, `bottom` или логического аналога поведение останется обычным `relative`. Предок с `overflow: hidden`, `auto` или `scroll` может стать ближайшим механизмом прокрутки, даже если пользователь фактически прокручивает страницу. Кроме того, контейнер должен быть достаточно больше sticky-элемента, чтобы у него появился диапазон перемещения.
 
-</details>
+</dd>
+</dl>
+<br>
 
-## Встречные вопросы
+
+## Дополнительные вопросы
 
 <details>
-<summary><strong>Вопрос:</strong> Относительно чего позиционируется <code>absolute</code>?</summary>
+<summary><strong>Относительно чего позиционируется <code>absolute</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Относительно containing block, то есть области отсчёта для размеров и смещений. Для `absolute` это часто padding box - коробка до внешнего края `padding` - ближайшего предка с `position` не `static`. Но containing block также могут создать, например, `transform`, `filter` или `contain`, поэтому одного поиска `position: relative` иногда недостаточно.
 
 Например, карточке задают `position: relative`, а небольшой метке внутри неё - `position: absolute; top: 8px; right: 8px`.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Что значит элемент вынут из потока?</summary>
+<summary><strong>Что значит элемент вынут из потока?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 Другие элементы раскладки ведут себя так, будто его обычного места нет. `absolute`/`fixed` элемент не резервирует пространство в потоке документа, поэтому может перекрывать другие элементы.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему <code>position: sticky</code> может не работать?</summary>
+<summary><strong>Почему <code>position: sticky</code> может не работать?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 На нужной оси не задан порог `top`/`bottom`, предок с `overflow` создал другой контейнер прокрутки, контейнер слишком мал или sticky-элемент растянут на всю его высоту. Sticky может работать технически правильно, но прилипать внутри не той прокручиваемой области, которую ожидал разработчик.
 
 Проверяют контейнер прокрутки, размеры родителя, наличие `top`, `overflow` у предков и то, достаточно ли места для перемещения элемента.
 
+<h2></h2>
+</dd>
+</dl>
+
 </details>
 
 <details>
-<summary><strong>Вопрос:</strong> Почему fixed элемент вдруг позиционируется не относительно viewport?</summary>
+<summary><strong>Почему fixed элемент вдруг позиционируется не относительно viewport?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
 
 `transform`, `filter` или `perspective` на предке может создать containing block для fixed-потомков. Это частая причина странного поведения `fixed` внутри трансформированных контейнеров.
+
+<h2></h2>
+</dd>
+</dl>
 
 </details>
 
 ## Где это встречается во frontend
 
-> [!NOTE]
-> | UI | Позиционирование |
-> | --- | --- |
-> | Badge в карточке | `absolute` внутри `relative` |
-> | Прилипающий заголовок таблицы | `sticky` + `top` |
-> | Floating chat button | `fixed` |
-> | Tooltip или popover | `absolute`/`fixed` + расчёт позиции всплывающего элемента |
-> | Anchor для badge/icon | `relative` на контейнере + `absolute` у потомка |
-> | Сдвиг декоративного элемента | `relative` |
+| UI | Позиционирование |
+| --- | --- |
+| Badge в карточке | `absolute` внутри `relative` |
+| Прилипающий заголовок таблицы | `sticky` + `top` |
+| Floating chat button | `fixed` |
+| Tooltip или popover | `absolute`/`fixed` + расчёт позиции всплывающего элемента |
+| Anchor для badge/icon | `relative` на контейнере + `absolute` у потомка |
+| Сдвиг декоративного элемента | `relative` |
 
 ## Связанные темы
 
