@@ -402,10 +402,10 @@ def format_pilot_card(content: str) -> str:
         content,
         count=1,
     )
-    content = re.sub(r"(?m)^## Ответ[ \t]*$", "<br>", content, count=1)
+    content = re.sub(r"(?m)^## Ответ[ \t]*$", "---", content, count=1)
     content = re.sub(
-        r"(?m)(^> \*\*.+\*\*\n\n)<br>[ \t]*\n(?!\n)",
-        r"\1<br>\n\n",
+        r"(?m)(^> \*\*.+\*\*\n\n)<br>[ \t]*$",
+        r"\1---",
         content,
         count=1,
     )
@@ -431,15 +431,42 @@ def format_pilot_card(content: str) -> str:
         r"</details>"
     )
 
-    def quote_followup_answer(match: re.Match[str]) -> str:
+    def normalize_followup_answer(match: re.Match[str]) -> str:
         answer = re.sub(r"\A<br>\s*|\s*<br>\Z", "", match.group("answer").strip())
-        lines = answer.splitlines()
-        if not all(line.startswith(">") for line in lines if line.strip()):
-            answer = "\n".join(f"> {line}" if line else ">" for line in lines)
-        return f"{match.group(1)}\n\n{answer}\n\n</details>"
+        answer = re.sub(r"(?m)^> ?", "", answer)
+        return f"{match.group(1)}\n\n<br>\n\n{answer}\n\n</details>"
 
-    content = followup_answer.sub(quote_followup_answer, content)
+    content = followup_answer.sub(normalize_followup_answer, content)
     content = content.replace("\n## Встречные вопросы\n", "\n## Дополнительные вопросы\n")
+    content = re.sub(
+        r"(?m)^> \[!NOTE\]\n(?P<table>(?:> \|.*(?:\n|$))+)",
+        lambda match: re.sub(r"(?m)^> ?", "", match.group("table")).rstrip() + "\n\n",
+        content,
+    )
+    content = re.sub(r"(?m)(^\|.*\|\n)(?=## )", r"\1\n", content)
+    content = re.sub(
+        r"(?ms)(^## Связанные темы\n\n).*?(?=\n\n^## Источники)",
+        r"\1"
+        r"- [Каскад, наследование и специфичность]"
+        r"(<./01 Что такое CSS cascade inheritance specificity.md>)\n"
+        r"- [Валидация форм]"
+        r"(<../Forms/05 Валидация форм schema resolver async validation.md>)",
+        content,
+        count=1,
+    )
+    canonical_sources = {
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors": (
+            "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors"
+        ),
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes": (
+            "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-classes"
+        ),
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements": (
+            "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/Pseudo-elements"
+        ),
+    }
+    for old_url, canonical_url in canonical_sources.items():
+        content = content.replace(old_url, canonical_url)
     return content
 
 
@@ -604,11 +631,17 @@ def validate() -> list[str]:
                 if len(re.findall(r"(?m)^## Дополнительные вопросы\s*$", content_without_code)) != 1:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
-                if content_without_code.count("<br>") != 1:
+                if not re.search(r"(?ms)^## Вопрос\s*\n\n> \*\*.+\*\*\n\n---\n\n", content_without_code):
+                    issues.append(f"{card.relative_to(ROOT)}: pilot main separator is missing")
+                if content_without_code.count("<br>") != followup_count:
                     issues.append(f"{card.relative_to(ROOT)}: pilot vertical spacing is inconsistent")
-                quoted_followups = len(re.findall(r"</summary>\n\n>", content_without_code))
-                if quoted_followups != followup_count:
+                spaced_followups = len(re.findall(r"</summary>\n\n<br>\n\n", content_without_code))
+                if spaced_followups != followup_count:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer style is inconsistent")
+                if re.search(r"</summary>\n\n>", content_without_code):
+                    issues.append(f"{card.relative_to(ROOT)}: pilot follow-up answer is still quoted")
+                if "> [!NOTE]" in content_without_code:
+                    issues.append(f"{card.relative_to(ROOT)}: pilot table is still wrapped in a note")
                 if "<strong>Ответ</strong>" in content_without_code:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up has a redundant answer label")
                 if "<summary><strong>Вопрос:</strong>" in content_without_code:
