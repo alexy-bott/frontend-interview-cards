@@ -213,6 +213,7 @@
 
 - [16 Map Set WeakMap WeakSet](<../JavaScript/16 Map Set WeakMap WeakSet.md>)
 - [01 Big O time space complexity](<./01 Big O time space complexity.md>)
+- [04 Linear search binary search и индексация](<./04 Linear search binary search и индексация.md>)
 - [08 Типовые frontend задачи и сложность](<./08 Типовые frontend задачи и сложность.md>)
 - [05 Selectors normalization и createEntityAdapter](<../State Management/05 Selectors normalization и createEntityAdapter.md>)
 

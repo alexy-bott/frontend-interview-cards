@@ -200,6 +200,7 @@ Pagination, или пагинация, делит большую коллекц�
 - [01 Виды состояния во frontend](<../State Management/01 Виды состояния во frontend.md>)
 - [06 RTK Query createApi query mutation tags](<../State Management/06 RTK Query createApi query mutation tags.md>)
 - [10 TanStack Query React Query vs RTK Query](<../State Management/10 TanStack Query React Query vs RTK Query.md>)
+- [09 Infinite scroll cursor pagination scroll restoration](<../Frontend System Design/09 Infinite scroll cursor pagination scroll restoration.md>)
 
 ## Источники
 

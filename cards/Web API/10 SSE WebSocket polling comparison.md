@@ -201,6 +201,7 @@ WebSocket предоставляет двусторонние текстовые
 - [48 WebSocket EventSource realtime](<../JavaScript/48 WebSocket EventSource realtime.md>)
 - [09 WebSocket protocol lifecycle reconnect](<./09 WebSocket protocol lifecycle reconnect.md>)
 - [05 Realtime экран WebSocket SSE polling](<../Frontend System Design/05 Realtime экран WebSocket SSE polling.md>)
+- [12 WebRTC basics](<./12 WebRTC basics.md>)
 
 ## Источники
 

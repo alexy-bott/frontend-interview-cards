@@ -225,11 +225,10 @@ console.log(Object.getPrototypeOf(admin) === base);
 
 ## Связанные темы
 
-- Prototype
 - [09 this call apply bind](<./09 this call apply bind.md>)
 - [11 class new constructor extends super](<./11 class new constructor extends super.md>)
 - [13 Проверка свойств объекта](<./13 Проверка свойств объекта.md>)
-- [01 Frontend threat model](<../Security/01 Frontend threat model.md>)
+- [51 OOP classes new static instanceof](<./51 OOP classes new static instanceof.md>)
 
 ## Источники
 

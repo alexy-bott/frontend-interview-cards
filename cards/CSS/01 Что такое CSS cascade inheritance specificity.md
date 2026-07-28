@@ -119,10 +119,9 @@ CSS-свойства имеют разные правила наследован
 
 ## Связанные темы
 
-- Каскад и наследование
-- Специфичность селекторов
-- SCSS архитектура и вложенность
-- [12 SCSS modules use forward architecture](<./12 SCSS modules use forward architecture.md>)
+- [15 CSS selectors pseudo-classes pseudo-elements](<./15 CSS selectors pseudo-classes pseudo-elements.md>)
+- [16 CSS reset normalize browser defaults](<./16 CSS reset normalize browser defaults.md>)
+- [09 CSS variables design tokens themes](<./09 CSS variables design tokens themes.md>)
 - [13 CSS Modules BEM naming collisions](<./13 CSS Modules BEM naming collisions.md>)
 
 ## Источники

@@ -145,9 +145,6 @@ Intrinsic sizing, или внутренний размер, позволяет �
 
 ## Связанные темы
 
-- Box Model
-- Grid
-- Flexbox
 - [02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>)
 - [03 Flexbox оси выравнивание перенос](<./03 Flexbox оси выравнивание перенос.md>)
 - [04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>)

@@ -228,6 +228,7 @@ React id относится к экземпляру списка, а `name` мо
 - [19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>)
 - [01 Виды состояния во frontend](<../State Management/01 Виды состояния во frontend.md>)
 - [05 Forms labels errors validation accessibility](<../Accessibility/05 Forms labels errors validation accessibility.md>)
+- [26 useInsertionEffect useDebugValue flushSync startTransition](<./26 useInsertionEffect useDebugValue flushSync startTransition.md>)
 
 ## Источники
 

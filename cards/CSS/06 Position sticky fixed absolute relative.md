@@ -116,10 +116,9 @@
 
 ## Связанные темы
 
-- Позиционирование
-- Stacking context и z-index
-- display и formatting contexts
 - [07 Stacking context z-index overflow](<./07 Stacking context z-index overflow.md>)
+- [02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>)
+- [05 Центрирование в CSS](<./05 Центрирование в CSS.md>)
 - [13 Portal](<../React/13 Portal.md>)
 
 ## Источники

@@ -212,7 +212,7 @@ DashboardPage загружает данные из пяти API endpoints, пр�
 - [02 Single Responsibility Principle во frontend](<../Principles/02 Single Responsibility Principle во frontend.md>)
 - [08 Coupling cohesion и границы модулей](<../Principles/08 Coupling cohesion и границы модулей.md>)
 - [11 Atomic Design MVC MVP modular architecture](<../Architecture/11 Atomic Design MVC MVP modular architecture.md>)
-- [03 Semver caret tilde exact versions](<../Tooling/03 Semver caret tilde exact versions.md>)
+- [06 DRY KISS YAGNI во frontend](<../Principles/06 DRY KISS YAGNI во frontend.md>)
 
 ## Источники
 

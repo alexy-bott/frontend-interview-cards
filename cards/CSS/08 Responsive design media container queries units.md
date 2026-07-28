@@ -152,11 +152,11 @@ Mobile-first не означает, что интерфейс проектиру
 
 ## Связанные темы
 
-- Responsive design и media queries
-- Container queries
-- Единицы измерения
-- Изображения и responsive media
+- [04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>)
+- [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
 - [07 Images responsive media alt lazy loading](<../HTML/07 Images responsive media alt lazy loading.md>)
+- [04 Visual accessibility contrast zoom motion](<../Accessibility/04 Visual accessibility contrast zoom motion.md>)
+- [05 Images fonts resource priority preload lazy loading](<../Performance/05 Images fonts resource priority preload lazy loading.md>)
 
 ## Источники
 

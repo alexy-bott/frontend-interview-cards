@@ -258,6 +258,7 @@ console.log(formData.getAll("tag"));
 - [55 ArrayBuffer TypedArray DataView](<./55 ArrayBuffer TypedArray DataView.md>)
 - [01 Формы во frontend](<../Forms/01 Формы во frontend.md>)
 - [02 Controlled uncontrolled и FormData](<../Forms/02 Controlled uncontrolled и FormData.md>)
+- [08 Загрузка файлов progress retry multipart](<../Frontend System Design/08 Загрузка файлов progress retry multipart.md>)
 
 ## Источники
 

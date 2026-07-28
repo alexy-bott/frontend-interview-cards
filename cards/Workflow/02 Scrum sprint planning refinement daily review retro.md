@@ -168,7 +168,7 @@ Sprint Review рассматривает результат и будущее п
 - [01 Agile Scrum Kanban для frontend](<./01 Agile Scrum Kanban для frontend.md>)
 - [03 Jira backlog issue story task acceptance criteria](<./03 Jira backlog issue story task acceptance criteria.md>)
 - [05 Estimation blockers risks communication](<./05 Estimation blockers risks communication.md>)
-- [02 Controlled uncontrolled и FormData](<../Forms/02 Controlled uncontrolled и FormData.md>)
+- [04 Definition of Ready Definition of Done frontend](<./04 Definition of Ready Definition of Done frontend.md>)
 
 ## Источники
 

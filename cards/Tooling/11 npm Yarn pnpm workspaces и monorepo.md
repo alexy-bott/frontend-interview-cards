@@ -192,7 +192,7 @@ Monorepo описывает организацию нескольких прое
 - [01 package.json scripts dependencies devDependencies](<./01 package.json scripts dependencies devDependencies.md>)
 - [02 lock files npm ci и воспроизводимая установка](<./02 lock files npm ci и воспроизводимая установка.md>)
 - [03 Semver caret tilde exact versions](<./03 Semver caret tilde exact versions.md>)
-- [11 Atomic Design MVC MVP modular architecture](<../Architecture/11 Atomic Design MVC MVP modular architecture.md>)
+- [03 FSD public API import boundaries](<../Architecture/03 FSD public API import boundaries.md>)
 
 ## Источники
 

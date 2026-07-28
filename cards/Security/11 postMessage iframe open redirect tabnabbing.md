@@ -299,6 +299,7 @@ Endpoint или client route перенаправляет на адрес из `
 
 - [01 Frontend threat model](<./01 Frontend threat model.md>)
 - [02 XSS reflected stored DOM React](<./02 XSS reflected stored DOM React.md>)
+- [09 iframe sandbox security](<../HTML/09 iframe sandbox security.md>)
 - [05 CORS same-origin preflight credentials](<./05 CORS same-origin preflight credentials.md>)
 - [06 CSP security headers clickjacking](<./06 CSP security headers clickjacking.md>)
 - [10 JWT sessions OAuth authorization basics](<./10 JWT sessions OAuth authorization basics.md>)

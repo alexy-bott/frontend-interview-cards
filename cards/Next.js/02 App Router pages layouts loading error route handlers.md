@@ -158,10 +158,12 @@ Next.js автоматически использует его как fallback �
 
 ## Связанные темы
 
+- [01 Что такое Next.js и зачем он нужен](<./01 Что такое Next.js и зачем он нужен.md>)
 - [03 Server Components Client Components и use client](<./03 Server Components Client Components и use client.md>)
 - [04 SSR SSG ISR Streaming и hydration](<./04 SSR SSG ISR Streaming и hydration.md>)
 - [08 Route Handlers Middleware Edge и Node runtime](<./08 Route Handlers Middleware Edge и Node runtime.md>)
 - [12 Route Groups Parallel и Intercepting Routes](<./12 Route Groups Parallel и Intercepting Routes.md>)
+- [11 Pages Router getServerSideProps getStaticProps getStaticPaths](<./11 Pages Router getServerSideProps getStaticProps getStaticPaths.md>)
 - [15 Suspense lazy и code splitting](<../React/15 Suspense lazy и code splitting.md>)
 
 ## Источники

@@ -117,11 +117,10 @@ Mixin вставляет объявления в каждое место `@inclu
 
 ## Связанные темы
 
-- SCSS
-- SCSS переменные mixins functions
-- SCSS архитектура и вложенность
 - [09 CSS variables design tokens themes](<./09 CSS variables design tokens themes.md>)
 - [12 SCSS modules use forward architecture](<./12 SCSS modules use forward architecture.md>)
+- [17 CSS preprocessors PostCSS Autoprefixer](<./17 CSS preprocessors PostCSS Autoprefixer.md>)
+- [13 CSS Modules BEM naming collisions](<./13 CSS Modules BEM naming collisions.md>)
 
 ## Источники
 

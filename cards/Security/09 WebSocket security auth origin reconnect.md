@@ -272,7 +272,7 @@ Header показывает origin страницы, которая иниции
 - [10 SSE WebSocket polling comparison](<../Web API/10 SSE WebSocket polling comparison.md>)
 - [04 Token storage cookies localStorage refresh access tokens](<./04 Token storage cookies localStorage refresh access tokens.md>)
 - [07 Auth permissions frontend backend responsibility](<./07 Auth permissions frontend backend responsibility.md>)
-- [01 Виды состояния во frontend](<../State Management/01 Виды состояния во frontend.md>)
+- [48 WebSocket EventSource realtime](<../JavaScript/48 WebSocket EventSource realtime.md>)
 
 ## Источники
 

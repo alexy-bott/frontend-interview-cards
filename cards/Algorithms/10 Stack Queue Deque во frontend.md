@@ -268,7 +268,7 @@ function hasBalancedBrackets(input: string) {
 - [24 Event Loop](<../JavaScript/24 Event Loop.md>)
 - [06 Recursion stack DFS BFS tree traversal](<./06 Recursion stack DFS BFS tree traversal.md>)
 - [11 Two pointers sliding window frequency map](<./11 Two pointers sliding window frequency map.md>)
-- [27 Promise combinators](<../JavaScript/27 Promise combinators.md>)
+- [08 Типовые frontend задачи и сложность](<./08 Типовые frontend задачи и сложность.md>)
 
 ## Источники
 

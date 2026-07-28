@@ -257,13 +257,11 @@ console.log(next.theme === state.theme);
 
 ## Связанные темы
 
-- Копирование объектов
-- Неизменяемость объектов
 - [07 Destructuring rest spread](<./07 Destructuring rest spread.md>)
 - [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
 - [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
-- Состояние в React
-- Redux Toolkit
+- [04 Props state и однонаправленный поток данных](<../React/04 Props state и однонаправленный поток данных.md>)
+- [03 Redux Toolkit configureStore createSlice Immer](<../State Management/03 Redux Toolkit configureStore createSlice Immer.md>)
 
 ## Источники
 

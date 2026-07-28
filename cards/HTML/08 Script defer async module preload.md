@@ -150,11 +150,11 @@
 
 ## Связанные темы
 
-- Head meta и resource hints
+- [06 Head meta SEO Open Graph resource hints](<./06 Head meta SEO Open Graph resource hints.md>)
 - [Critical rendering path](<../Performance/03 Critical rendering path render pipeline.md>)
-- [Performance: Core Web Vitals](<../Performance/02 Core Web Vitals LCP INP CLS.md>)
-- Vite
-- Webpack
+- [04 Bundle size code splitting tree shaking loading strategy](<../Performance/04 Bundle size code splitting tree shaking loading strategy.md>)
+- [04 Vite dev server build env proxy](<../Tooling/04 Vite dev server build env proxy.md>)
+- [05 Webpack entry loaders plugins optimization](<../Tooling/05 Webpack entry loaders plugins optimization.md>)
 - [09 Production build assets hashing base publicPath](<../Tooling/09 Production build assets hashing base publicPath.md>)
 
 ## Источники

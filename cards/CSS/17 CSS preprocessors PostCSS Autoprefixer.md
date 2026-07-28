@@ -136,10 +136,9 @@ Autoprefixer не исправляет любой браузерный баг и
 
 ## Связанные темы
 
-- CSS препроцессоры
-- SCSS
 - [11 SCSS variables mixins functions nesting](<./11 SCSS variables mixins functions nesting.md>)
 - [12 SCSS modules use forward architecture](<./12 SCSS modules use forward architecture.md>)
+- [04 Vite dev server build env proxy](<../Tooling/04 Vite dev server build env proxy.md>)
 - [10 Babel transpilation polyfills browserslist](<../Tooling/10 Babel transpilation polyfills browserslist.md>)
 
 ## Источники

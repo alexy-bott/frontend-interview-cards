@@ -157,7 +157,7 @@
 - [41 postMessage BroadcastChannel](<../JavaScript/41 postMessage BroadcastChannel.md>)
 - [06 CSP security headers clickjacking](<../Security/06 CSP security headers clickjacking.md>)
 - [05 CORS same-origin preflight credentials](<../Security/05 CORS same-origin preflight credentials.md>)
-- [07 Images responsive media alt lazy loading](<./07 Images responsive media alt lazy loading.md>)
+- [11 postMessage iframe open redirect tabnabbing](<../Security/11 postMessage iframe open redirect tabnabbing.md>)
 
 ## Источники
 

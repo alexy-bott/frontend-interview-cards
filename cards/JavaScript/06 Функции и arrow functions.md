@@ -231,12 +231,10 @@ console.log(user.arrow.call({ name: "Other" }));
 
 ## Связанные темы
 
-- Функции
-- Чистая функция
+- [50 IIFE HOF currying compose first-class functions](<./50 IIFE HOF currying compose first-class functions.md>)
 - [05 Hoisting и TDZ](<./05 Hoisting и TDZ.md>)
 - [09 this call apply bind](<./09 this call apply bind.md>)
 - [31 DOM events](<./31 DOM events.md>)
-- Как работает React
 
 ## Источники
 

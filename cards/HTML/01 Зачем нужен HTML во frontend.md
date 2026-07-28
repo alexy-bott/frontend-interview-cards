@@ -118,11 +118,10 @@ HTML даёт поисковой системе содержимое и стру
 
 ## Связанные темы
 
-- HTML
-- Семантическая верстка
-- Accessibility
-- [01 Что такое React и зачем он нужен](<../React/01 Что такое React и зачем он нужен.md>)
+- [02 Div span block inline](<./02 Div span block inline.md>)
 - [03 Семантическая верстка landmarks headings](<./03 Семантическая верстка landmarks headings.md>)
+- [04 Accessibility ARIA accessible name keyboard](<./04 Accessibility ARIA accessible name keyboard.md>)
+- [10 Shadow DOM Web Components slots](<./10 Shadow DOM Web Components slots.md>)
 
 ## Источники
 

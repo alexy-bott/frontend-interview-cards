@@ -262,7 +262,6 @@ console.log(user.profile.city);
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [12 Копирование и immutability](<./12 Копирование и immutability.md>)
 - [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
-- Копирование объектов
 
 ## Источники
 

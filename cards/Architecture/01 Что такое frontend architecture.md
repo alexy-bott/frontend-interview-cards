@@ -104,7 +104,7 @@ Frontend-архитектура - это принципы и правила, п�
 - [02 FSD layers slices segments import rule](<./02 FSD layers slices segments import rule.md>)
 - [04 API слой contracts DTO mapping](<./04 API слой contracts DTO mapping.md>)
 - [05 Где хранить state local server global URL](<./05 Где хранить state local server global URL.md>)
-- [01 Что такое React и зачем он нужен](<../React/01 Что такое React и зачем он нужен.md>)
+- [01 SOLID во frontend](<../Principles/01 SOLID во frontend.md>)
 
 ## Источники
 

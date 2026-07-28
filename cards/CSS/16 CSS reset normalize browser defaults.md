@@ -135,8 +135,6 @@ Reset задаёт исходную точку, а компонентные ст
 
 ## Связанные темы
 
-- CSS reset и normalize
-- Box Model
 - [01 Что такое CSS cascade inheritance specificity](<./01 Что такое CSS cascade inheritance specificity.md>)
 - [02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>)
 - [15 CSS selectors pseudo-classes pseudo-elements](<./15 CSS selectors pseudo-classes pseudo-elements.md>)

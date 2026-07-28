@@ -169,6 +169,8 @@ Design pattern - известная схема решения повторяющ
 - [08 Coupling cohesion и границы модулей](<../Principles/08 Coupling cohesion и границы модулей.md>)
 - [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
 - [09 Shared UI design system Radix UI](<../Architecture/09 Shared UI design system Radix UI.md>)
+- [06 Factory Singleton lifecycle](<./06 Factory Singleton lifecycle.md>)
+- [07 Decorator Proxy Mixin Mediator Flyweight](<./07 Decorator Proxy Mixin Mediator Flyweight.md>)
 
 ## Источники
 

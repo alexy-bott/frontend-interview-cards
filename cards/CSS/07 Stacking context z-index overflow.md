@@ -129,11 +129,10 @@ Portal рендерит DOM-узел всплывающего слоя в дру
 
 ## Связанные темы
 
-- Stacking context и z-index
-- Позиционирование
-- Portal
-- [13 Portal](<../React/13 Portal.md>)
 - [06 Position sticky fixed absolute relative](<./06 Position sticky fixed absolute relative.md>)
+- [02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>)
+- [10 Animations transitions transform performance](<./10 Animations transitions transform performance.md>)
+- [13 Portal](<../React/13 Portal.md>)
 
 ## Источники
 

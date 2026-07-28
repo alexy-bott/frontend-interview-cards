@@ -141,11 +141,10 @@ Grid выбирают, когда строки и колонки должны о
 
 ## Связанные темы
 
-- Grid
-- Responsive design и media queries
-- Flexbox
 - [03 Flexbox оси выравнивание перенос](<./03 Flexbox оси выравнивание перенос.md>)
+- [05 Центрирование в CSS](<./05 Центрирование в CSS.md>)
 - [08 Responsive design media container queries units](<./08 Responsive design media container queries units.md>)
+- [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
 
 ## Источники
 

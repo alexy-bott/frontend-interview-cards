@@ -118,10 +118,10 @@ Animation подходит, когда нужна последовательно
 
 ## Связанные темы
 
-- Анимации transform vs position
 - [Performance: Core Web Vitals](<../Performance/02 Core Web Vitals LCP INP CLS.md>)
 - [Critical rendering path](<../Performance/03 Critical rendering path render pipeline.md>)
-- [08 Script defer async module preload](<../HTML/08 Script defer async module preload.md>)
+- [04 Visual accessibility contrast zoom motion](<../Accessibility/04 Visual accessibility contrast zoom motion.md>)
+- [33 requestAnimationFrame и requestIdleCallback](<../JavaScript/33 requestAnimationFrame и requestIdleCallback.md>)
 
 ## Источники
 

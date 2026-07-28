@@ -215,7 +215,6 @@ const expression = () => "expression";
 
 ## Связанные темы
 
-- Hoisting и TDZ
 - [04 var let const и область видимости](<./04 var let const и область видимости.md>)
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [21 ES modules](<./21 ES modules.md>)

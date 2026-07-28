@@ -248,7 +248,7 @@ Protected environment ограничивает исполнителей, deploym
 
 - [03 GitLab CI для frontend](<./03 GitLab CI для frontend.md>)
 - [07 Production troubleshooting logs rollback smoke tests](<./07 Production troubleshooting logs rollback smoke tests.md>)
-- [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
+- [04 Docker для frontend multi-stage build](<./04 Docker для frontend multi-stage build.md>)
 - [09 Performance budgets CI monitoring RUM](<../Performance/09 Performance budgets CI monitoring RUM.md>)
 
 ## Источники

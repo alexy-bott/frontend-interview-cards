@@ -235,6 +235,7 @@ console.log(first === numbers);
 - [16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>)
 - [26 Promise](<./26 Promise.md>)
 - [01 Big O time space complexity](<../Algorithms/01 Big O time space complexity.md>)
+- [23 Array methods filter reduce и type predicates](<../TypeScript/23 Array methods filter reduce и type predicates.md>)
 
 ## Источники
 

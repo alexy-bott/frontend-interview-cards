@@ -135,11 +135,10 @@ Flexbox удобен для одной оси: ряда или колонки. G
 
 ## Связанные темы
 
-- Flexbox
-- Центрирование
-- Grid
 - [04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>)
 - [05 Центрирование в CSS](<./05 Центрирование в CSS.md>)
+- [08 Responsive design media container queries units](<./08 Responsive design media container queries units.md>)
+- [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
 
 ## Источники
 

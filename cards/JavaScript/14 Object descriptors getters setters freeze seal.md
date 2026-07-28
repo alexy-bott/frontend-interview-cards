@@ -270,7 +270,6 @@ console.log(value.visible);
 
 ## Связанные темы
 
-- Неизменяемость объектов
 - [07 Destructuring rest spread](<./07 Destructuring rest spread.md>)
 - [12 Копирование и immutability](<./12 Копирование и immutability.md>)
 - [13 Проверка свойств объекта](<./13 Проверка свойств объекта.md>)

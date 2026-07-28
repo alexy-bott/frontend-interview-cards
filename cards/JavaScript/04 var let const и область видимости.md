@@ -201,11 +201,10 @@ for (let j = 0; j < 3; j++) {
 
 ## Связанные темы
 
-- var let const
 - [05 Hoisting и TDZ](<./05 Hoisting и TDZ.md>)
 - [08 Замыкание](<./08 Замыкание.md>)
-- [12 Копирование и immutability](<./12 Копирование и immutability.md>)
 - [42 Execution context lexical environment scope chain](<./42 Execution context lexical environment scope chain.md>)
+- [43 Strict mode use strict](<./43 Strict mode use strict.md>)
 
 ## Источники
 

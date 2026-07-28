@@ -157,10 +157,8 @@ $radius: 8px;
 
 ## Связанные темы
 
-- SCSS modules @use и @forward
-- SCSS
-- SCSS архитектура и вложенность
-- CSS препроцессоры
+- [11 SCSS variables mixins functions nesting](<./11 SCSS variables mixins functions nesting.md>)
+- [17 CSS preprocessors PostCSS Autoprefixer](<./17 CSS preprocessors PostCSS Autoprefixer.md>)
 - [13 CSS Modules BEM naming collisions](<./13 CSS Modules BEM naming collisions.md>)
 
 ## Источники

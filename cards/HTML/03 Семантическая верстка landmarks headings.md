@@ -131,11 +131,10 @@ ARIA может сообщить вспомогательной технолог
 
 ## Связанные темы
 
-- Семантическая верстка
-- Semantics ARIA и accessible name
-- React Testing Library
-- [05 React Testing Library queries user behavior](<../Testing/05 React Testing Library queries user behavior.md>)
+- [02 Div span block inline](<./02 Div span block inline.md>)
 - [04 Accessibility ARIA accessible name keyboard](<./04 Accessibility ARIA accessible name keyboard.md>)
+- [02 Semantic HTML accessible name ARIA roles](<../Accessibility/02 Semantic HTML accessible name ARIA roles.md>)
+- [05 React Testing Library queries user behavior](<../Testing/05 React Testing Library queries user behavior.md>)
 
 ## Источники
 

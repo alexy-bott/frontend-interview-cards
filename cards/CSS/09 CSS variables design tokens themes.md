@@ -138,11 +138,10 @@ CSS custom properties не заменяют возможности Sass на э�
 
 ## Связанные темы
 
-- SCSS переменные mixins functions
-- SCSS
-- Каскад и наследование
 - [11 SCSS variables mixins functions nesting](<./11 SCSS variables mixins functions nesting.md>)
+- [01 Что такое CSS cascade inheritance specificity](<./01 Что такое CSS cascade inheritance specificity.md>)
 - [13 CSS Modules BEM naming collisions](<./13 CSS Modules BEM naming collisions.md>)
+- [09 Shared UI design system Radix UI](<../Architecture/09 Shared UI design system Radix UI.md>)
 
 ## Источники
 

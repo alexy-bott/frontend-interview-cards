@@ -103,6 +103,7 @@
 
 ## Связанные темы
 
+- [01 Зачем нужен HTML во frontend](<./01 Зачем нужен HTML во frontend.md>)
 - [03 Семантическая верстка landmarks headings](<./03 Семантическая верстка landmarks headings.md>)
 - [02 Box model display formatting contexts](<../CSS/02 Box model display formatting contexts.md>)
 - [23 JSX SyntheticEvent и декларативность](<../React/23 JSX SyntheticEvent и декларативность.md>)

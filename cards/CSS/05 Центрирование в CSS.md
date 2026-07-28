@@ -133,11 +133,10 @@
 
 ## Связанные темы
 
-- Центрирование
-- Flexbox
-- Grid
-- Позиционирование
 - [03 Flexbox оси выравнивание перенос](<./03 Flexbox оси выравнивание перенос.md>)
+- [04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>)
+- [06 Position sticky fixed absolute relative](<./06 Position sticky fixed absolute relative.md>)
+- [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
 
 ## Источники
 

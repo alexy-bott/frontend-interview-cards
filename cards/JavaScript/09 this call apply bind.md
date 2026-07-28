@@ -231,7 +231,6 @@ console.log(say.bind({ name: "Lin" }, "Welcome")());
 
 ## Связанные темы
 
-- this
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [10 Prototype и наследование](<./10 Prototype и наследование.md>)
 - [31 DOM events](<./31 DOM events.md>)

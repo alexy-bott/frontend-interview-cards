@@ -202,10 +202,10 @@ Story: "Пользователь может редактировать проф�
 
 ## Связанные темы
 
+- [01 Agile Scrum Kanban для frontend](<./01 Agile Scrum Kanban для frontend.md>)
 - [02 Scrum sprint planning refinement daily review retro](<./02 Scrum sprint planning refinement daily review retro.md>)
 - [04 Definition of Ready Definition of Done frontend](<./04 Definition of Ready Definition of Done frontend.md>)
-- [03 React Hook Form register handleSubmit formState](<../Forms/03 React Hook Form register handleSubmit formState.md>)
-- [01 REST API и ресурсная модель](<../Web API/01 REST API и ресурсная модель.md>)
+- [01 Как проектировать frontend фичу](<../Frontend System Design/01 Как проектировать frontend фичу.md>)
 
 ## Источники
 

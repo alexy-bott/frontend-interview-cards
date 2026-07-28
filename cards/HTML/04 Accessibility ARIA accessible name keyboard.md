@@ -132,11 +132,11 @@ Accessible name, или доступное имя, - краткое назван
 
 ## Связанные темы
 
-- Accessibility
-- Semantics ARIA и accessible name
-- Keyboard navigation и focus management
-- Dialog dropdown и overlay accessibility
 - [05 HTML формы labels validation disabled readonly](<./05 HTML формы labels validation disabled readonly.md>)
+- [02 Semantic HTML accessible name ARIA roles](<../Accessibility/02 Semantic HTML accessible name ARIA roles.md>)
+- [03 Keyboard navigation focus management](<../Accessibility/03 Keyboard navigation focus management.md>)
+- [06 Dialog dropdown overlay accessibility](<../Accessibility/06 Dialog dropdown overlay accessibility.md>)
+- [05 React Testing Library queries user behavior](<../Testing/05 React Testing Library queries user behavior.md>)
 
 ## Источники
 

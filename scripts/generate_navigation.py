@@ -65,6 +65,10 @@ SECTION_GROUPS = (
 WIKILINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\((<[^>]+>|[^)]+)\)")
 GENERATED_LINK_RE = re.compile(r"(?<!!)\[([^\]]+)\]\(<([^>]+)>\)")
+RELATED_TOPICS_RE = re.compile(
+    r"(?ms)^## Связанные темы\s*\n(?P<body>.*?)(?=^## |\Z)"
+)
+RELATED_TOPIC_ITEM_RE = re.compile(r"^- \[([^\]]+)\]\(<([^>]+)>\)$")
 FOLLOWUP_BLOCK_RE = re.compile(r"(?m)^> \[!followup\][^\n]*(?:\n>.*)*")
 TOP_NAV_RE = re.compile(
     r"\n?<!-- CARD-NAV-TOP:START -->.*?<!-- CARD-NAV-TOP:END -->\n?",
@@ -669,6 +673,13 @@ def validate() -> list[str]:
         issues.append("cards directory is missing")
         return issues
 
+    all_cards = [
+        card
+        for topic in topic_directories()
+        for card in card_files(topic)
+    ]
+    related_inbound = {card.resolve(): 0 for card in all_cards}
+
     for topic in topic_directories():
         readme = topic / "README.md"
         if not readme.exists():
@@ -740,6 +751,63 @@ def validate() -> list[str]:
                 issues.append(f"{card.relative_to(ROOT)}: unsupported Obsidian callout remains")
             if content_without_code.count("<details>") != content_without_code.count("</details>"):
                 issues.append(f"{card.relative_to(ROOT)}: unbalanced details elements")
+
+            related_sections = list(RELATED_TOPICS_RE.finditer(content_without_code))
+            if len(related_sections) != 1:
+                issues.append(
+                    f"{card.relative_to(ROOT)}: related topics section is missing or duplicated"
+                )
+            else:
+                related_lines = [
+                    line.strip()
+                    for line in related_sections[0].group("body").splitlines()
+                    if line.strip().startswith("- ")
+                ]
+                if len(related_lines) < 2:
+                    issues.append(
+                        f"{card.relative_to(ROOT)}: related topics must contain at least two links"
+                    )
+
+                seen_related_targets: set[Path] = set()
+                for line in related_lines:
+                    match = RELATED_TOPIC_ITEM_RE.fullmatch(line)
+                    if match is None:
+                        issues.append(
+                            f"{card.relative_to(ROOT)}: related topic is not an internal Markdown link: {line}"
+                        )
+                        continue
+
+                    destination = unquote(match.group(2).split("#", 1)[0])
+                    target = (card.parent / destination).resolve()
+                    try:
+                        target.relative_to(CARDS_DIR.resolve())
+                    except ValueError:
+                        issues.append(
+                            f"{card.relative_to(ROOT)}: related topic points outside cards: {line}"
+                        )
+                        continue
+
+                    if target == card.resolve():
+                        issues.append(
+                            f"{card.relative_to(ROOT)}: related topics contain a self-link"
+                        )
+                    if target.name == "README.md" or target.suffix.casefold() != ".md":
+                        issues.append(
+                            f"{card.relative_to(ROOT)}: related topic must point to a card: {line}"
+                        )
+                    if target in seen_related_targets:
+                        issues.append(
+                            f"{card.relative_to(ROOT)}: related topic target is duplicated: {line}"
+                        )
+                    elif target in related_inbound:
+                        related_inbound[target] += 1
+                    seen_related_targets.add(target)
+
+    for card, inbound_count in related_inbound.items():
+        if inbound_count == 0:
+            issues.append(
+                f"{card.relative_to(ROOT)}: card has no incoming related-topic link"
+            )
 
     markdown_files = sorted(CARDS_DIR.rglob("*.md")) + [ROOT / "README.md"]
     for path in markdown_files:

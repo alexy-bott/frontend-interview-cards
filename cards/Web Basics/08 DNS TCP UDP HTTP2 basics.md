@@ -264,7 +264,7 @@ DNS - время поиска адреса, connection - установка тр
 - [08 Network caching CDN compression HTTP cache](<../Performance/08 Network caching CDN compression HTTP cache.md>)
 - [03 HTTP vs HTTPS TLS certificates](<./03 HTTP vs HTTPS TLS certificates.md>)
 - [04 URL origin domain path query fragment](<./04 URL origin domain path query fragment.md>)
-- [06 Bundle code splitting tree shaking size budgets](<../Tooling/06 Bundle code splitting tree shaking size budgets.md>)
+- [01 Что такое web performance и как ее измерять](<../Performance/01 Что такое web performance и как ее измерять.md>)
 
 ## Источники
 

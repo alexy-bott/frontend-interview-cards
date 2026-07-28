@@ -127,11 +127,10 @@ CSS Modules не отменяют каскад. Наследуемые свой�
 
 ## Связанные темы
 
-- SCSS
-- SCSS modules @use и @forward
-- Каскад и наследование
 - [11 SCSS variables mixins functions nesting](<./11 SCSS variables mixins functions nesting.md>)
 - [12 SCSS modules use forward architecture](<./12 SCSS modules use forward architecture.md>)
+- [01 Что такое CSS cascade inheritance specificity](<./01 Что такое CSS cascade inheritance specificity.md>)
+- [09 Shared UI design system Radix UI](<../Architecture/09 Shared UI design system Radix UI.md>)
 
 ## Источники
 

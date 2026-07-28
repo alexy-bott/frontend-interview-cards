@@ -138,9 +138,9 @@ HTML-атрибуты дают браузеру соотношение стор�
 
 ## Связанные темы
 
-- Изображения и responsive media
 - [Performance: Core Web Vitals](<../Performance/02 Core Web Vitals LCP INP CLS.md>)
-- Semantics ARIA и accessible name
+- [05 Images fonts resource priority preload lazy loading](<../Performance/05 Images fonts resource priority preload lazy loading.md>)
+- [07 Images media alt captions](<../Accessibility/07 Images media alt captions.md>)
 - [04 Accessibility ARIA accessible name keyboard](<./04 Accessibility ARIA accessible name keyboard.md>)
 
 ## Источники

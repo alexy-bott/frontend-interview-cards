@@ -207,6 +207,7 @@ setMode(config.mode);
 
 ## Связанные темы
 
+- [01 Зачем нужен TypeScript](<./01 Зачем нужен TypeScript.md>)
 - [01 Типы данных](<../JavaScript/01 Типы данных.md>)
 - [03 any unknown never void](<./03 any unknown never void.md>)
 - [05 Union intersection discriminated unions](<./05 Union intersection discriminated unions.md>)

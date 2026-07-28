@@ -147,10 +147,10 @@
 
 ## Связанные темы
 
-- Head meta и resource hints
-- App Router
 - [09 Dynamic routes params searchParams metadata](<../Next.js/09 Dynamic routes params searchParams metadata.md>)
 - [Performance: Core Web Vitals](<../Performance/02 Core Web Vitals LCP INP CLS.md>)
+- [05 Images fonts resource priority preload lazy loading](<../Performance/05 Images fonts resource priority preload lazy loading.md>)
+- [13 Image Font Link Script и оптимизация](<../Next.js/13 Image Font Link Script и оптимизация.md>)
 
 ## Источники
 

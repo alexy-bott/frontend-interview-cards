@@ -269,7 +269,7 @@ URL сохраняется в истории и может попасть в ж�
 - [03 CSRF cookies SameSite tokens](<./03 CSRF cookies SameSite tokens.md>)
 - [10 JWT sessions OAuth authorization basics](<./10 JWT sessions OAuth authorization basics.md>)
 - [06 Cookies tokens auth flow refresh](<../Web API/06 Cookies tokens auth flow refresh.md>)
-- [01 Что такое frontend architecture](<../Architecture/01 Что такое frontend architecture.md>)
+- [06 Browser storage cookies localStorage IndexedDB Cache API](<../Browser Internals/06 Browser storage cookies localStorage IndexedDB Cache API.md>)
 
 ## Источники
 

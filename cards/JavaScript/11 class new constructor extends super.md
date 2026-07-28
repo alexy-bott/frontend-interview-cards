@@ -279,7 +279,7 @@ console.log(admin instanceof User);
 - [10 Prototype и наследование](<./10 Prototype и наследование.md>)
 - [23 Ошибки try catch](<./23 Ошибки try catch.md>)
 - [51 OOP classes new static instanceof](<./51 OOP classes new static instanceof.md>)
-- Error Boundaries
+- [12 Error Boundaries](<../React/12 Error Boundaries.md>)
 
 ## Источники
 

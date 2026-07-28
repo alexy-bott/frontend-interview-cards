@@ -240,8 +240,7 @@ console.log(account.balance);
 - [10 Prototype и наследование](<./10 Prototype и наследование.md>)
 - [13 Проверка свойств объекта](<./13 Проверка свойств объекта.md>)
 - [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
-- Proxy
-- Состояние в React
+- [03 Redux Toolkit configureStore createSlice Immer](<../State Management/03 Redux Toolkit configureStore createSlice Immer.md>)
 
 ## Источники
 

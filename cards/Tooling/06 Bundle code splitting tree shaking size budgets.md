@@ -189,7 +189,7 @@ Size budget, или лимит размера, является автомати
 - [02 Core Web Vitals LCP INP CLS](<../Performance/02 Core Web Vitals LCP INP CLS.md>)
 - [04 Bundle size code splitting tree shaking loading strategy](<../Performance/04 Bundle size code splitting tree shaking loading strategy.md>)
 - [15 Suspense lazy и code splitting](<../React/15 Suspense lazy и code splitting.md>)
-- [26 Promise](<../JavaScript/26 Promise.md>)
+- [21 ES modules](<../JavaScript/21 ES modules.md>)
 
 ## Источники
 

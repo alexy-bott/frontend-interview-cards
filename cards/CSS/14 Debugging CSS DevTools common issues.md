@@ -123,11 +123,11 @@ Production-сборка может извлекать и разделять CSS 
 
 ## Связанные темы
 
-- Box Model
-- Каскад и наследование
-- Stacking context и z-index
-- Build config и production сборка
+- [02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>)
+- [01 Что такое CSS cascade inheritance specificity](<./01 Что такое CSS cascade inheritance specificity.md>)
+- [07 Stacking context z-index overflow](<./07 Stacking context z-index overflow.md>)
 - [09 Production build assets hashing base publicPath](<../Tooling/09 Production build assets hashing base publicPath.md>)
+- [10 Performance debugging DevTools Lighthouse profiling](<../Performance/10 Performance debugging DevTools Lighthouse profiling.md>)
 
 ## Источники
 

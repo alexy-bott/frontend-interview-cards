@@ -179,6 +179,7 @@ Resolver - адаптер между RHF и библиотекой схемно�
 - [06 Submit lifecycle server errors reset defaultValues](<./06 Submit lifecycle server errors reset defaultValues.md>)
 - [08 Accessibility форм](<./08 Accessibility форм.md>)
 - [18 Проверка данных с backend](<../TypeScript/18 Проверка данных с backend.md>)
+- [03 Форма с async validation и server errors](<../Frontend System Design/03 Форма с async validation и server errors.md>)
 
 ## Источники
 

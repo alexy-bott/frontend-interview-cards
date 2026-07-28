@@ -194,7 +194,7 @@ Git создаёт commit из снимка в index, связывает его 
 - [01 Что такое Git и зачем он frontend разработчику](<./01 Что такое Git и зачем он frontend разработчику.md>)
 - [04 Merge vs rebase fast-forward squash](<./04 Merge vs rebase fast-forward squash.md>)
 - [05 Cherry-pick revert reset restore stash reflog](<./05 Cherry-pick revert reset restore stash reflog.md>)
-- [01 package.json scripts dependencies devDependencies](<../Tooling/01 package.json scripts dependencies devDependencies.md>)
+- [03 Branching strategy feature branch main trunk git flow](<./03 Branching strategy feature branch main trunk git flow.md>)
 
 ## Источники
 

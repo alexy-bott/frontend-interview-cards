@@ -119,11 +119,11 @@ Formatting context, или контекст форматирования, - на
 
 ## Связанные темы
 
-- Box Model
-- display и formatting contexts
-- CSS reset и normalize
-- Позиционирование
+- [16 CSS reset normalize browser defaults](<./16 CSS reset normalize browser defaults.md>)
+- [06 Position sticky fixed absolute relative](<./06 Position sticky fixed absolute relative.md>)
 - [07 Stacking context z-index overflow](<./07 Stacking context z-index overflow.md>)
+- [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
+- [03 Flexbox оси выравнивание перенос](<./03 Flexbox оси выравнивание перенос.md>)
 
 ## Источники
 

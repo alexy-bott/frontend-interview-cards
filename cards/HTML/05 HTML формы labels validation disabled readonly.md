@@ -153,10 +153,9 @@
 
 ## Связанные темы
 
-- Формы
-- Controlled uncontrolled и FormData
-- Forms errors и accessibility
+- [01 Формы во frontend](<../Forms/01 Формы во frontend.md>)
 - [02 Controlled uncontrolled и FormData](<../Forms/02 Controlled uncontrolled и FormData.md>)
+- [05 Валидация форм schema resolver async validation](<../Forms/05 Валидация форм schema resolver async validation.md>)
 - [08 Accessibility форм](<../Forms/08 Accessibility форм.md>)
 
 ## Источники
