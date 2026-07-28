@@ -1,0 +1,18 @@
+name: Check navigation
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate generated navigation and links
+        run: python scripts/generate_navigation.py --check
