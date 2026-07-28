@@ -402,10 +402,15 @@ def format_pilot_card(content: str) -> str:
         content,
         count=1,
     )
-    content = re.sub(r"(?m)^## Ответ[ \t]*$", "---", content, count=1)
     content = re.sub(
-        r"(?m)(^> \*\*.+\*\*\n\n)<br>[ \t]*$",
-        r"\1---",
+        r"(?m)^## Ответ[ \t]*$",
+        "## <!-- ANSWER-SEPARATOR -->",
+        content,
+        count=1,
+    )
+    content = re.sub(
+        r"(?m)(^> \*\*.+\*\*\n\n)(?:<br>|---)[ \t]*$",
+        r"\1## <!-- ANSWER-SEPARATOR -->",
         content,
         count=1,
     )
@@ -631,7 +636,11 @@ def validate() -> list[str]:
                 if len(re.findall(r"(?m)^## Дополнительные вопросы\s*$", content_without_code)) != 1:
                     issues.append(f"{card.relative_to(ROOT)}: pilot follow-up heading is missing")
                 followup_count = content_without_code.count("<details>")
-                if not re.search(r"(?ms)^## Вопрос\s*\n\n> \*\*.+\*\*\n\n---\n\n", content_without_code):
+                if not re.search(
+                    r"(?ms)^## Вопрос\s*\n\n> \*\*.+\*\*\n\n"
+                    r"## <!-- ANSWER-SEPARATOR -->\n\n",
+                    content_without_code,
+                ):
                     issues.append(f"{card.relative_to(ROOT)}: pilot main separator is missing")
                 if content_without_code.count("<br>") != followup_count:
                     issues.append(f"{card.relative_to(ROOT)}: pilot vertical spacing is inconsistent")
