@@ -404,13 +404,14 @@ def format_pilot_card(content: str) -> str:
     )
     content = re.sub(
         r"(?m)^## Ответ[ \t]*$",
-        "## <!-- ANSWER-SEPARATOR -->",
+        "<h2></h2>",
         content,
         count=1,
     )
     content = re.sub(
-        r"(?m)(^> \*\*.+\*\*\n\n)(?:<br>|---)[ \t]*$",
-        r"\1## <!-- ANSWER-SEPARATOR -->",
+        r"(?m)(^> \*\*.+\*\*\n\n)"
+        r"(?:<br>|---|## <!-- ANSWER-SEPARATOR -->)[ \t]*$",
+        r"\1<h2></h2>",
         content,
         count=1,
     )
@@ -638,7 +639,7 @@ def validate() -> list[str]:
                 followup_count = content_without_code.count("<details>")
                 if not re.search(
                     r"(?ms)^## Вопрос\s*\n\n> \*\*.+\*\*\n\n"
-                    r"## <!-- ANSWER-SEPARATOR -->\n\n",
+                    r"<h2></h2>\n\n",
                     content_without_code,
                 ):
                     issues.append(f"{card.relative_to(ROOT)}: pilot main separator is missing")
