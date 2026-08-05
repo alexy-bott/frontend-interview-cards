@@ -16,9 +16,11 @@
 <dl>
 <dd>
 
-`EventTarget` является интерфейсом подписки и отправки событий. Его реализуют DOM nodes, `window`, `AbortSignal`, WebSocket и другие Web APIs; также можно создать собственный `new EventTarget()`. Listener добавляют через `addEventListener` и снимают через `removeEventListener` или связанный `AbortSignal`.
+`EventTarget` — это интерфейс подписки и отправки событий. Его реализуют DOM nodes, `window`, `AbortSignal`, WebSocket и другие Web APIs. Также можно создать отдельный объект через `new EventTarget()`.
 
-`Event` описывает тип, target, текущую фазу и флаги propagation. `CustomEvent` добавляет поле `detail` для прикладных данных.
+Listener добавляют через `addEventListener` и снимают через `removeEventListener` или связанный `AbortSignal`.
+
+`Event` описывает событие: его тип, исходный target, текущий target, фазу распространения и служебные флаги. `CustomEvent` дополнительно предоставляет поле `detail` для прикладных данных.
 
 ```js
 const event = new CustomEvent("item:selected", {
@@ -31,11 +33,19 @@ const event = new CustomEvent("item:selected", {
 const accepted = button.dispatchEvent(event);
 ```
 
-`dispatchEvent` отправляет событие синхронно. До возврата метода вызываются подходящие listeners по capture, target и bubble path. Метод возвращает `false`, если cancelable event был отменён через `preventDefault`; иначе `true`. Для пользовательского события браузер не имеет встроенного default action, поэтому отправитель сам решает, что не выполнять при `false`.
+`dispatchEvent` отправляет событие синхронно. Метод возвращается только после вызова всех подходящих listeners.
 
-`detail` передаётся по ссылке внутри той же JavaScript-среды, а не клонируется. Listener может изменить объект, поэтому event contract лучше считать read-only и не использовать для больших изменяемых моделей.
+Если событие отправлено на DOM-узле, браузер формирует event path и вызывает listeners на этапах capture, target и, при `bubbles: true`, bubbling. Отдельный объект `new EventTarget()` не имеет DOM-предков, поэтому автоматически распространять событие ему некуда.
 
-Синтетическое событие имеет `isTrusted === false` и не заменяет реальный пользовательский жест для API, которым требуется user activation.
+`dispatchEvent` возвращает `false`, если событие имеет `cancelable: true` и listener вызвал `preventDefault`. Во всех остальных случаях возвращается `true`.
+
+Для пользовательского события браузер обычно не имеет встроенного default action. `preventDefault` только отмечает событие как отменённое, а отправитель сам проверяет результат `dispatchEvent` и решает, выполнять ли прикладное действие.
+
+Поле `detail` передаётся по ссылке внутри той же JavaScript-среды и не клонируется. Listener может изменить переданный объект, поэтому событийный контракт лучше считать read-only и не использовать его для передачи больших изменяемых моделей.
+
+Программно созданное событие имеет `isTrusted === false`. Оно не заменяет реальное пользовательское действие для API, которым требуется user activation.
+
+Пользовательское событие является хорошей границей интеграции между независимо реализованными частями интерфейса: Web Component, legacy widget, host page или microfrontend. Внутри одного React-приложения обычно понятнее использовать props, callbacks, context или state manager.
 
 </dd>
 </dl>
@@ -51,7 +61,11 @@ const accepted = button.dispatchEvent(event);
 <dd>
 <h2></h2>
 
-Обычный `Event` подходит для сигнала без прикладного payload. `CustomEvent` предоставляет `detail`, например `{ id, source }`. Оба поддерживают `bubbles`, `cancelable` и `composed`; отдельный класс нужен именно для стандартизированного поля данных.
+Обычный `Event` подходит для сигнала без прикладных данных.
+
+`CustomEvent` добавляет стандартное поле `detail`, через которое можно передать payload, например `{ id, source }`.
+
+Оба типа событий поддерживают настройки `bubbles`, `cancelable` и `composed`. `CustomEvent` нужен именно тогда, когда вместе с сигналом требуется передать прикладные данные.
 
 <h2></h2>
 </dd>
@@ -66,7 +80,13 @@ const accepted = button.dispatchEvent(event);
 <dd>
 <h2></h2>
 
-`bubbles` разрешает путь от target к DOM-предкам. `cancelable` позволяет listener вызвать `preventDefault` и сообщить отправителю об отмене. `composed` разрешает прохождение через границу Shadow DOM. Для публичного события Web Component часто нужны `bubbles: true` и `composed: true`, иначе внешний контейнер его не увидит.
+`bubbles` разрешает событию после target подниматься по DOM-предкам.
+
+`cancelable` позволяет listener вызвать `preventDefault` и установить флаг отмены, который отправитель может проверить через результат `dispatchEvent` или `event.defaultPrevented`.
+
+`composed` разрешает событию пересекать границы Shadow DOM.
+
+Для публичного события Web Component часто используют `bubbles: true` и `composed: true`, чтобы внешний контейнер мог обработать событие, не обращаясь к внутренней разметке компонента.
 
 <h2></h2>
 </dd>
@@ -81,7 +101,9 @@ const accepted = button.dispatchEvent(event);
 <dd>
 <h2></h2>
 
-`false`, если событие было cancelable и хотя бы один listener вызвал `preventDefault`; во всех остальных случаях `true`. Это можно использовать как синхронный veto protocol:
+Метод возвращает `false`, если событие имеет `cancelable: true` и хотя бы один listener вызвал `preventDefault`. Во всех остальных случаях возвращается `true`.
+
+Это можно использовать как синхронный протокол подтверждения или запрета:
 
 ```js
 if (element.dispatchEvent(beforeCloseEvent)) {
@@ -89,7 +111,7 @@ if (element.dispatchEvent(beforeCloseEvent)) {
 }
 ```
 
-Сам `preventDefault` не выполняет rollback уже сделанных изменений, поэтому событие `before:*` отправляют до действия.
+`preventDefault` не отменяет уже выполненные изменения и не выполняет автоматический rollback. Поэтому отменяемое событие вида `before:*` отправляют до прикладного действия.
 
 <h2></h2>
 </dd>
@@ -104,7 +126,11 @@ if (element.dispatchEvent(beforeCloseEvent)) {
 <dd>
 <h2></h2>
 
-Browser сообщает её как uncaught exception в обработчике. Она не распространяется обычным `throw` из `dispatchEvent` обратно вызывающему коду, хотя listeners работают во вложенном синхронном call stack. Поэтому `try/catch` только вокруг `dispatchEvent` не является надёжной обработкой ошибок listeners.
+Ошибка сообщается средой как uncaught exception в обработчике события.
+
+Listeners вызываются синхронно до завершения `dispatchEvent`, но выброшенная ими ошибка не распространяется обычным `throw` обратно в код, вызвавший `dispatchEvent`.
+
+Поэтому `try/catch` только вокруг `dispatchEvent` не является надёжным способом обработать ошибки всех listeners. Обработчик должен самостоятельно обрабатывать ожидаемые ошибки внутри своей границы.
 
 <h2></h2>
 </dd>
@@ -119,7 +145,11 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Нет. Вызов `async` listener синхронно возвращает Promise, который EventTarget игнорирует, после чего dispatch продолжается и завершается. Будущий rejection может стать unhandled. Если отправителю нужен асинхронный ответ всех участников, нужен другой явный контракт с Promise, а не `dispatchEvent`.
+Нет. Вызов `async` listener синхронно возвращает Promise, но `EventTarget` не использует и не ожидает этот Promise.
+
+После запуска обработчика доставка события продолжается, а `dispatchEvent` завершается, не дожидаясь асинхронной части listener. Будущий rejection такого Promise может стать необработанным.
+
+Если отправителю нужен асинхронный результат или ответы всех участников, следует использовать отдельный явный API, возвращающий Promise, а не полагаться на `dispatchEvent`.
 
 <h2></h2>
 </dd>
@@ -134,7 +164,11 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Программный dispatch синхронен и запускается в текущем call stack. Многие нативные события сначала приходят в event loop как отдельная task. Кроме того, синтетический event не является trusted input и не получает привилегии пользовательской активации, например для clipboard, popup или fullscreen.
+Программный вызов `dispatchEvent` синхронно доставляет событие в текущем call stack.
+
+Многие нативные события браузера, например пользовательский ввод, сначала становятся отдельной работой event loop и только затем запускают обработчики.
+
+Кроме того, программно созданное событие имеет `isTrusted === false` и не предоставляет привилегии реального пользовательского действия для clipboard, popup, fullscreen и других защищённых API.
 
 <h2></h2>
 </dd>
@@ -149,7 +183,17 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Да. Компонент может скрывать внутренний DOM и публиковать небольшой событийный API: `value:change`, `dialog:close`, `item:selected`. Нужно документировать имя, тип `detail`, bubbling/composed/cancelable и момент события. Это слабее связывает потребителя с внутренней разметкой.
+Да. Web Component может скрывать внутренний DOM и публиковать небольшой событийный API: `value:change`, `dialog:close`, `item:selected`.
+
+Для каждого публичного события нужно документировать:
+
+- имя;
+- структуру `detail`;
+- настройки `bubbles`, `composed` и `cancelable`;
+- момент отправки;
+- возможность отмены действия.
+
+Такой контракт меньше связывает потребителя с внутренней разметкой и реализацией компонента.
 
 <h2></h2>
 </dd>
@@ -164,7 +208,11 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Обычно нет. Props, callbacks, context и state manager видимы в component data flow, типизируются и согласованы с render. CustomEvent полезен на границе React с Web Component, legacy widget, независимым microfrontend или host page. Внутренний глобальный event bus легко создаёт неявные зависимости и трудную очистку.
+Обычно нет. Props, callbacks, context и state manager явно участвуют в потоке данных компонентов, лучше типизируются и согласованы с render React.
+
+`CustomEvent` полезен на границе React с Web Component, legacy widget, независимым microfrontend или host page.
+
+Глобальный event bus внутри приложения легко создаёт неявные зависимости, усложняет поиск источника события и требует ручного управления lifecycle listeners.
 
 <h2></h2>
 </dd>
@@ -179,7 +227,11 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Нет, dispatch работает внутри одного EventTarget и JavaScript realm. Для связи с iframe, Worker или другой вкладкой используют `postMessage`, `MessagePort` или `BroadcastChannel`, где данные проходят structured clone или transfer. CustomEvent не является транспортом между контекстами.
+Нет. `dispatchEvent` доставляет событие внутри текущего JavaScript-контекста и, для DOM-события, по его event path. Событие само по себе не пересекает границы документов, окон, вкладок или Worker.
+
+Для связи с iframe, Worker или другой вкладкой используют `postMessage`, `MessagePort` или `BroadcastChannel`.
+
+В этих API данные передаются через structured clone или transfer, тогда как `CustomEvent.detail` внутри одной среды передаётся по ссылке.
 
 <h2></h2>
 </dd>
@@ -194,7 +246,11 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Описать payload отдельным типом и сузить event до `CustomEvent<Payload>` в адаптере, а не распространять cast по приложению. Для собственного EventTarget можно создать typed wrapper с картой `event name → payload`. Runtime-источник всё равно нужно считать внешней границей, если событие приходит от стороннего widget.
+Payload описывают отдельным типом, а полученное событие сужают до `CustomEvent<Payload>` в одном адаптере, а не распространяют type assertion по всему приложению.
+
+Для собственного EventTarget можно создать typed wrapper с картой соответствий `event name → payload`.
+
+Если событие приходит от стороннего widget или другого независимого модуля, его данные всё равно нужно считать внешним runtime-контрактом и при необходимости проверять.
 
 <h2></h2>
 </dd>
@@ -209,7 +265,11 @@ Browser сообщает её как uncaught exception в обработчик�
 <dd>
 <h2></h2>
 
-Хранить ту же ссылку функции для `removeEventListener` или зарегистрировать listener с `{ signal }` и отменить controller при завершении владельца. Опция `{ once: true }` подходит только событию, которое гарантированно должно обработаться один раз, но не заменяет досрочный lifecycle cleanup.
+Для `removeEventListener` нужно сохранить ту же ссылку callback. Также должно совпадать значение параметра `capture`, с которым listener был зарегистрирован.
+
+Другой вариант — зарегистрировать listener с `{ signal }` и вызвать `controller.abort()` при завершении владельца.
+
+Опция `{ once: true }` автоматически удаляет listener после первого вызова, но не заменяет досрочный cleanup, если ожидаемое событие так и не произошло.
 
 <h2></h2>
 </dd>
@@ -241,7 +301,11 @@ if (form.dispatchEvent(beforeSave)) {
 <dd>
 <h2></h2>
 
-Только если событие не было отменено. При невалидной форме listener синхронно вызывает `preventDefault`, `dispatchEvent` возвращает `false`, и условие пропускает `save`.
+`save` вызовется только в том случае, если событие не было отменено.
+
+При невалидной форме listener синхронно вызывает `preventDefault`. Событие имеет `cancelable: true`, поэтому `dispatchEvent` возвращает `false`, и тело условия не выполняется.
+
+При валидной форме `preventDefault` не вызывается, `dispatchEvent` возвращает `true`, после чего вызывается `save`.
 
 <h2></h2>
 </dd>
