@@ -16,27 +16,51 @@
 <dl>
 <dd>
 
-Cookie является небольшой записью `name=value` с правилами области и срока жизни. Сервер создаёт её через response header `Set-Cookie`, а браузер автоматически добавляет подходящие cookies в header `Cookie` будущих HTTP-запросов. Это главное отличие от `localStorage`: Web Storage никогда не отправляется серверу автоматически.
+Cookie — небольшая запись `name=value` с правилами области действия и срока жизни.
 
-Выбор cookie определяется несколькими независимыми условиями:
+Обычно сервер создаёт cookie через response header `Set-Cookie`. Браузер сохраняет её и автоматически добавляет подходящие cookies в header `Cookie` последующих HTTP-запросов.
+
+```http
+Set-Cookie: sessionId=abc; Path=/; HttpOnly; Secure; SameSite=Lax
+```
+
+Это главное отличие от `localStorage`: данные Web Storage никогда не отправляются серверу автоматически.
+
+Перед отправкой браузер проверяет все ограничения cookie:
 
 | Атрибут | Что ограничивает |
 | --- | --- |
-| `Domain` | Host и разрешённые subdomains |
-| `Path` | URL paths, к которым cookie отправляется |
+| `Domain` | Hosts, которым может отправляться cookie |
+| `Path` | URL paths, для которых подходит cookie |
 | `Expires` / `Max-Age` | Срок жизни |
-| `Secure` | Отправка только по HTTPS |
-| `HttpOnly` | Запрет чтения через JavaScript |
-| `SameSite` | Cross-site контекст отправки |
-| `Partitioned` | Хранение third-party cookie отдельно по top-level site |
+| `Secure` | Отправку только через HTTPS |
+| `HttpOnly` | Доступ к значению через JavaScript |
+| `SameSite` | Отправку в cross-site контексте |
+| `Partitioned` | Отдельное хранение cookie для каждого top-level site |
 
-Если `Domain` не указан, cookie является host-only и не отправляется subdomains. `Path` управляет отправкой, но не является security boundary: другой код того же origin может иметь способы взаимодействовать с документами и cookies.
+Если `Domain` не указан, cookie является host-only: она отправляется только тому host, который её установил, но не его subdomains.
 
-Session cookie не имеет `Expires`/`Max-Age` и живёт в browser session, хотя session restore может восстановить её. Persistent cookie хранится до срока или удаления. `Max-Age` обычно имеет приоритет при одновременном указании.
+Если `Domain` указан, cookie может отправляться этому domain и подходящим subdomains. Сервер не может установить cookie для произвольного чужого domain.
 
-`HttpOnly` cookie участвует в HTTP, но не видна `document.cookie`. Это защищает её содержимое от прямого чтения при XSS, но вредный script всё ещё может отправлять authenticated requests от имени пользователя. `Secure` защищает cookie от отправки по обычному HTTP, но не исправляет XSS и CSRF.
+`Path` ограничивает URL-пути, для которых браузер отправляет cookie. Но он не является надёжной границей безопасности: документы одного origin могут взаимодействовать друг с другом другими способами.
 
-`SameSite=Strict` наиболее сильно ограничивает cross-site отправку. `Lax` допускает часть top-level navigations и часто является default. `None` разрешает cross-site контекст и требует `Secure`. Same-site сравнивает registrable domain и scheme, а same-origin дополнительно учитывает host и port; это не одинаковые понятия.
+Cookie без `Expires` и `Max-Age` называют session cookie. Обычно она удаляется после завершения browser session, хотя восстановление сессии браузером может вернуть её.
+
+Persistent cookie имеет срок хранения. Если одновременно указаны `Expires` и `Max-Age`, обычно приоритет имеет `Max-Age`.
+
+`HttpOnly` запрещает читать cookie через `document.cookie`, но браузер продолжает отправлять её в подходящих HTTP-запросах. Это снижает риск прямой кражи секрета при XSS, но вредоносный script всё ещё может выполнять разрешённые запросы от имени пользователя.
+
+`Secure` разрешает отправку cookie только через защищённое HTTPS-соединение. Атрибут защищает от передачи cookie по обычному HTTP, но сам по себе не устраняет XSS или CSRF.
+
+`SameSite` определяет поведение cookie в cross-site контексте:
+
+- `Strict` наиболее сильно ограничивает отправку с другого site;
+- `Lax` допускает часть top-level navigations и часто применяется браузерами по умолчанию;
+- `None` разрешает cross-site отправку и требует атрибут `Secure`.
+
+Same-site и same-origin — разные понятия. Site обычно определяется по scheme и registrable domain, а origin дополнительно включает конкретный host и port.
+
+Поэтому `app.example.com` и `api.example.com` могут быть same-site, но cross-origin. Для такого запроса cookie может подходить по `SameSite`, но frontend всё равно должен учитывать CORS и настройку `fetch credentials`.
 
 </dd>
 </dl>
@@ -52,7 +76,24 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Чтение возвращает одну строку доступных не-HttpOnly cookies вида `"theme=dark; lang=ru"`. Присваивание `document.cookie = "theme=dark; Path=/"` добавляет или обновляет одну cookie и не заменяет всю строку. API синхронный и неудобен для частого доступа, а имя и значение нужно корректно кодировать и разбирать.
+Чтение `document.cookie` возвращает одну строку доступных текущему документу cookies, кроме `HttpOnly`:
+
+```js
+console.log(document.cookie);
+// "theme=dark; lang=ru"
+```
+
+Строка содержит только пары `name=value`. Атрибуты `Path`, `Domain`, `Expires`, `Secure`, `SameSite` и другие через этот API не возвращаются.
+
+Присваивание изменяет только одну cookie и не заменяет всю строку:
+
+```js
+document.cookie = "theme=dark; Path=/; SameSite=Lax";
+```
+
+Для обновления существующей cookie должны совпасть её имя и область действия. Иначе может быть создана другая cookie с тем же именем, но другим `Path` или `Domain`.
+
+API синхронный и может блокировать main thread. Имена и значения обычно кодируют через `encodeURIComponent`, а при чтении строку приходится разбирать вручную.
 
 <h2></h2>
 </dd>
@@ -67,7 +108,17 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Нет. Атрибут устанавливает сервер в `Set-Cookie`; JavaScript не может ни создать HttpOnly cookie, ни прочитать её. Иначе защита от чтения script не имела бы смысла. Header `Set-Cookie` также не раскрывается frontend-коду как обычный response header.
+Нет. `HttpOnly` cookie устанавливает сервер через header `Set-Cookie`.
+
+JavaScript не может создать такую cookie, прочитать её или снять с неё атрибут `HttpOnly`. Иначе защита от доступа со стороны script не имела бы смысла.
+
+Сам header `Set-Cookie` также не раскрывается frontend-коду как обычный response header:
+
+```js
+response.headers.get("set-cookie"); // недоступно
+```
+
+Браузер обрабатывает его самостоятельно.
 
 <h2></h2>
 </dd>
@@ -82,7 +133,53 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-`credentials: "same-origin"` является default и разрешает credentials для same-origin запроса. Для cross-origin нужен `credentials: "include"`. Но cookie всё равно должна подходить по Domain, Path, Secure, SameSite и browser privacy policy. Опция `include` не отменяет эти правила.
+По умолчанию `fetch` использует:
+
+```js
+credentials: "same-origin"
+```
+
+Это разрешает отправку credentials для same-origin запросов.
+
+Для cross-origin запроса указывают:
+
+```js
+await fetch("https://api.example.com/me", {
+  credentials: "include",
+});
+```
+
+Но `include` только разрешает участие credentials в запросе. Конкретная cookie всё равно должна подходить по `Domain`, `Path`, `Secure`, `SameSite`, сроку жизни и privacy policy браузера.
+
+Для cross-origin ответа дополнительно требуется корректная настройка CORS, если JavaScript должен получить доступ к результату.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Влияет ли <code>credentials</code> на сохранение <code>Set-Cookie</code>?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Да. Режим `credentials` влияет как на отправку credentials, так и на обработку cookies из ответа.
+
+Для cross-origin запроса обычно нужен `credentials: "include"`, чтобы браузер мог принять подходящую cookie из `Set-Cookie`.
+
+```js
+await fetch("https://api.example.com/session", {
+  method: "POST",
+  credentials: "include",
+});
+```
+
+При этом frontend всё равно не сможет прочитать header `Set-Cookie`. Браузер сохранит cookie самостоятельно, если она соответствует правилам `Domain`, `Path`, `Secure`, `SameSite` и политике браузера.
+
+Для credentialed cross-origin response сервер также должен вернуть подходящие CORS-заголовки.
 
 <h2></h2>
 </dd>
@@ -97,7 +194,23 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Чтобы frontend получил cross-origin response, сервер возвращает `Access-Control-Allow-Credentials: true` и конкретный `Access-Control-Allow-Origin`, совпадающий с разрешённым origin; `*` не подходит. Для preflight сервер также разрешает method и headers. CORS управляет доступом JavaScript к ответу и не является полной защитой от CSRF.
+Чтобы JavaScript получил доступ к cross-origin response с credentials, сервер должен вернуть:
+
+```http
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: https://app.example.com
+```
+
+При использовании credentials значение `Access-Control-Allow-Origin: *` не подходит. Сервер должен указать конкретный разрешённый origin.
+
+Если запрос вызывает preflight, сервер также должен разрешить используемые method и headers.
+
+Важно разделять два действия:
+
+1. Браузер может фактически отправить запрос и приложить cookies.
+2. CORS определяет, разрешено ли JavaScript прочитать response.
+
+Поэтому CORS-ошибка в консоли не всегда означает, что запрос вообще не дошёл до сервера.
 
 <h2></h2>
 </dd>
@@ -112,7 +225,21 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Некоторые cross-site запросы отправляются без preflight, а browser может приложить cookies до того, как запретит чужому script читать response. Сервер должен защищать изменение состояния через SameSite, CSRF token, проверку `Origin`/`Referer` и корректную семантику методов. Точная комбинация зависит от auth architecture.
+CORS в первую очередь ограничивает чтение cross-origin response из JavaScript.
+
+Некоторые cross-site запросы можно отправить без preflight, например через HTML-форму. Браузер может приложить подходящие cookies, даже если чужая страница не получит доступ к ответу.
+
+Если такой запрос изменяет состояние сервера, действие уже может быть выполнено.
+
+Поэтому сервер отдельно защищается от CSRF через подходящую комбинацию:
+
+- `SameSite`;
+- CSRF token;
+- проверку `Origin` или `Referer`;
+- корректное использование HTTP-методов;
+- дополнительное подтверждение критических операций.
+
+Конкретная схема зависит от архитектуры авторизации.
 
 <h2></h2>
 </dd>
@@ -127,7 +254,22 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Токен в localStorage доступен XSS для чтения и выноса. HttpOnly скрывает секрет от JavaScript, но browser автоматически отправляет cookie, поэтому нужна CSRF-защита; XSS всё ещё может выполнять действия в открытой странице. Выбор включает lifecycle token, refresh, backend control, cross-origin deployment и threat model. Утверждение «cookie всегда безопасна» слишком грубое.
+Access token в `localStorage` доступен любому JavaScript-коду текущего origin. При XSS злоумышленник может прочитать токен и передать его на другой сервер.
+
+`HttpOnly` cookie скрывает значение от JavaScript и снижает риск прямой кражи секрета. Но браузер автоматически отправляет такую cookie, поэтому архитектура должна учитывать CSRF.
+
+Кроме того, `HttpOnly` не устраняет последствия XSS полностью: вредоносный script может выполнять действия от имени пользователя через открытое приложение, даже не зная значения cookie.
+
+Выбор зависит от:
+
+- модели угроз;
+- срока жизни access и refresh tokens;
+- контроля над backend;
+- cross-origin архитектуры;
+- механизма CSRF-защиты;
+- требований к logout и отзыву сессии.
+
+Поэтому утверждение «cookie всегда безопаснее» без контекста слишком грубое.
 
 <h2></h2>
 </dd>
@@ -142,7 +284,19 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Установить cookie того же имени с `Max-Age=0` или прошлым `Expires` и теми же `Path` и `Domain`, с которыми она была создана. Если scope не совпал, браузер создаст или удалит другую cookie, а исходная останется. HttpOnly session cookie обычно удаляет сервер.
+Cookie удаляют, устанавливая запись того же имени с `Max-Age=0` или прошедшим `Expires`:
+
+```http
+Set-Cookie: sessionId=; Max-Age=0; Path=/
+```
+
+Важно использовать те же `Path` и `Domain`, с которыми cookie была создана.
+
+Если исходная cookie была host-only, при удалении также не следует добавлять `Domain`.
+
+При несовпадении области браузер может удалить или создать другую cookie, а исходная запись останется.
+
+`HttpOnly` cookie обычно удаляет сервер, потому что JavaScript не может управлять ею через `document.cookie`.
 
 <h2></h2>
 </dd>
@@ -157,7 +311,27 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Браузер принимает `__Secure-` cookie только с атрибутом `Secure` из secure context. `__Host-` дополнительно требует `Path=/` и запрещает `Domain`, поэтому cookie является host-only и не может быть подменена subdomain с более широким Domain. Префикс усиливает проверяемую конфигурацию, но не заменяет остальные защиты.
+Префикс заставляет браузер проверить дополнительные требования при установке cookie.
+
+Cookie с именем `__Secure-...` принимается только с атрибутом `Secure` и из защищённого контекста:
+
+```http
+Set-Cookie: __Secure-session=abc; Secure
+```
+
+Cookie с префиксом `__Host-` дополнительно должна:
+
+- иметь `Secure`;
+- иметь `Path=/`;
+- не содержать `Domain`.
+
+```http
+Set-Cookie: __Host-session=abc; Secure; Path=/; HttpOnly
+```
+
+Поэтому такая cookie является host-only и не может быть установлена для более широкой области через `Domain`.
+
+Префиксы помогают браузеру отклонять неправильную конфигурацию, но не заменяют `HttpOnly`, `SameSite`, CSRF-защиту и безопасную серверную логику.
 
 <h2></h2>
 </dd>
@@ -172,7 +346,17 @@ Session cookie не имеет `Expires`/`Max-Age` и живёт в browser sess
 <dd>
 <h2></h2>
 
-Cookie с атрибутом `Partitioned` хранится в отдельном разделе по top-level site в дополнение к origin third-party ресурса. Это механизм CHIPS для сценариев embedded content при ограничении third-party cookies. Атрибут требует `Secure`, а поддержка и browser privacy rules всё равно должны учитываться.
+Обычная third-party cookie может использоваться одним встроенным ресурсом на разных внешних сайтах.
+
+Cookie с атрибутом `Partitioned` хранится отдельно для каждого top-level site. Поэтому один и тот же embedded-сервис получает разные разделы cookie при открытии внутри разных сайтов.
+
+```http
+Set-Cookie: widgetSession=abc; Secure; SameSite=None; Partitioned
+```
+
+Этот механизм называют CHIPS. Он позволяет поддерживать отдельные сценарии embedded content при ограничении обычных third-party cookies.
+
+Атрибут `Partitioned` требует `Secure`. Его использование всё равно зависит от поддержки браузера и общей privacy policy.
 
 <h2></h2>
 </dd>
@@ -187,7 +371,13 @@ Cookie с атрибутом `Partitioned` хранится в отдельно�
 <dd>
 <h2></h2>
 
-Размер одной cookie и число cookies ограничены браузером, обычно речь идёт примерно о нескольких килобайтах на запись. Подходящие cookies добавляются к каждому запросу соответствующей области и увеличивают network overhead. Для client-only state используют Web Storage или IndexedDB, а в cookie оставляют минимальный server-relevant идентификатор или настройку.
+Размер одной cookie и общее число cookies ограничены браузером. Обычно речь идёт примерно о нескольких килобайтах на одну запись, но точные ограничения зависят от реализации.
+
+Подходящие cookies автоматически добавляются к каждому HTTP-запросу соответствующей области. Большой объём данных увеличивает размер request headers и создаёт постоянный network overhead.
+
+Для client-only состояния используют `localStorage`, `sessionStorage` или IndexedDB.
+
+В cookie обычно оставляют минимальные данные, действительно необходимые серверу: идентификатор сессии, CSRF token или небольшую настройку.
 
 <h2></h2>
 </dd>
@@ -202,7 +392,15 @@ Cookie с атрибутом `Partitioned` хранится в отдельно�
 <dd>
 <h2></h2>
 
-Cookie приходит серверу в request headers, поэтому server component, middleware или route handler может определить session до HTML response. Client JavaScript не увидит HttpOnly значение. Изменять cookie надёжно нужно там, где framework позволяет сформировать HTTP response; render уже отправленного streaming response не может задним числом добавить header.
+При серверном запросе cookies приходят в header `Cookie`. Поэтому сервер может определить сессию до формирования HTML и подготовить персонализированный ответ.
+
+`HttpOnly` cookie доступна серверу, но не клиентскому JavaScript.
+
+Устанавливать или изменять cookie нужно в той части серверного кода, которая формирует HTTP response и ещё может добавить header `Set-Cookie`.
+
+После начала отправки streaming response добавить новый HTTP-header задним числом уже нельзя.
+
+В framework обычно используют его серверные API для чтения request cookies и формирования response cookies, а не обращаются к `document.cookie` во время SSR.
 
 <h2></h2>
 </dd>
@@ -217,7 +415,30 @@ Cookie приходит серверу в request headers, поэтому server
 <dd>
 <h2></h2>
 
-Origin состоит из scheme, host и port. Site основан на scheme и registrable domain, поэтому `app.example.com` и `api.example.com` могут быть cross-origin, но same-site. CORS оценивает origin, а SameSite cookie оценивает site. Такая комбинация объясняет, почему запрос может требовать CORS и при этом не считаться cross-site для SameSite.
+Origin состоит из:
+
+```text
+scheme + host + port
+```
+
+Например:
+
+```text
+https://app.example.com:443
+```
+
+Site обычно определяется по scheme и registrable domain. Конкретный subdomain и port не делают два адреса разными site, если их registrable domain и scheme совпадают.
+
+Поэтому:
+
+```text
+https://app.example.com
+https://api.example.com
+```
+
+являются cross-origin, потому что отличаются hosts, но могут быть same-site.
+
+CORS сравнивает origins, а атрибут `SameSite` оценивает sites. Поэтому запрос может требовать настройки CORS и одновременно считаться same-site для отправки cookies.
 
 <h2></h2>
 </dd>
@@ -240,7 +461,26 @@ await fetch("https://api.example.com/me", {
 <dd>
 <h2></h2>
 
-Нет. Cookie должна подходить по Domain, Path, Secure, SameSite и privacy policy. API должен разрешить origin и credentials через CORS. `include` только разрешает fetch участвовать в credentialed cross-origin запросе, но не отменяет серверные и browser restrictions.
+Нет.
+
+Чтобы cookie была отправлена, она должна:
+
+- подходить по `Domain` и `Path`;
+- не быть просроченной;
+- соответствовать требованиям `Secure`;
+- разрешать текущий контекст по `SameSite`;
+- не блокироваться privacy policy браузера.
+
+`credentials: "include"` только разрешает `fetch` использовать credentials в cross-origin запросе. Опция не отменяет правила конкретной cookie.
+
+Чтобы JavaScript получил доступ к response, API также должен вернуть:
+
+```http
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: https://адрес-frontend-приложения
+```
+
+При этом запрос с cookie может фактически уйти на сервер, но при неправильном CORS frontend не сможет прочитать ответ.
 
 <h2></h2>
 </dd>
