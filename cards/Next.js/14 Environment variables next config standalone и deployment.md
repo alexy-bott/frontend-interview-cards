@@ -16,43 +16,650 @@
 <dl>
 <dd>
 
-Next.js-приложение сначала собирают командой `next build`, а затем запускают через `next start`, standalone-сервер, образ Docker или адаптер выбранной платформы. Способ развёртывания должен соответствовать возможностям приложения: статический export не умеет выполнять Server Components для запроса, Server Actions и динамические Route Handlers.
+Next.js-приложение можно развернуть несколькими способами.
 
-Environment variables, то есть переменные окружения, по умолчанию доступны только серверному коду через `process.env`. Next.js загружает `.env`, `.env.local` и файлы для конкретного `NODE_ENV`. Локальные файлы с секретами не добавляют в Git; в CI и production значения передают через защищённое хранилище секретов платформы.
+Обычный Node.js-сервер:
 
-Префикс `NEXT_PUBLIC_` делает переменную доступной клиентскому коду. Её значение подставляется в JavaScript во время `next build` и после сборки уже не меняется:
-
-```ts
-const apiOrigin = process.env.NEXT_PUBLIC_API_ORIGIN;
+```bash
+next build
+next start
 ```
 
-Это означает, что один и тот же готовый клиентский бандл нельзя перенести из тестового окружения staging в production и ожидать другого `NEXT_PUBLIC_API_ORIGIN`. Для конфигурации, которая должна определяться при запуске, значение получают на сервере и явно передают клиенту. Секреты никогда не помечают `NEXT_PUBLIC_`.
+Standalone output:
 
-`next.config.js` или `next.config.mjs` выполняется в Node.js во время сборки и задаёт конфигурацию фреймворка: источники изображений, `redirects`, `rewrites`, `headers`, `basePath`, `output` и совместимость сборщика. Настройку `env` в `next.config.js` не используют для секретов, потому что указанные там значения встраиваются в JavaScript-бандл.
+```bash
+next build
+node .next/standalone/server.js
+```
 
-`redirects` возвращает браузеру HTTP-перенаправление на новый URL. `rewrites` внутренне сопоставляет входной URL с другим источником, не меняя адресную строку, и подходит для проксирования API или постепенной миграции. `headers` добавляет заголовки ответа, например CSP и HSTS, но заголовки безопасности должны соответствовать архитектуре приложения, а не копироваться вслепую.
-
-`output: "standalone"` создаёт `.next/standalone` с минимальным сервером и необходимыми production-зависимостями, то есть зависимостями для запуска. Это удобно для небольшого образа Docker. Каталоги `public` и `.next/static` не копируются туда автоматически для standalone-сервера, поэтому отдельный этап сборки Docker должен перенести их или настроить раздачу через CDN.
+Static export:
 
 ```js
 // next.config.js
 module.exports = {
+  output: "export",
+};
+```
+
+```bash
+next build
+```
+
+В последнем случае готовые файлы создаются в каталоге:
+
+```text
+out
+```
+
+Также приложение можно развернуть через managed-платформу или совместимый adapter.
+
+Способ deployment должен соответствовать используемым возможностям приложения.
+
+Обычный Node.js-сервер и Docker поддерживают основные серверные возможности Next.js:
+
+- request-time rendering;
+- Server Components;
+- Server Actions;
+- Route Handlers;
+- ISR;
+- Image Optimization;
+- streaming.
+
+Static export не имеет Next.js-сервера после deployment.
+
+Server Components при этом могут выполниться во время `next build` и сформировать статический результат, но не могут повторно выполняться для нового запроса пользователя.
+
+Static export не поддерживает возможности, которым нужен runtime-сервер:
+
+- SSR во время запроса;
+- Server Actions;
+- request-time cookies и headers;
+- Middleware;
+- ISR;
+- динамические Route Handlers;
+- стандартный серверный Image Optimizer;
+- `redirects`, `rewrites` и `headers` из `next.config`.
+
+Статический `GET` Route Handler, результат которого можно определить во время сборки, может быть преобразован в обычный статический файл.
+
+Environment variables, то есть переменные окружения, Next.js загружает в `process.env`.
+
+По умолчанию они доступны только серверному коду.
+
+Next.js проверяет значения в следующем порядке и останавливается на первом найденном:
+
+```text
+1. process.env
+2. .env.$(NODE_ENV).local
+3. .env.local
+4. .env.$(NODE_ENV)
+5. .env
+```
+
+При `NODE_ENV=test` файл `.env.local` не загружается.
+
+Типичные файлы:
+
+```text
+.env
+.env.development
+.env.production
+.env.test
+
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+```
+
+Файлы:
+
+```text
+.env
+.env.development
+.env.production
+.env.test
+```
+
+могут хранить общие несекретные значения и значения по умолчанию.
+
+Файлы:
+
+```text
+.env*.local
+```
+
+предназначены для локальных значений и секретов и обычно добавляются в `.gitignore`.
+
+При использовании каталога `src` environment-файлы всё равно располагают в корне проекта:
+
+```text
+project/
+  .env.local
+  package.json
+  src/
+    app/
+```
+
+В CI и production секреты передают через защищённое хранилище платформы, а не копируют из локального `.env.local`.
+
+Важно различать server build-time и server runtime variables.
+
+Если Server Component статически формируется во время `next build`, значение:
+
+```ts
+process.env.API_ORIGIN
+```
+
+читается во время сборки и влияет на сохранённый HTML или RSC Payload.
+
+Изменение переменной при запуске контейнера не перестроит уже созданный статический результат.
+
+Чтобы читать серверную переменную при каждом запросе, маршрут должен выполняться динамически.
+
+В Next.js 14 это можно обозначить, например, через:
+
+```tsx
+import {
+  unstable_noStore as noStore,
+} from "next/cache";
+
+export default function Page() {
+  noStore();
+
+  const apiOrigin =
+    process.env.API_ORIGIN;
+
+  return <div>{apiOrigin}</div>;
+}
+```
+
+Динамический рендеринг также возникает при использовании request-time API вроде:
+
+```ts
+cookies()
+headers()
+```
+
+Префикс:
+
+```text
+NEXT_PUBLIC_
+```
+
+делает переменную доступной клиентскому коду.
+
+Например:
+
+```ts
+const apiOrigin =
+  process.env.NEXT_PUBLIC_API_ORIGIN;
+```
+
+Next.js заменяет такое обращение конкретным значением во время:
+
+```bash
+next build
+```
+
+В итоговом клиентском JavaScript фактически оказывается строка:
+
+```ts
+const apiOrigin =
+  "https://api.example.com";
+```
+
+После сборки значение уже не меняется.
+
+Это означает, что один и тот же готовый клиентский bundle нельзя перенести из staging в production и ожидать другого:
+
+```text
+NEXT_PUBLIC_API_ORIGIN
+```
+
+Для каждого значения потребуется:
+
+- отдельная сборка;
+- либо конфигурация времени выполнения, переданная клиенту сервером.
+
+Build-time подстановка рассчитана на статически анализируемое обращение:
+
+```ts
+process.env.NEXT_PUBLIC_API_ORIGIN
+```
+
+Динамический доступ не подставляется таким же образом:
+
+```ts
+const variableName =
+  "NEXT_PUBLIC_API_ORIGIN";
+
+process.env[variableName];
+```
+
+Также не следует использовать копирование объекта как способ runtime-доступа:
+
+```ts
+const env = process.env;
+
+env.NEXT_PUBLIC_API_ORIGIN;
+```
+
+Для клиентской конфигурации времени запуска Server Component может прочитать обычную серверную переменную во время динамического рендеринга и передать только безопасное публичное значение:
+
+```tsx
+import {
+  unstable_noStore as noStore,
+} from "next/cache";
+
+import {
+  ClientApp,
+} from "./ClientApp";
+
+export default function Page() {
+  noStore();
+
+  const publicConfig = {
+    apiOrigin:
+      process.env.API_ORIGIN ?? "",
+  };
+
+  return (
+    <ClientApp
+      config={publicConfig}
+    />
+  );
+}
+```
+
+Переданное значение окажется в RSC Payload и станет доступно пользователю, поэтому таким способом нельзя передавать секреты.
+
+Секреты никогда не помечают:
+
+```text
+NEXT_PUBLIC_
+```
+
+и не передают Client Components через props.
+
+`next.config.js` или `next.config.mjs` является Node.js-модулем в корне проекта.
+
+Он используется Next.js во время build- и server-фаз, но не включается в клиентский bundle.
+
+CommonJS-вариант:
+
+```js
+// next.config.js
+
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   output: "standalone",
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.example.com",
-        pathname: "/products/**",
-      },
-    ],
+};
+
+module.exports = nextConfig;
+```
+
+ES Modules-вариант:
+
+```js
+// next.config.mjs
+
+/** @type {import("next").NextConfig} */
+const nextConfig = {
+  output: "standalone",
+};
+
+export default nextConfig;
+```
+
+Файл конфигурации задаёт, например:
+
+- источники изображений;
+- `redirects`;
+- `rewrites`;
+- `headers`;
+- `basePath`;
+- `assetPrefix`;
+- `output`;
+- настройки сборщика;
+- output file tracing;
+- Server Actions;
+- cache handler.
+
+Многие настройки влияют на готовый артефакт и не могут произвольно изменяться после сборки.
+
+Например:
+
+- `basePath`;
+- `assetPrefix`;
+- `output`;
+- часть image configuration;
+- публичные environment variables.
+
+Поле:
+
+```js
+env
+```
+
+в `next.config.js` не используют для секретов:
+
+```js
+module.exports = {
+  env: {
+    INTERNAL_SECRET:
+      process.env.INTERNAL_SECRET,
   },
 };
 ```
 
-При self-hosting, то есть самостоятельном размещении, перед Next.js обычно ставят reverse proxy, или обратный прокси-сервер. Он ограничивает размер и скорость запросов, завершает TLS, может отдавать статические ресурсы и защищает Node.js-сервер от медленных соединений. Если приложение запущено в нескольких экземплярах, общий Data Cache и хранилище ISR нельзя без проверки оставлять локальными: разные экземпляры способны отдавать разные версии данных.
+Все значения из этого поля встраиваются в JavaScript во время сборки независимо от наличия префикса `NEXT_PUBLIC_`.
 
-Надёжный CI/CD собирает один неизменяемый артефакт, проверяет его и продвигает между окружениями. Версии Node.js и package manager, то есть менеджера пакетов, фиксируют, зависимости устанавливают через lockfile, а сборку выполняют с теми публичными переменными, которые должны попасть в клиент. После развёртывания нужны проверки состояния, логи, метрики, корректное завершение процесса и стратегия отката.
+Безопаснее читать секрет непосредственно в server-only коде:
+
+- Server Component;
+- Server Action;
+- Route Handler;
+- data access layer.
+
+Даже если `next.config.js` сам остаётся серверным, нужно понимать, куда попадёт результат использования переменной.
+
+Например, secret может случайно оказаться:
+
+- в поле `env`;
+- в generated-файле;
+- в публичном URL;
+- в header;
+- в клиентском bundle;
+- в build log.
+
+`redirects` возвращает браузеру HTTP-перенаправление.
+
+Например:
+
+```js
+module.exports = {
+  async redirects() {
+    return [
+      {
+        source: "/old",
+        destination: "/new",
+        permanent: true,
+      },
+    ];
+  },
+};
+```
+
+Адресная строка изменяется, а браузер выполняет новый запрос.
+
+Next.js использует:
+
+```text
+permanent: true  → 308
+permanent: false → 307
+```
+
+`rewrites` внутренне сопоставляет входящий URL с другим маршрутом, не меняя адресную строку:
+
+```js
+module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: "/backend/:path*",
+        destination:
+          "https://api.example.com/:path*",
+      },
+    ];
+  },
+};
+```
+
+Rewrite подходит для:
+
+- проксирования backend;
+- постепенной миграции;
+- сохранения старого публичного URL;
+- объединения нескольких приложений.
+
+Публичный URL, destination и их правила кэширования при этом нужно проектировать отдельно.
+
+`headers` добавляет headers ответа:
+
+```js
+module.exports = {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key:
+              "X-Content-Type-Options",
+            value: "nosniff",
+          },
+        ],
+      },
+    ];
+  },
+};
+```
+
+Через него можно задавать статические security headers, например:
+
+- CSP;
+- HSTS;
+- `X-Content-Type-Options`;
+- `Referrer-Policy`;
+- `Permissions-Policy`.
+
+Их нельзя копировать вслепую: политика должна соответствовать реальным scripts, images, iframe, API и способу TLS termination.
+
+Динамический CSP с nonce обычно требует обработки конкретного запроса, а не только статической конфигурации.
+
+`Cache-Control` для Next.js pages и статических assets нельзя надёжно переопределять через `headers()` в `next.config`: production-сервер устанавливает собственные значения для корректной работы кэширования.
+
+Настройка:
+
+```js
+output: "standalone"
+```
+
+включает output file tracing.
+
+Во время сборки Next.js анализирует imports и необходимые production-файлы, а затем создаёт:
+
+```text
+.next/standalone
+```
+
+Внутри находится минимальный сервер:
+
+```text
+.next/standalone/server.js
+```
+
+Его запускают:
+
+```bash
+node .next/standalone/server.js
+```
+
+При необходимости задают:
+
+```bash
+PORT=3000
+HOSTNAME=0.0.0.0
+node .next/standalone/server.js
+```
+
+Standalone output включает только traced-файлы и production-зависимости, необходимые серверу.
+
+Он уменьшает размер Docker image, потому что не требует копировать весь исходный проект и весь каталог `node_modules`.
+
+Каталоги:
+
+```text
+public
+.next/static
+```
+
+не копируются в standalone автоматически.
+
+Если их не раздаёт CDN или reverse proxy, их переносят вручную:
+
+```text
+public
+→ .next/standalone/public
+
+.next/static
+→ .next/standalone/.next/static
+```
+
+После этого минимальный `server.js` сможет отдавать их самостоятельно.
+
+Пример `next.config.js`:
+
+```js
+/** @type {import("next").NextConfig} */
+const nextConfig = {
+  output: "standalone",
+
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname:
+          "cdn.example.com",
+        pathname:
+          "/products/**",
+      },
+    ],
+  },
+};
+
+module.exports = nextConfig;
+```
+
+При self-hosting перед Next.js рекомендуется ставить reverse proxy, например Nginx.
+
+Он может:
+
+- завершать TLS;
+- ограничивать размер body;
+- выполнять rate limiting;
+- отклонять некорректные запросы;
+- защищать от медленных соединений;
+- настраивать timeouts;
+- отдавать статические файлы;
+- выполнять compression;
+- балансировать запросы между репликами.
+
+Это разгружает Node.js-сервер и оставляет ему основную работу:
+
+- React rendering;
+- Server Actions;
+- Route Handlers;
+- работу с данными.
+
+Если приложение запущено в нескольких экземплярах, локальная память и локальная файловая система каждой реплики не являются общим хранилищем.
+
+Нужно согласовать:
+
+- Data Cache;
+- ISR;
+- tag invalidation;
+- сессии;
+- rate limiting;
+- Server Actions;
+- rolling deployment;
+- фоновые задачи.
+
+Для Data Cache и ISR в Next.js 14 можно настроить общий:
+
+```js
+cacheHandler
+```
+
+который использует Redis, общее файловое хранилище или другой backend.
+
+Иначе возможна ситуация:
+
+```text
+container A → уже обновил страницу
+container B → продолжает отдавать старую версию
+```
+
+Для Server Actions нескольким экземплярам и разным builds может потребоваться одинаковый:
+
+```text
+NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+```
+
+Иначе одна реплика может не распознать ссылку на action, созданную другой сборкой или репликой.
+
+При rolling deployment старые и новые экземпляры некоторое время работают одновременно.
+
+Для защиты от version skew можно использовать согласованный идентификатор deployment:
+
+```js
+module.exports = {
+  deploymentId:
+    process.env.DEPLOYMENT_VERSION,
+};
+```
+
+Все экземпляры одной версии должны получать одинаковое значение.
+
+Надёжный CI/CD:
+
+1. фиксирует версии Node.js и package manager;
+2. устанавливает зависимости через lockfile;
+3. запускает lint, typecheck и tests;
+4. выполняет `next build`;
+5. проверяет собранный артефакт;
+6. публикует immutable image или архив;
+7. развёртывает его;
+8. выполняет health check и smoke tests;
+9. сохраняет возможность быстрого rollback.
+
+Один неизменяемый артефакт уменьшает расхождение между staging и production.
+
+Но нужно учитывать build-time значения:
+
+- `NEXT_PUBLIC_*`;
+- `basePath`;
+- `assetPrefix`;
+- часть `next.config`;
+- статически прочитанные серверные variables.
+
+Если они отличаются между окружениями, возможны два подхода:
+
+```text
+отдельный артефакт для каждого окружения
+```
+
+либо:
+
+```text
+один артефакт
++
+runtime server variables
++
+явная передача безопасной конфигурации клиенту
+```
+
+После deployment нужны:
+
+- централизованные логи;
+- метрики;
+- tracing;
+- error monitoring;
+- health checks;
+- graceful shutdown;
+- стратегия rollback;
+- контроль version skew.
 
 </dd>
 </dl>
@@ -68,7 +675,48 @@ module.exports = {
 <dd>
 <h2></h2>
 
-Обычная переменная читается только серверным кодом и может содержать секрет. Значение с `NEXT_PUBLIC_` встраивается в клиентский JavaScript во время сборки, поэтому его может увидеть любой пользователь. Префикс определяет границу доступности, а не просто соглашение об имени.
+Обычная переменная по умолчанию доступна только серверному коду:
+
+```ts
+process.env.DATABASE_URL
+```
+
+Она может содержать secret, если значение:
+
+- не возвращается клиенту;
+- не попадает в props Client Component;
+- не добавляется в публичный response;
+- не записывается в открытые логи.
+
+Но момент чтения тоже важен.
+
+Если Server Component статически формируется во время `next build`, значение используется во время сборки.
+
+Если компонент выполняется динамически на каждый запрос, сервер может прочитать актуальную переменную процесса после запуска контейнера.
+
+Переменная с префиксом:
+
+```text
+NEXT_PUBLIC_
+```
+
+встраивается в клиентский JavaScript:
+
+```ts
+process.env.NEXT_PUBLIC_ANALYTICS_ID
+```
+
+Её может увидеть любой пользователь.
+
+Префикс определяет границу доступности, а не просто стиль имени.
+
+Нельзя использовать его для:
+
+- паролей;
+- закрытых API keys;
+- database URLs;
+- private tokens;
+- внутренних credentials.
 
 <h2></h2>
 </dd>
@@ -83,7 +731,47 @@ module.exports = {
 <dd>
 <h2></h2>
 
-Next.js заменяет обращение к этой переменной конкретным значением во время `next build`. Контейнер запускает уже готовые JavaScript-файлы. Чтобы значение стало конфигурацией времени выполнения, сервер должен прочитать его при запросе и передать браузеру через HTML, API или Server Component.
+Next.js заменяет статически анализируемое обращение:
+
+```ts
+process.env.NEXT_PUBLIC_API_ORIGIN
+```
+
+конкретным значением во время:
+
+```bash
+next build
+```
+
+Контейнер запускает уже созданные JavaScript-файлы.
+
+Изменение environment variable после сборки не переписывает bundle.
+
+Например:
+
+```text
+build:
+NEXT_PUBLIC_API_ORIGIN=https://staging.example.com
+
+runtime:
+NEXT_PUBLIC_API_ORIGIN=https://api.example.com
+```
+
+Клиентский код всё равно содержит staging-значение.
+
+Чтобы значение определялось во время запуска или запроса:
+
+1. сервер читает обычную runtime variable;
+2. выбирает безопасные публичные поля;
+3. передаёт их Client Component через props, RSC Payload или HTTP endpoint.
+
+Динамический доступ:
+
+```ts
+process.env[variableName]
+```
+
+не является способом превратить `NEXT_PUBLIC_` в runtime client configuration.
 
 <h2></h2>
 </dd>
@@ -98,7 +786,52 @@ Next.js заменяет обращение к этой переменной к�
 <dd>
 <h2></h2>
 
-Нельзя помещать секрет в поле `env`, потому что Next.js подставляет такие значения в бандл. Сам файл конфигурации может прочитать серверную переменную для задачи сборки, но нужно понимать, куда результат попадёт. Секрет безопаснее читать непосредственно в server-only модуле, Route Handler или Server Action и никогда не возвращать клиенту.
+Нельзя помещать secret в поле:
+
+```js
+env
+```
+
+Например:
+
+```js
+module.exports = {
+  env: {
+    DATABASE_PASSWORD:
+      process.env.DATABASE_PASSWORD,
+  },
+};
+```
+
+Next.js встроит значение в JavaScript независимо от префикса имени.
+
+Сам `next.config.js` является серверным Node.js-модулем и может читать environment variables для настройки сборки.
+
+Но нужно проверить, куда попадёт производное значение.
+
+Например, чтение секрета опасно, если результат используется в:
+
+- `env`;
+- публичном rewrite URL;
+- response header;
+- клиентском define;
+- generated asset;
+- build log.
+
+Секрет безопаснее читать непосредственно в server-only модуле во время выполнения операции:
+
+```ts
+import "server-only";
+
+export async function getPrivateData() {
+  const token =
+    process.env.INTERNAL_API_TOKEN;
+
+  // ...
+}
+```
+
+Даже серверный secret нельзя возвращать клиенту в сообщении об ошибке или сериализуемом объекте.
 
 <h2></h2>
 </dd>
@@ -113,7 +846,47 @@ Next.js заменяет обращение к этой переменной к�
 <dd>
 <h2></h2>
 
-Redirect отправляет статус перенаправления и новый URL, после чего браузер выполняет отдельный запрос и меняет адресную строку. Rewrite незаметно сопоставляет исходный URL с другим внутренним или внешним адресом назначения. Он полезен для проксирования, но публичный URL и правила кэширования остаются отдельной частью контракта.
+Redirect возвращает браузеру HTTP-ответ с новым URL:
+
+```text
+GET /old
+→ 308 Location: /new
+→ браузер запрашивает /new
+```
+
+Адресная строка меняется.
+
+Rewrite внутренне сопоставляет исходный URL с другим destination:
+
+```text
+GET /api/products
+→ внутри обрабатывается как https://backend.example.com/products
+```
+
+Адресная строка пользователя остаётся прежней.
+
+Redirect используют для:
+
+- переезда страницы;
+- изменения canonical URL;
+- нормализации старых адресов;
+- временного перенаправления.
+
+Rewrite используют для:
+
+- proxy;
+- постепенной миграции backend;
+- объединения нескольких приложений;
+- сохранения публичного URL при смене внутренней архитектуры.
+
+Rewrite не отменяет необходимость продумать:
+
+- authentication;
+- CORS;
+- cookies;
+- Cache-Control;
+- timeout;
+- обработку ошибок destination.
 
 <h2></h2>
 </dd>
@@ -128,7 +901,56 @@ Redirect отправляет статус перенаправления и н�
 <dd>
 <h2></h2>
 
-Next.js трассирует необходимые файлы и production-зависимости, затем создаёт минимальный `server.js` в `.next/standalone`. Это уменьшает образ Docker, но не означает полностью готовый каталог: `public` и `.next/static` копируют отдельно, если их не раздаёт CDN.
+При:
+
+```js
+output: "standalone"
+```
+
+Next.js выполняет output file tracing.
+
+Он определяет файлы и production-зависимости, которые реально нужны серверным маршрутам, и создаёт минимальный каталог:
+
+```text
+.next/standalone
+```
+
+Основной файл запуска:
+
+```text
+.next/standalone/server.js
+```
+
+Standalone обычно содержит:
+
+- минимальный Next.js-сервер;
+- traced server files;
+- необходимые части `node_modules`;
+- production server bundle.
+
+Он не копирует автоматически:
+
+```text
+public
+.next/static
+```
+
+Если эти ресурсы не раздаёт CDN, их копируют в:
+
+```text
+.next/standalone/public
+.next/standalone/.next/static
+```
+
+Standalone уменьшает Docker image, но не решает автоматически:
+
+- хранение secrets;
+- общий Data Cache;
+- TLS;
+- rate limiting;
+- health checks;
+- централизованные логи;
+- version skew.
 
 <h2></h2>
 </dd>
@@ -143,7 +965,57 @@ Next.js трассирует необходимые файлы и production-з�
 <dd>
 <h2></h2>
 
-Когда все страницы и данные можно сформировать во время сборки, а на хостинге нужны только HTML, CSS, JavaScript и статические ресурсы. Он не подходит для SSR во время запроса, Server Actions, cookies на сервере и динамического Node.js API. Image Optimization также требует отдельного загрузчика или отказа от серверного оптимизатора.
+Static export подходит, когда результат можно полностью сформировать во время сборки.
+
+После:
+
+```js
+output: "export"
+```
+
+и:
+
+```bash
+next build
+```
+
+создаётся каталог:
+
+```text
+out
+```
+
+Его можно разместить на любом static hosting:
+
+- Nginx;
+- object storage;
+- CDN;
+- GitHub Pages;
+- статической hosting-платформе.
+
+Server Components могут выполняться во время сборки и формировать HTML и RSC Payload.
+
+Статические `GET` Route Handlers также могут создать файлы во время build.
+
+После deployment сервер Next.js отсутствует, поэтому нельзя использовать:
+
+- SSR на каждый запрос;
+- Server Actions;
+- request-time cookies и headers;
+- Middleware;
+- ISR;
+- динамические Route Handlers;
+- серверную authentication;
+- стандартную Image Optimization;
+- динамические redirects и rewrites.
+
+Для `next/image` нужен:
+
+- custom loader;
+- либо `unoptimized`;
+- либо внешний image optimization service.
+
+Static export выбирают по требованиям приложения, а не только ради простого deployment.
 
 <h2></h2>
 </dd>
@@ -158,7 +1030,49 @@ Next.js трассирует необходимые файлы и production-з�
 <dd>
 <h2></h2>
 
-Локальная память и файловый кэш не являются общими. Нужно согласовать Data Cache, ISR, rate limiting, то есть ограничение частоты запросов, сессии и фоновые задачи между экземплярами. Иначе один контейнер обновит страницу, а другой продолжит отдавать прежний результат. Конкретное решение зависит от хостинга и cache handler.
+Локальная память и локальная файловая система не являются общими между replicas.
+
+Нужно согласовать:
+
+- Data Cache;
+- ISR;
+- tag invalidation;
+- sessions;
+- rate limiting;
+- Server Actions;
+- rolling deployments;
+- background jobs.
+
+Для Data Cache и ISR используют общий cache handler:
+
+```text
+Next.js replicas
+       ↓
+Redis или другое общее хранилище
+```
+
+Для Server Actions при нескольких builds или instances может потребоваться одинаковый:
+
+```text
+NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+```
+
+Для экземпляров одного deployment задают общий:
+
+```text
+deploymentId
+```
+
+или используют соответствующий механизм hosting-платформы для защиты от version skew.
+
+Сессии и rate limits также нельзя бессистемно хранить только в памяти одного процесса.
+
+Иначе:
+
+- пользователь может оказаться разлогинен после смены replica;
+- разные containers покажут разные данные;
+- ограничение запросов можно обойти переходом на другой instance;
+- старая страница может обратиться к Server Action новой несовместимой сборки.
 
 <h2></h2>
 </dd>
@@ -173,7 +1087,44 @@ Next.js трассирует необходимые файлы и production-з�
 <dd>
 <h2></h2>
 
-Один проверенный артефакт уменьшает расхождение между staging и production и позволяет точно откатить версию. Исключением являются значения `NEXT_PUBLIC_`, которые входят в сборку: либо для окружений собирают отдельные артефакты, либо проектируют конфигурацию времени выполнения через сервер.
+Один проверенный immutable artifact уменьшает расхождение между staging и production.
+
+Проверяется и развёртывается один и тот же набор:
+
+- JavaScript;
+- server bundle;
+- dependencies;
+- статических assets;
+- Next.js-конфигурации.
+
+Это позволяет:
+
+- точно знать, какая версия запущена;
+- воспроизводимо выполнить rollback;
+- не получить разные зависимости;
+- не повторять непредсказуемую сборку в production.
+
+Но значения, встроенные во время build, уже являются частью артефакта:
+
+- `NEXT_PUBLIC_*`;
+- `basePath`;
+- `assetPrefix`;
+- часть `next.config`;
+- статически прочитанные server variables.
+
+Если они различаются между окружениями, используют:
+
+- отдельный артефакт для каждого окружения;
+- либо runtime server configuration.
+
+Во втором случае сервер динамически читает environment variables и передаёт клиенту только безопасные публичные значения.
+
+Таким образом, правило звучит не как «всегда один образ для всех окружений», а как:
+
+```text
+один раз собрать конкретную конфигурацию
+и продвигать именно этот проверенный артефакт
+```
 
 <h2></h2>
 </dd>
@@ -185,12 +1136,13 @@ Next.js трассирует необходимые файлы и production-з�
 
 | Задача | Решение |
 | --- | --- |
-| Пароль базы данных | Серверная переменная окружения |
-| Публичный origin API | `NEXT_PUBLIC_`, если допустима фиксация при сборке |
+| Пароль базы данных | Серверная environment variable в server-only коде |
+| Публичный origin API | `NEXT_PUBLIC_`, если допустима фиксация во время build |
+| Публичная конфигурация времени запуска | Runtime server variable с явной передачей Client Component |
 | Развёртывание в Docker | Multi-stage build и `output: "standalone"` |
 | Полностью статический сайт | `output: "export"` с проверкой ограничений |
 | Постепенная миграция backend | `rewrites` |
-| Несколько реплик | Общее хранилище кэша и сессий, наблюдаемость |
+| Несколько replicas | Общий cache handler, согласованные сессии, ключ Actions и deployment ID |
 
 ## Связанные темы
 
@@ -207,9 +1159,17 @@ Next.js трассирует необходимые файлы и production-з�
 
 - [Next.js 14 docs: Environment Variables](https://nextjs.org/docs/14/app/building-your-application/configuring/environment-variables)
 - [Next.js 14 docs: next.config.js](https://nextjs.org/docs/14/app/api-reference/next-config-js)
+- [Next.js 14 docs: env option](https://nextjs.org/docs/14/pages/api-reference/next-config-js/env)
+- [Next.js 14 docs: headers](https://nextjs.org/docs/14/app/api-reference/next-config-js/headers)
+- [Next.js 14 docs: redirects](https://nextjs.org/docs/14/app/api-reference/next-config-js/redirects)
+- [Next.js 14 docs: rewrites](https://nextjs.org/docs/14/app/api-reference/next-config-js/rewrites)
 - [Next.js 14 docs: Deploying](https://nextjs.org/docs/14/app/building-your-application/deploying)
 - [Next.js 14 docs: output](https://nextjs.org/docs/14/app/api-reference/next-config-js/output)
 - [Next.js 14 docs: Static Exports](https://nextjs.org/docs/14/app/building-your-application/deploying/static-exports)
+- [Next.js 14 docs: Cache Handler](https://nextjs.org/docs/14/app/api-reference/next-config-js/incrementalCacheHandlerPath)
+- [Next.js 14 docs: Server Actions and Mutations](https://nextjs.org/docs/14/app/building-your-application/data-fetching/server-actions-and-mutations)
+- [Next.js docs: Self-hosting](https://nextjs.org/docs/app/guides/self-hosting)
+- [Next.js docs: deploymentId](https://nextjs.org/docs/app/api-reference/config/next-config-js/deploymentId)
 
 ---
 
