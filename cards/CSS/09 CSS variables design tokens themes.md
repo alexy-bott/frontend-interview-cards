@@ -712,6 +712,7 @@ Component tokens дают локальный API компонента:
 
 <h2></h2>
 </dl>
+</dd>
 
 </details>
 
