@@ -16,47 +16,665 @@
 <dl>
 <dd>
 
-Управляемое поле (controlled input) получает текущее значение из состояния React через `value` или `checked` и синхронно сообщает изменения через `onChange`. Источником истины является React. Неуправляемое поле (uncontrolled input) хранит текущее значение внутри DOM; React задаёт только начальное `defaultValue` или `defaultChecked`, а данные читаются через `ref` или `FormData`.
+Управляемое поле, или controlled input, получает текущее значение из состояния React через `value` или `checked`.
+
+При пользовательском вводе поле вызывает `onChange`, а обработчик сразу ставит в очередь обновление соответствующего состояния.
+
+Источником истины является React:
 
 ```tsx
 function ControlledEmail() {
-  const [email, setEmail] = useState("");
+  const [
+    email,
+    setEmail,
+  ] = useState("");
 
   return (
     <input
+      name="email"
       value={email}
-      onChange={(event) => setEmail(event.target.value)}
+      onChange={(event) => {
+        setEmail(
+          event.target.value,
+        );
+      }}
     />
   );
 }
 ```
 
-Управляемая модель удобна, когда значение сразу влияет на другой интерфейс: поиск фильтрует список, поле меняет доступность кнопки, ввод форматируется или несколько полей зависят друг от друга. Поскольку состояние обновляется при каждом вводе, компонент и его дочернее дерево могут рендериться часто. Обычно это решают локализацией состояния и продуманной структурой формы, а не отказом от управляемых полей как таковых.
+Поток данных выглядит так:
+
+```text
+React state
+→ value
+→ DOM-поле
+
+пользовательский ввод
+→ onChange
+→ обновление state
+→ новый value
+```
+
+Неуправляемое поле, или uncontrolled input, хранит текущее значение внутри DOM.
+
+React может задать только начальное значение через:
+
+- `defaultValue`;
+- `defaultChecked`.
+
+Текущее значение читают в нужный момент через:
+
+- `FormData`;
+- `ref`;
+- нативный DOM API.
 
 ```tsx
 function UncontrolledForm() {
-  function submit(formData: FormData) {
-    const email = formData.get("email");
+  function submit(
+    formData: FormData,
+  ) {
+    const email =
+      formData.get("email");
+
+    console.log(email);
   }
 
   return (
     <form action={submit}>
-      <input name="email" defaultValue="user@example.com" />
-      <button type="submit">Save</button>
+      <input
+        name="email"
+        defaultValue={
+          "user@example.com"
+        }
+      />
+
+      <button type="submit">
+        Save
+      </button>
     </form>
   );
 }
 ```
 
-`defaultValue` задаёт значение только при начальном монтировании. Последующее изменение prop не перезаписывает текущее значение DOM. `value` задаёт значение на каждом рендере, поэтому управляемое поле должно иметь `onChange`, который синхронно обновляет состояние. Иначе поле становится доступным только для чтения и возвращает введённый символ к прежнему значению.
+Здесь источником истины является DOM:
 
-Одно поле не должно переключаться между управляемым и неуправляемым режимом в течение жизненного цикла. Например, `value={undefined}` сначала делает поле неуправляемым, а позднее строковое значение превращает его в управляемое. Состояние текстового управляемого поля инициализируют строкой `""`, а для checkbox используют логическое значение `checked`. `null` и `undefined` не являются корректными текущими значениями управляемого поля.
+```text
+defaultValue
+→ начальное значение
 
-Для checkbox и radio используются `checked` и `defaultChecked`, а не `value` для состояния выбора. `<input type="file">` всегда является неуправляемым: файл выбирает пользователь, а код читает `input.files` или `FormData`; браузер не разрешает программно назначить путь к файлу.
+дальнейший ввод
+→ хранится самим DOM
 
-React Hook Form в основном регистрирует нативные поля и хранит их значения без переноса каждого введённого символа в общее состояние формы. Подписки позволяют обновлять только заинтересованные части. Для стороннего управляемого компонента, например сложного Select, используется `Controller`. Поэтому библиотека не является полностью неуправляемой: способ зависит от конкретного поля.
+отправка
+→ FormData читает текущее значение
+```
 
-React 19 добавил передачу функций в `action` формы, а также `useActionState`, `useFormStatus` и `useOptimistic`. Они организуют отправку формы, состояние выполнения и оптимистичное обновление, но не отменяют различие между `value` и `defaultValue`.
+Для неуправляемой формы `ref` нужен не всегда.
+
+Если значения требуются только при отправке, обычно достаточно:
+
+```tsx
+const formData =
+  new FormData(form);
+```
+
+`FormData` собирает поля, у которых есть `name`:
+
+```tsx
+<input
+  name="email"
+/>
+```
+
+Без `name` поле не попадёт в отправляемые данные.
+
+`FormData` может прочитать как uncontrolled-, так и controlled-поле.
+
+Например:
+
+```tsx
+<input
+  name="email"
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+DOM отражает актуальный React state, поэтому значение также попадёт в `FormData`.
+
+Различие controlled и uncontrolled определяет не способ отправки, а владельца текущего значения:
+
+```text
+controlled
+→ значение хранит React
+
+uncontrolled
+→ значение хранит DOM
+```
+
+Понятие controlled и uncontrolled относится не только к нативным полям формы.
+
+Пользовательский компонент также может быть управляемым:
+
+```tsx
+<Modal
+  isOpen={isOpen}
+  onOpenChange={setIsOpen}
+/>
+```
+
+Здесь родитель владеет состоянием `isOpen`.
+
+Неуправляемый вариант может хранить состояние внутри:
+
+```tsx
+<Modal
+  defaultOpen={false}
+/>
+```
+
+Названия API зависят от компонента, но принцип остаётся тем же:
+
+```text
+controlled
+→ состояние передаёт владелец
+
+uncontrolled
+→ состояние хранит сам компонент
+```
+
+Управляемая модель удобна, когда значение сразу влияет на другой интерфейс:
+
+- поиск фильтрует список;
+- поле изменяет доступность кнопки;
+- ввод форматируется;
+- несколько полей зависят друг от друга;
+- значение нужно валидировать во время ввода;
+- состояние нужно передать другому компоненту.
+
+Например:
+
+```tsx
+function Search() {
+  const [
+    query,
+    setQuery,
+  ] = useState("");
+
+  const filteredItems =
+    items.filter((item) =>
+      item.name
+        .toLowerCase()
+        .includes(
+          query.toLowerCase(),
+        ),
+    );
+
+  return (
+    <>
+      <input
+        value={query}
+        onChange={(event) => {
+          setQuery(
+            event.target.value,
+          );
+        }}
+      />
+
+      <ItemsList
+        items={filteredItems}
+      />
+    </>
+  );
+}
+```
+
+При каждом вводе обновляется компонент, который владеет состоянием.
+
+Это не означает, что обязательно рендерится всё приложение.
+
+Если ввод начинает работать медленно, обычно сначала:
+
+- размещают состояние ближе к полю;
+- отделяют тяжёлое поддерево;
+- не поднимают состояние выше необходимого;
+- профилируют реальную причину задержки.
+
+Отказываться от controlled-поля только из-за самого факта повторного рендера обычно не нужно.
+
+`value` и `defaultValue` выполняют разные задачи.
+
+`value` задаёт текущее значение на каждом рендере:
+
+```tsx
+<input
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+React постоянно синхронизирует DOM с `email`.
+
+`defaultValue` задаёт только начальное значение uncontrolled-поля:
+
+```tsx
+<input
+  defaultValue={
+    "user@example.com"
+  }
+/>
+```
+
+После монтирования пользователь может изменить значение внутри DOM.
+
+Последующее изменение `defaultValue` не должно использоваться как способ обновить уже введённое текущее значение.
+
+Если нужно управлять актуальным значением из React, используют `value`.
+
+Если нужно полностью переинициализировать uncontrolled-поддерево, можно:
+
+- выполнить reset формы;
+- использовать DOM API;
+- перемонтировать компонент новым `key`.
+
+Аналогичное различие существует для checkbox и radio:
+
+```text
+checked
+→ текущее controlled-состояние выбора
+
+defaultChecked
+→ начальное uncontrolled-состояние
+```
+
+Controlled checkbox:
+
+```tsx
+function Agreement() {
+  const [
+    accepted,
+    setAccepted,
+  ] = useState(false);
+
+  return (
+    <input
+      type="checkbox"
+      checked={accepted}
+      onChange={(event) => {
+        setAccepted(
+          event.target.checked,
+        );
+      }}
+    />
+  );
+}
+```
+
+Для checkbox и radio состояние выбора управляется через:
+
+```tsx
+checked
+```
+
+а не через `value`.
+
+Prop `value` у checkbox и radio определяет значение, которое будет отправлено вместе с формой, если элемент выбран:
+
+```tsx
+<input
+  type="checkbox"
+  name="permissions"
+  value="edit"
+  checked={canEdit}
+  onChange={(event) => {
+    setCanEdit(
+      event.target.checked,
+    );
+  }}
+/>
+```
+
+Здесь:
+
+```text
+checked
+→ выбран ли checkbox
+
+value
+→ какое значение отправить
+```
+
+Controlled-поле должно сразу обновлять значение, переданное в `value` или `checked`.
+
+Неправильно:
+
+```tsx
+<input
+  value={email}
+/>
+```
+
+Если `onChange` отсутствует, React будет возвращать полю значение из `email`, и пользователь не сможет изменить текст.
+
+Правильный вариант:
+
+```tsx
+<input
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+Если поле намеренно доступно только для чтения, это указывают явно:
+
+```tsx
+<input
+  value={email}
+  readOnly
+/>
+```
+
+Также поле может быть неинтерактивным через:
+
+```tsx
+disabled
+```
+
+Обработчик controlled-поля должен обновлять именно то значение, которое передано обратно в поле.
+
+Ошибка:
+
+```tsx
+<input
+  value={email}
+  onChange={(event) => {
+    setDraft(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+Если `email` при этом не меняется, введённый символ исчезнет, потому что после события React снова применит прежний `value`.
+
+Одно поле не должно переключаться между controlled- и uncontrolled-режимом в течение своего жизненного цикла.
+
+Проблемный вариант:
+
+```tsx
+const [
+  email,
+  setEmail,
+] = useState<
+  string | undefined
+>(undefined);
+
+return (
+  <input
+    value={email}
+    onChange={(event) => {
+      setEmail(
+        event.target.value,
+      );
+    }}
+  />
+);
+```
+
+На первом рендере:
+
+```text
+value === undefined
+→ поле uncontrolled
+```
+
+После ввода или загрузки данных:
+
+```text
+value === string
+→ поле controlled
+```
+
+React предупреждает о смене режима.
+
+Controlled-текстовое поле инициализируют строкой:
+
+```tsx
+const [
+  email,
+  setEmail,
+] = useState("");
+```
+
+Если данные могут отсутствовать, значение нормализуют:
+
+```tsx
+<input
+  value={user.email ?? ""}
+  onChange={handleChange}
+/>
+```
+
+Для controlled checkbox и radio используют boolean:
+
+```tsx
+const [
+  checked,
+  setChecked,
+] = useState(false);
+```
+
+```tsx
+<input
+  type="checkbox"
+  checked={checked}
+  onChange={(event) => {
+    setChecked(
+      event.target.checked,
+    );
+  }}
+/>
+```
+
+`null` и `undefined` не следует использовать как текущее значение controlled-текстового поля.
+
+Управляемый компонент должен оставаться управляемым на протяжении всего существования.
+
+Неуправляемый компонент также не должен позднее получать `value` или `checked`.
+
+`<input type="file">` используется как uncontrolled-поле выбора файла.
+
+Пользователь выбирает файл через интерфейс браузера:
+
+```tsx
+<input
+  type="file"
+  name="document"
+/>
+```
+
+Приложение читает результат через:
+
+```tsx
+inputRef.current?.files
+```
+
+или:
+
+```tsx
+formData.get("document")
+```
+
+Браузер не разрешает приложению программно назначить путь к локальному файлу через controlled `value`.
+
+Можно очистить выбор:
+
+- сбросом формы;
+- присваиванием пустой строки через DOM API;
+- перемонтированием поля новым `key`.
+
+Но нельзя программно выбрать локальный файл вместо пользователя.
+
+React Hook Form преимущественно использует нативное поведение uncontrolled-полей.
+
+Нативное поле регистрируют через:
+
+```tsx
+const {
+  register,
+  handleSubmit,
+} = useForm<FormValues>();
+```
+
+```tsx
+<input
+  {...register("email")}
+/>
+```
+
+Текущее значение не обязательно переносится в state родительского компонента на каждом введённом символе.
+
+Библиотека использует:
+
+- refs;
+- внутреннее состояние формы;
+- подписки;
+- точечные обновления заинтересованных потребителей.
+
+Это может уменьшить число повторных рендеров большой формы.
+
+Но React Hook Form не является полностью uncontrolled-системой.
+
+Сторонние компоненты часто работают как controlled:
+
+```tsx
+<Select
+  value={value}
+  onChange={onChange}
+/>
+```
+
+Для их интеграции используют `Controller` или `useController`:
+
+```tsx
+<Controller
+  name="country"
+  control={control}
+  render={({
+    field,
+  }) => (
+    <Select
+      value={field.value}
+      onChange={
+        field.onChange
+      }
+    />
+  )}
+/>
+```
+
+Таким образом, одна форма может одновременно содержать:
+
+- нативные uncontrolled-поля через `register`;
+- controlled-компоненты через `Controller`.
+
+React 19 позволяет передать функцию в `action` формы:
+
+```tsx
+async function submit(
+  formData: FormData,
+) {
+  const email =
+    formData.get("email");
+
+  await saveEmail(email);
+}
+
+function EmailForm() {
+  return (
+    <form action={submit}>
+      <input
+        name="email"
+      />
+
+      <button type="submit">
+        Save
+      </button>
+    </form>
+  );
+}
+```
+
+React передаёт функции объект `FormData`.
+
+Action выполняется как React Action, поэтому React может отслеживать состояние отправки и интегрировать её с:
+
+- `useFormStatus`;
+- `useActionState`;
+- `useOptimistic`;
+- Error Boundary.
+
+После успешного завершения функции `action` React автоматически сбрасывает uncontrolled-поля формы.
+
+Например, очищается:
+
+```tsx
+<input
+  name="email"
+/>
+```
+
+Controlled-поле продолжает получать значение из React state:
+
+```tsx
+<input
+  name="email"
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+Для его очистки нужно обновить state:
+
+```tsx
+setEmail("");
+```
+
+`useFormStatus`, `useActionState` и `useOptimistic` организуют:
+
+- состояние отправки;
+- результат Action;
+- отображение ошибок;
+- оптимистичное обновление.
+
+Но они не отменяют различие между:
+
+```text
+value
+→ controlled
+
+defaultValue
+→ uncontrolled
+```
+
+Способ хранения значения конкретного поля по-прежнему выбирается отдельно.
 
 </dd>
 </dl>
@@ -72,7 +690,46 @@ React 19 добавил передачу функций в `action` формы, 
 <dd>
 <h2></h2>
 
-Это место, где хранится актуальное значение. У управляемого поля им является состояние React, и DOM отражает это значение. У неуправляемого поля значение хранит DOM, а React читает его в нужный момент через `ref` или `FormData`.
+Источник истины — место, где хранится актуальное значение поля.
+
+У controlled-поля им является React state:
+
+```tsx
+const [
+  email,
+  setEmail,
+] = useState("");
+
+<input
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+DOM отражает значение `email`.
+
+У uncontrolled-поля значение хранит DOM:
+
+```tsx
+<input
+  name="email"
+  defaultValue="user@example.com"
+/>
+```
+
+React задаёт начальное значение, а актуальные данные читаются позже через:
+
+```tsx
+new FormData(form)
+```
+
+или `ref`.
+
+Одновременно иметь два независимых источника истины для одного поля не следует.
 
 <h2></h2>
 </dd>
@@ -87,7 +744,41 @@ React 19 добавил передачу функций в `action` формы, 
 <dd>
 <h2></h2>
 
-`value` управляет текущим значением на каждом рендере и требует синхронного `onChange`. `defaultValue` используется только для начальной инициализации неуправляемого поля. Изменение `defaultValue` после монтирования не обновляет уже введённый пользователем текст.
+`value` управляет текущим значением поля на каждом рендере:
+
+```tsx
+<input
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+Источником истины является React state.
+
+`defaultValue` задаёт только начальное значение uncontrolled-поля:
+
+```tsx
+<input
+  defaultValue={
+    "user@example.com"
+  }
+/>
+```
+
+После монтирования текущее значение хранит DOM.
+
+Изменение `defaultValue` не следует использовать для замены уже введённого пользователем текста.
+
+Для checkbox и radio аналогичными props являются:
+
+```text
+checked
+defaultChecked
+```
 
 <h2></h2>
 </dd>
@@ -102,7 +793,58 @@ React 19 добавил передачу функций в `action` формы, 
 <dd>
 <h2></h2>
 
-Источник истины меняется посреди жизненного цикла, и поведение поля становится неоднозначным. Частая причина: состояние сначала равно `undefined`, а после запроса становится строкой. Управляемое поле нужно инициализировать подходящим значением, например пустой строкой.
+Источник истины меняется посреди жизненного цикла поля.
+
+Частая причина:
+
+```tsx
+const [
+  email,
+  setEmail,
+] = useState<
+  string | undefined
+>(undefined);
+```
+
+Первоначально:
+
+```text
+value={undefined}
+→ значение хранит DOM
+```
+
+После загрузки:
+
+```text
+value="user@example.com"
+→ значение контролирует React
+```
+
+Поведение становится неоднозначным, поэтому React показывает предупреждение.
+
+Controlled-текстовое поле нужно инициализировать строкой:
+
+```tsx
+const [
+  email,
+  setEmail,
+] = useState("");
+```
+
+Либо нормализовать значение:
+
+```tsx
+value={email ?? ""}
+```
+
+Checkbox и radio инициализируют boolean:
+
+```tsx
+const [
+  checked,
+  setChecked,
+] = useState(false);
+```
 
 <h2></h2>
 </dd>
@@ -117,7 +859,49 @@ React 19 добавил передачу функций в `action` формы, 
 <dd>
 <h2></h2>
 
-React после каждого события устанавливает DOM-значение из `value`. Если `onChange` отсутствует или обновляет другое состояние, prop остаётся прежним и введённый символ исчезает. Для поля, намеренно доступного только для чтения, указывают `readOnly`, чтобы контракт был явным.
+React после пользовательского события снова устанавливает DOM-значение из `value`.
+
+Если `onChange` отсутствует:
+
+```tsx
+<input
+  value={email}
+/>
+```
+
+значение React state не меняется, поэтому введённый символ исчезает.
+
+Похожая ошибка возникает, если обработчик обновляет не то состояние:
+
+```tsx
+<input
+  value={email}
+  onChange={(event) => {
+    setAnotherValue(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+Нужно обновить значение, переданное в `value`:
+
+```tsx
+<input
+  value={email}
+  onChange={(event) => {
+    setEmail(
+      event.target.value,
+    );
+  }}
+/>
+```
+
+Если поле намеренно нельзя редактировать, указывают:
+
+```tsx
+readOnly
+```
 
 <h2></h2>
 </dd>
@@ -132,7 +916,38 @@ React после каждого события устанавливает DOM-з
 <dd>
 <h2></h2>
 
-Нативные поля регистрируются через `ref`, а их текущие значения не обязательно проходят через состояние общего компонента при каждом вводе. Библиотека использует подписки и обновляет только потребителей конкретной ошибки или состояния. Сторонние управляемые компоненты всё равно могут рендериться через `Controller`.
+Нативные поля обычно регистрируются через:
+
+```tsx
+register
+```
+
+и продолжают хранить текущее значение внутри DOM.
+
+Каждый введённый символ не обязательно обновляет state общего React-компонента формы.
+
+React Hook Form использует:
+
+- refs;
+- внутреннее состояние;
+- подписки;
+- точечное обновление потребителей.
+
+Например, компонент может подписываться только на ошибку конкретного поля, а не на все значения формы.
+
+Сторонние controlled-компоненты всё равно могут повторно рендериться через:
+
+```tsx
+Controller
+```
+
+Поэтому выигрыш зависит от:
+
+- типа полей;
+- структуры подписок;
+- используемых методов `watch`;
+- расположения компонентов;
+- правил валидации.
 
 <h2></h2>
 </dd>
@@ -147,7 +962,38 @@ React после каждого события устанавливает DOM-з
 <dd>
 <h2></h2>
 
-Из соображений безопасности браузер не позволяет JavaScript назначить локальный файл через `value`. Пользователь выбирает файл, после чего приложение читает `files` или создаёт `FormData`. Очистить поле можно через DOM API или перемонтирование, но нельзя подставить путь к файлу.
+Из соображений безопасности браузер не позволяет JavaScript выбрать локальный файл вместо пользователя.
+
+Нельзя управлять выбранным файлом так:
+
+```tsx
+<input
+  type="file"
+  value={filePath}
+/>
+```
+
+Пользователь выбирает файл самостоятельно.
+
+После этого приложение читает:
+
+```tsx
+inputRef.current?.files
+```
+
+или:
+
+```tsx
+formData.get("file")
+```
+
+Очистить поле можно:
+
+- через reset формы;
+- присвоив DOM-свойству `value` пустую строку;
+- перемонтировав поле новым `key`.
+
+Но программно подставить путь к локальному файлу нельзя.
 
 <h2></h2>
 </dd>
@@ -159,12 +1005,14 @@ React после каждого события устанавливает DOM-з
 
 | Сценарий | Подход |
 | --- | --- |
-| Поиск с мгновенным фильтром | Управляемое поле |
-| Простая форма, читаемая при отправке | Неуправляемые поля и `FormData` |
-| Маска телефона | Управляемое поле или специализированный контроллер |
+| Поиск с мгновенным фильтром | Controlled-поле |
+| Простая форма, читаемая при отправке | Uncontrolled-поля и `FormData` |
+| Маска телефона | Controlled-поле или специализированный контроллер |
 | Большая анкета | React Hook Form с подписками |
-| Загрузка файла | Неуправляемое поле выбора файла |
-| `action` формы в React 19 | Нативные имена полей плюс состояние действия |
+| Сторонний Select | Controlled-компонент через `Controller` |
+| Загрузка файла | Uncontrolled-поле выбора файла |
+| `action` формы в React 19 | Имена полей, `FormData` и состояние Action |
+| Успешная React Action | Автоматический reset uncontrolled-полей |
 
 ## Связанные темы
 
@@ -179,6 +1027,11 @@ React после каждого события устанавливает DOM-з
 - [React: `<input>`](https://react.dev/reference/react-dom/components/input)
 - [React: Reacting to Input with State](https://react.dev/learn/reacting-to-input-with-state)
 - [React: `<form>`](https://react.dev/reference/react-dom/components/form)
+- [React: `useFormStatus`](https://react.dev/reference/react-dom/hooks/useFormStatus)
+- [React: `useActionState`](https://react.dev/reference/react/useActionState)
+- [React: `useOptimistic`](https://react.dev/reference/react/useOptimistic)
+- [React Hook Form: `register`](https://react-hook-form.com/docs/useform/register)
+- [React Hook Form: `Controller`](https://react-hook-form.com/docs/usecontroller/controller)
 - [React 19: Actions and forms](https://react.dev/blog/2024/12/05/react-19)
 
 ---
