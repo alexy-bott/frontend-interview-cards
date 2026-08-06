@@ -16,34 +16,516 @@
 <dl>
 <dd>
 
-JSX является расширением синтаксиса JavaScript для описания React-элементов. Он похож на HTML, но не является строкой разметки и не обрабатывается браузером напрямую. Инструмент сборки применяет современное преобразование JSX и создаёт вызовы служебных функций React. Результатом становятся объекты с типом, `props` и дочерними элементами.
+JSX является расширением синтаксиса JavaScript для описания React-элементов. Он похож на HTML, но не является строкой разметки и не обрабатывается браузером напрямую.
+
+Инструмент сборки применяет современное JSX-преобразование и обычно создаёт вызовы служебных функций `jsx` и `jsxs` из JSX runtime.
 
 ```tsx
-const button = <Button disabled={isSaving}>Save</Button>;
+const button = (
+  <Button disabled={isSaving}>
+    Save
+  </Button>
+);
 ```
+
+Результатом является React-элемент — неизменяемое описание того, что React должен отобразить. Это не DOM-узел и не экземпляр компонента.
+
+React-элемент содержит информацию о:
+
+- типе встроенного элемента или компонента;
+- переданных `props`;
+- дочернем содержимом;
+- служебных данных React.
+
+После создания React-элемент следует воспринимать как непрозрачное значение только для чтения, а не изменять его свойства вручную.
 
 JSX следует правилам JavaScript и React:
 
-- компонент пишется с заглавной буквы, а строка `"button"` обозначает DOM-элемент;
-- JavaScript-выражение помещается в `{}`, а инструкция вроде `if` выполняется до `return`;
+- компонент пишется с заглавной буквы, а строка `"button"` обозначает встроенный DOM-элемент;
+- JavaScript-выражение помещается в `{}`;
+- инструкция вроде `if` выполняется до `return`;
 - несколько соседних узлов оборачиваются в общий элемент или Fragment;
+- теги должны закрываться;
 - DOM-свойства используют имена вроде `className`, `htmlFor`, `onClick`;
 - массив элементов получает стабильные `key`;
-- `props` и React-элементы являются снимками данных только для чтения и не мутируются после создания.
+- `props`, state и значения, уже переданные в JSX, не мутируются.
 
-React по умолчанию экранирует строки, вставленные в JSX, поэтому текст пользователя не интерпретируется как HTML. Риск XSS появляется при `dangerouslySetInnerHTML` или другом обходе этой модели. HTML из внешнего источника нужно санитизировать проверенной библиотекой и дополнительно ограничивать политикой безопасности контента (Content Security Policy, CSP); TypeScript-тип `string` не делает разметку безопасной.
+Например:
 
-Декларативность означает, что JSX описывает результат для текущих `props` и состояния. Обработчик события обновляет состояние, React повторно вычисляет JSX и синхронизирует DOM. Код не должен одновременно вручную менять тот же DOM-узел и ожидать, что React будет считать это источником истины.
+```tsx
+function Status({ isSaving }) {
+  let content;
 
-SyntheticEvent является объектом события, который React передаёт JSX-обработчику. Он предоставляет знакомые поля и методы: `target`, `currentTarget`, `preventDefault()`, `stopPropagation()` и `nativeEvent`. `nativeEvent` содержит исходное браузерное событие. Начиная с React 17 SyntheticEvent больше не использует старый пул объектов событий, поэтому `event.persist()` в современном React ничего не делает.
+  if (isSaving) {
+    content = <span>Saving...</span>;
+  } else {
+    content = <span>Saved</span>;
+  }
 
-React устанавливает общие слушатели событий на корневой контейнер и сопоставляет DOM-событие с React-деревом. Обработчики фазы всплытия записываются как `onClick`, а фазы перехвата как `onClickCapture`. Большинство событий React всплывает, но нужно знать исключения конкретного события, например `onScroll` работает только на назначенном элементе.
+  return <div>{content}</div>;
+}
+```
 
-`event.target` является исходным DOM-узлом, где произошло событие. `event.currentTarget` является узлом, чей обработчик сейчас выполняется. Если пользователь нажал на `<span>` внутри `<button onClick>`, `target` может быть `span`, а `currentTarget` будет `button`. В TypeScript `currentTarget` обычно даёт более полезный тип обработчика.
+Внутри `{}` можно использовать выражение:
 
-`preventDefault()` отменяет стандартное действие браузера, например переход по ссылке или обычную отправку формы. Он не останавливает всплытие. `stopPropagation()` останавливает дальнейшее распространение, но не отменяет стандартное действие. `return false` в обработчике React не выполняет ни одну из этих операций.
+```tsx
+<div>{isSaving ? "Saving..." : "Saved"}</div>
+```
 
-Portal сохраняет React-родительство, поэтому события React всплывают через владельцев Portal, хотя DOM расположен в другом контейнере. Нативный слушатель вне соответствующего корневого узла React следует фактическому DOM-пути, что важно при смешивании React и стороннего императивного кода.
+Но нельзя непосредственно написать инструкцию:
+
+```tsx
+<div>
+  {if (isSaving) {
+    // ...
+  }}
+</div>
+```
+
+JSX сам по себе не является обязательной частью React. Эквивалентный React-элемент можно создать через:
+
+```tsx
+createElement(
+  Button,
+  {
+    disabled: isSaving,
+  },
+  "Save",
+);
+```
+
+JSX делает вложенную структуру интерфейса и передачу `props` более читаемыми.
+
+React по умолчанию экранирует строки, вставленные в JSX:
+
+```tsx
+<p>{userInput}</p>
+```
+
+Если `userInput` содержит:
+
+```text
+<script>alert("XSS")</script>
+```
+
+эта строка отображается как текст, а не выполняется как HTML.
+
+Модель экранирования обходится при использовании:
+
+```tsx
+dangerouslySetInnerHTML={{
+  __html: externalHtml,
+}}
+```
+
+Непроверенный HTML может содержать:
+
+- обработчики событий;
+- опасные элементы;
+- опасные атрибуты;
+- ссылки и ресурсы, влияющие на безопасность.
+
+`dangerouslySetInnerHTML` используют только для доверенного и санитизированного HTML. Данные из CMS, Markdown, пользовательского ввода или внешнего API сами по себе доверенными не являются.
+
+Дополнительным уровнем защиты служит Content Security Policy, но CSP не заменяет санитизацию HTML.
+
+Декларативность означает, что компонент описывает, как должен выглядеть интерфейс для текущих:
+
+- `props`;
+- state;
+- Context.
+
+Например:
+
+```tsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button
+      onClick={() => {
+        setCount((value) => value + 1);
+      }}
+    >
+      {count}
+    </button>
+  );
+}
+```
+
+Обработчик не изменяет текст кнопки вручную:
+
+```ts
+button.textContent = "...";
+```
+
+Он обновляет state:
+
+```ts
+setCount((value) => value + 1);
+```
+
+После этого React повторно вызывает компонент, получает новый JSX и синхронизирует DOM.
+
+Упрощённый поток:
+
+```text
+Событие пользователя
+→ обработчик
+→ обновление state
+→ render
+→ reconciliation
+→ commit изменений в DOM
+```
+
+Код не должен одновременно вручную менять управляемый React DOM-узел и ожидать, что React будет считать это изменение источником истины.
+
+Императивный доступ через `ref` используют как ограниченный escape hatch для операций вроде:
+
+- focus;
+- scroll;
+- измерения;
+- управления сторонним виджетом;
+- запуска нативного media API.
+
+SyntheticEvent является объектом события, который React передаёт JSX-обработчику.
+
+Например:
+
+```tsx
+function Button() {
+  function handleClick(
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) {
+    console.log(event);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Save
+    </button>
+  );
+}
+```
+
+React-событие предоставляет знакомые свойства и методы браузерного `Event`:
+
+- `target`;
+- `currentTarget`;
+- `type`;
+- `bubbles`;
+- `defaultPrevented`;
+- `preventDefault()`;
+- `stopPropagation()`.
+
+React дополнительно предоставляет:
+
+- `nativeEvent`;
+- `isDefaultPrevented()`;
+- `isPropagationStopped()`.
+
+`nativeEvent` содержит исходное браузерное событие:
+
+```tsx
+function handleClick(
+  event: React.MouseEvent<HTMLButtonElement>,
+) {
+  console.log(event.nativeEvent);
+}
+```
+
+Соответствие SyntheticEvent и `nativeEvent` не всегда один к одному.
+
+Например, конкретный React event может быть реализован через нативное событие другого типа. Это внутреннее соответствие не является стабильным публичным контрактом.
+
+Начиная с React 17 SyntheticEvent в React DOM больше не использует прежний pooling объектов.
+
+Поэтому свойства события можно читать в асинхронном callback:
+
+```tsx
+function handleClick(
+  event: React.MouseEvent<HTMLButtonElement>,
+) {
+  const target = event.target;
+
+  setTimeout(() => {
+    console.log(target);
+  });
+}
+```
+
+Метод:
+
+```ts
+event.persist();
+```
+
+в современном React DOM ничего не делает. Он сохраняется в API в основном из-за совместимости и отличий других renderer, например React Native.
+
+React DOM реализует систему событий через служебные обработчики на корневом контейнере React.
+
+JSX:
+
+```tsx
+<button onClick={handleClick}>
+  Save
+</button>
+```
+
+не следует воспринимать как обязательное создание отдельного нативного `addEventListener` непосредственно на каждой кнопке.
+
+React получает браузерное событие, определяет соответствующий React-узел и вызывает JSX-обработчики по React-дереву.
+
+При этом SyntheticEvent отражает ожидаемый JSX-контекст.
+
+Например:
+
+```ts
+event.currentTarget
+```
+
+показывает элемент, которому назначен текущий React-обработчик, даже если внутренний нативный обработчик React находится на корне.
+
+Поэтому:
+
+```ts
+event.currentTarget
+```
+
+и:
+
+```ts
+event.nativeEvent.currentTarget
+```
+
+не обязаны совпадать.
+
+Обработчик фазы всплытия записывается как:
+
+```tsx
+onClick={handleClick}
+```
+
+Обработчик фазы перехвата:
+
+```tsx
+onClickCapture={handleClickCapture}
+```
+
+Упрощённый порядок:
+
+```text
+Capture родителей
+→ Capture целевого элемента
+→ обработчик целевого элемента
+→ Bubble родителей
+```
+
+Например:
+
+```tsx
+<div
+  onClickCapture={() => {
+    console.log("parent capture");
+  }}
+  onClick={() => {
+    console.log("parent bubble");
+  }}
+>
+  <button
+    onClick={() => {
+      console.log("button");
+    }}
+  >
+    Save
+  </button>
+</div>
+```
+
+При нажатии на кнопку порядок будет:
+
+```text
+parent capture
+button
+parent bubble
+```
+
+React-события обычно распространяются вверх по React-дереву.
+
+Основное исключение:
+
+```tsx
+onScroll
+```
+
+`onScroll` срабатывает только на элементе, которому непосредственно назначен обработчик:
+
+```tsx
+<div onScroll={handleScroll}>
+  <div>Content</div>
+</div>
+```
+
+Некоторые события, которые нативно не всплывают одинаковым образом во всех браузерах, React может представить через согласованную модель SyntheticEvent.
+
+`event.target` является исходным DOM-узлом, на котором было отправлено конкретное событие.
+
+`event.currentTarget` является DOM-узлом, чей обработчик выполняется в данный момент.
+
+Например:
+
+```tsx
+function Button() {
+  function handleClick(
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) {
+    console.log(event.target);
+    console.log(event.currentTarget);
+  }
+
+  return (
+    <button onClick={handleClick}>
+      <span>Save</span>
+    </button>
+  );
+}
+```
+
+Если пользователь нажал на `<span>`:
+
+```text
+event.target
+→ span
+
+event.currentTarget
+→ button
+```
+
+При всплытии `target` остаётся исходным элементом, а `currentTarget` меняется для каждого вызываемого обработчика.
+
+В TypeScript `currentTarget` обычно имеет более полезный тип:
+
+```tsx
+function handleChange(
+  event: React.ChangeEvent<HTMLInputElement>,
+) {
+  const value =
+    event.currentTarget.value;
+}
+```
+
+`target` типизируется шире, потому что событие потенциально может начаться на дочернем узле.
+
+`currentTarget` имеет смысл во время выполнения конкретного обработчика. Если DOM-узел понадобится позже, его лучше сохранить отдельно:
+
+```tsx
+function handleClick(
+  event: React.MouseEvent<HTMLButtonElement>,
+) {
+  const button = event.currentTarget;
+
+  setTimeout(() => {
+    button.focus();
+  });
+}
+```
+
+`preventDefault()` отменяет стандартное действие браузера:
+
+```tsx
+function handleSubmit(
+  event: React.FormEvent<HTMLFormElement>,
+) {
+  event.preventDefault();
+}
+```
+
+Например, он может отменить:
+
+- переход по ссылке;
+- стандартную отправку формы;
+- другое отменяемое действие браузера.
+
+`preventDefault()` не останавливает распространение события по React-дереву.
+
+`stopPropagation()` останавливает переход события к следующим React-обработчикам:
+
+```tsx
+function handleClick(
+  event: React.MouseEvent<HTMLButtonElement>,
+) {
+  event.stopPropagation();
+}
+```
+
+Он не отменяет стандартное действие браузера.
+
+Иногда требуются оба вызова:
+
+```tsx
+function handleClick(
+  event: React.MouseEvent<HTMLAnchorElement>,
+) {
+  event.preventDefault();
+  event.stopPropagation();
+}
+```
+
+Возврат:
+
+```ts
+return false;
+```
+
+в React-обработчике не заменяет ни `preventDefault()`, ни `stopPropagation()`.
+
+Portal меняет физическое расположение DOM, но не меняет положение содержимого в React-дереве.
+
+Например:
+
+```tsx
+function Parent() {
+  return (
+    <div onClick={handleParentClick}>
+      {createPortal(
+        <button>Save</button>,
+        document.body,
+      )}
+    </div>
+  );
+}
+```
+
+Хотя кнопка физически находится в `document.body`, её SyntheticEvent всплывает к `Parent`, потому что кнопка остаётся дочерним узлом в React-дереве.
+
+Упрощённо:
+
+```text
+React propagation
+→ по React-дереву
+
+Native DOM propagation
+→ по фактическому DOM-дереву
+```
+
+Нативный слушатель:
+
+```ts
+document.body.addEventListener(
+  "click",
+  handleNativeClick,
+);
+```
+
+наблюдает фактический DOM-путь события.
+
+Это важно при смешивании:
+
+- React Portal;
+- нативных слушателей;
+- сторонних виджетов;
+- нескольких React roots;
+- императивного DOM-кода.
 
 </dd>
 </dl>
@@ -59,7 +541,39 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-Нет. React-элементы можно создавать через `createElement` или служебные функции JSX напрямую. JSX делает вложенное дерево и `props` читаемее. В production-сборке браузер получает преобразованный JavaScript, а не исходный JSX.
+Нет.
+
+React-элементы можно создавать через:
+
+```tsx
+createElement(
+  "button",
+  {
+    disabled: true,
+  },
+  "Save",
+);
+```
+
+Современный JSX transform обычно преобразует JSX в вызовы JSX runtime:
+
+```tsx
+const button = (
+  <button disabled>
+    Save
+  </button>
+);
+```
+
+Концептуально превращается в создание React-элемента с:
+
+- типом `"button"`;
+- `props`;
+- дочерним содержимым.
+
+JSX делает вложенное дерево и передачу `props` читаемее.
+
+В production-сборке браузер получает преобразованный JavaScript, а не исходный JSX.
 
 <h2></h2>
 </dd>
@@ -74,7 +588,41 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-В фигурных скобках JSX ожидается выражение, то есть конструкция со значением. `if` является инструкцией: он управляет выполнением, но не возвращает значение. Условие выполняют до `return`, используют тернарный оператор или выделяют отдельный компонент. Длинная цепочка `&&` и тернарных операторов читается хуже, чем ясная переменная.
+В фигурных скобках JSX ожидается JavaScript-выражение, то есть конструкция, результатом которой является значение.
+
+Например:
+
+```tsx
+<div>
+  {isLoading ? "Loading" : "Ready"}
+</div>
+```
+
+`if` является инструкцией. Он управляет выполнением программы, но сам не является значением, которое можно вставить в JSX.
+
+Условие можно выполнить до `return`:
+
+```tsx
+function Status({ isLoading }) {
+  if (isLoading) {
+    return <div>Loading</div>;
+  }
+
+  return <div>Ready</div>;
+}
+```
+
+Либо заранее вычислить переменную:
+
+```tsx
+const content = isLoading
+  ? "Loading"
+  : "Ready";
+
+return <div>{content}</div>;
+```
+
+Длинная цепочка `&&` и вложенных тернарных операторов часто читается хуже, чем понятная переменная, ранний `return` или отдельный компонент.
 
 <h2></h2>
 </dd>
@@ -89,7 +637,45 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-Нативное событие создаёт браузер, например `PointerEvent` или `SubmitEvent`. SyntheticEvent создаёт React для JSX-обработчика и предоставляет согласованный интерфейс, связанный с React-деревом. Исходный объект доступен через `event.nativeEvent`, но соответствие типов событий не всегда один к одному.
+Нативное событие создаёт браузер:
+
+```text
+PointerEvent
+KeyboardEvent
+SubmitEvent
+FocusEvent
+```
+
+SyntheticEvent создаёт и передаёт React JSX-обработчику.
+
+Он предоставляет согласованный интерфейс:
+
+```ts
+target
+currentTarget
+preventDefault()
+stopPropagation()
+```
+
+и связывает распространение события с React-деревом.
+
+Исходное браузерное событие доступно через:
+
+```ts
+event.nativeEvent
+```
+
+Но соответствие типов не всегда один к одному.
+
+Например, внутреннее нативное событие, через которое React реализует определённый JSX-обработчик, не является частью стабильного публичного API.
+
+`currentTarget` SyntheticEvent отражает текущий JSX-обработчик и может отличаться от:
+
+```ts
+event.nativeEvent.currentTarget
+```
+
+из-за внутреннего делегирования событий React.
 
 <h2></h2>
 </dd>
@@ -104,7 +690,39 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-`onClickCapture` вызывается при движении события сверху вниз по React-дереву до `target`. Затем обработчик целевого элемента и `onClick` родителей вызываются снизу вверх. Фаза перехвата полезна для общей диагностики или инфраструктуры, но прикладные обработчики обычно используют фазу всплытия.
+Обработчик фазы перехвата получает суффикс:
+
+```tsx
+onClickCapture
+```
+
+React вызывает capture-обработчики сверху вниз по React-дереву.
+
+Затем вызывается обработчик целевого элемента, после чего bubble-обработчики родителей выполняются снизу вверх.
+
+```text
+Родитель capture
+→ Потомок capture
+→ target
+→ Потомок bubble
+→ Родитель bubble
+```
+
+Фаза перехвата полезна для:
+
+- общей диагностики;
+- аналитики;
+- роутеров;
+- инфраструктурных обработчиков;
+- перехвата до обычной прикладной логики.
+
+Прикладные обработчики обычно используют фазу всплытия:
+
+```tsx
+onClick
+```
+
+`stopPropagation()` предотвращает дальнейшее распространение по React-дереву после текущего обработчика.
 
 <h2></h2>
 </dd>
@@ -119,7 +737,44 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-`target` указывает на самый глубокий элемент, где началось событие, и остаётся тем же при всплытии. `currentTarget` меняется и указывает на элемент текущего обработчика. Для значения формы часто читают `currentTarget`, если обработчик назначен непосредственно полю или форме.
+`target` указывает на DOM-объект, на котором было отправлено конкретное событие.
+
+Он остаётся прежним при распространении события.
+
+`currentTarget` указывает на элемент текущего выполняемого обработчика.
+
+Например:
+
+```tsx
+<div onClick={handleContainerClick}>
+  <button onClick={handleButtonClick}>
+    <span>Save</span>
+  </button>
+</div>
+```
+
+При нажатии на `<span>`:
+
+```text
+target
+→ span
+```
+
+В обработчике кнопки:
+
+```text
+currentTarget
+→ button
+```
+
+В обработчике контейнера:
+
+```text
+currentTarget
+→ div
+```
+
+Для значения формы часто читают `currentTarget`, если обработчик назначен непосредственно нужному полю или форме.
 
 <h2></h2>
 </dd>
@@ -134,7 +789,35 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-Первый отменяет действие браузера, но событие продолжает всплывать. Второй останавливает переход к следующим обработчикам, но браузерное действие может выполниться. Иногда нужны оба вызова, но каждый должен соответствовать конкретному поведению.
+`preventDefault()` отменяет стандартное действие браузера:
+
+```tsx
+event.preventDefault();
+```
+
+Например:
+
+- переход по ссылке;
+- стандартную отправку формы.
+
+Но событие продолжает распространяться к React-родителям.
+
+`stopPropagation()` останавливает дальнейшее распространение события:
+
+```tsx
+event.stopPropagation();
+```
+
+Но стандартное действие браузера всё ещё может выполниться.
+
+Иногда нужны оба вызова:
+
+```tsx
+event.preventDefault();
+event.stopPropagation();
+```
+
+Каждый вызов должен соответствовать конкретному требованию интерфейса, а не добавляться автоматически.
 
 <h2></h2>
 </dd>
@@ -149,7 +832,41 @@ Portal сохраняет React-родительство, поэтому соб�
 <dd>
 <h2></h2>
 
-React экранирует строковые значения в JSX, поэтому `<script>` из строки отображается как текст. Это не защищает `dangerouslySetInnerHTML`, опасный URL, прямую DOM-инъекцию или уязвимость стороннего виджета. Непроверенный HTML санитизируют, а не считают безопасным из-за JSX.
+React экранирует строковые значения в JSX:
+
+```tsx
+<div>{untrustedText}</div>
+```
+
+Поэтому строка:
+
+```text
+<script>alert("XSS")</script>
+```
+
+отображается как текст.
+
+Это не защищает код, который обходит обычный вывод строк:
+
+- `dangerouslySetInnerHTML`;
+- прямое присваивание `innerHTML`;
+- небезопасную DOM-инъекцию;
+- уязвимый сторонний виджет;
+- неправильную обработку URL и внешних ресурсов.
+
+Непроверенный HTML санитизируют перед передачей в:
+
+```tsx
+dangerouslySetInnerHTML
+```
+
+TypeScript-тип:
+
+```ts
+string
+```
+
+не доказывает, что строка является безопасным HTML.
 
 <h2></h2>
 </dd>
@@ -164,7 +881,26 @@ React экранирует строковые значения в JSX, поэт�
 <dd>
 <h2></h2>
 
-React хранит Portal в прежнем React-дереве и вызывает обработчики по этой иерархии. DOM-предки при этом другие. Поэтому всплывающий компонент не является изолированным и должен учитывать родительские JSX-обработчики.
+Portal меняет только физическое расположение DOM-узла.
+
+Содержимое остаётся дочерним узлом прежнего React-компонента:
+
+```tsx
+<div onClick={handleParentClick}>
+  {createPortal(
+    <button>Save</button>,
+    document.body,
+  )}
+</div>
+```
+
+SyntheticEvent от кнопки распространяется к `<div onClick>` по React-дереву, хотя в DOM кнопка находится внутри `document.body`.
+
+Поэтому Portal не является изолированной областью событий.
+
+Если родительский обработчик не должен получать событие, распространение можно явно остановить внутри Portal или изменить расположение Portal в React-дереве.
+
+Нативные браузерные слушатели при этом следуют фактической DOM-иерархии.
 
 <h2></h2>
 </dd>
@@ -199,7 +935,54 @@ function Form() {
 <dd>
 <h2></h2>
 
-Точный нативный `target` может быть `span` или вложенным узлом, на котором началось событие. `currentTarget` в `handleSubmit` всегда является `<form>`, потому что обработчик `submit` назначен форме. `preventDefault()` отменит стандартную отправку, но не остановит всплытие события.
+Нужно различать два отдельных события.
+
+Сначала браузер создаёт событие `click`:
+
+```text
+click.target
+→ span
+```
+
+Но `handleSubmit` обрабатывает не `click`, а последующее событие:
+
+```text
+submit
+```
+
+Событие `submit` отправляется самой форме.
+
+Поэтому внутри `handleSubmit`:
+
+```text
+event.target
+→ form
+
+event.currentTarget
+→ form
+```
+
+`currentTarget` указывает на форму, потому что именно ей назначен React-обработчик:
+
+```tsx
+<form onSubmit={handleSubmit}>
+```
+
+`target` также является формой, потому что нативный `submit` был отправлен форме, а не вложенному `<span>`.
+
+Элемент, который инициировал отправку формы, доступен у нативного `SubmitEvent` через:
+
+```ts
+submitter
+```
+
+В этом примере им будет:
+
+```text
+button[type="submit"]
+```
+
+`event.preventDefault()` отменит стандартную отправку формы, но не остановит распространение события `submit` к React-родителям.
 
 <h2></h2>
 </dd>
@@ -213,11 +996,13 @@ function Form() {
 | --- | --- |
 | Условная разметка | JavaScript-выражения и ясные ветви до `return` |
 | Список элементов | Стабильные `key` из данных |
-| Отправка формы | `preventDefault` или `action` формы React 19 |
+| Отправка формы | Различать `submit` и предшествующий `click` |
+| Отмена обычной отправки | `preventDefault()` или `action` формы React 19 |
+| Определение кнопки отправки | `SubmitEvent.submitter` |
 | Кнопка с иконкой | Различать `target` и `currentTarget` |
 | Общий обработчик контейнера | Всплытие, перехват и делегирование |
 | HTML из CMS | Санитизация перед `dangerouslySetInnerHTML` |
-| Portal | React и DOM-иерархии событий различаются |
+| Portal | React- и DOM-иерархии событий различаются |
 
 ## Связанные темы
 
@@ -231,9 +1016,14 @@ function Form() {
 ## Источники
 
 - [React: Writing Markup with JSX](https://react.dev/learn/writing-markup-with-jsx)
+- [React: JavaScript in JSX with Curly Braces](https://react.dev/learn/javascript-in-jsx-with-curly-braces)
+- [React: `createElement`](https://react.dev/reference/react/createElement)
 - [React: Responding to Events](https://react.dev/learn/responding-to-events)
 - [React: `SyntheticEvent`](https://react.dev/reference/react-dom/components/common#react-event-object)
 - [React: `dangerouslySetInnerHTML`](https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html)
+- [React: `createPortal`](https://react.dev/reference/react-dom/createPortal)
+- [React 19 Upgrade Guide: JSX Transform](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
+- [HTML Standard: Form submission](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#form-submission-algorithm)
 
 ---
 
