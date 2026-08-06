@@ -16,56 +16,471 @@
 <dl>
 <dd>
 
-Асинхронный тест должен явно сообщить средству запуска тестов, какую операцию он ожидает. В Jest для этого возвращают Promise или объявляют callback теста как `async` и используют `await`. Если Promise не вернуть и не дождаться, тест может завершиться раньше проверки и дать ложный успешный результат.
+Асинхронный тест должен явно сообщить средству запуска тестов, какую операцию он ожидает.
+
+В Jest для этого:
+
+- возвращают Promise;
+- объявляют callback теста как `async` и используют `await`;
+- для callback API вызывают аргумент `done`.
+
+Если Promise не вернуть и не дождаться, тест может завершиться раньше проверки и дать ложный успешный результат.
 
 ```ts
-test('загружает пользователя', async () => {
-  await expect(loadUser(1)).resolves.toEqual({ id: 1, name: 'Ada' });
+test("загружает пользователя", async () => {
+  await expect(
+    loadUser(1),
+  ).resolves.toEqual({
+    id: 1,
+    name: "Ada",
+  });
 });
 
-test('сообщает об ошибке', async () => {
-  await expect(loadUser(-1)).rejects.toThrow('Invalid id');
+test("сообщает об ошибке", async () => {
+  await expect(
+    loadUser(-1),
+  ).rejects.toThrow(
+    "Invalid id",
+  );
 });
 ```
+
+Вместо `await` Promise можно вернуть:
+
+```ts
+test("загружает пользователя", () => {
+  return expect(
+    loadUser(1),
+  ).resolves.toEqual({
+    id: 1,
+    name: "Ada",
+  });
+});
+```
+
+Главное — Jest должен получить Promise проверки.
+
+Неправильно:
+
+```ts
+test("загружает пользователя", () => {
+  expect(
+    loadUser(1),
+  ).resolves.toEqual({
+    id: 1,
+    name: "Ada",
+  });
+});
+```
+
+Здесь тестовый callback ничего не возвращает. Jest может завершить тест раньше, чем выполнится проверка.
 
 Для UI-теста важно разделять два ожидания:
 
 1. `await user.click(...)` ожидает завершения последовательности DOM-событий, которую воспроизводит `userEvent`.
-2. `await screen.findBy...` или `waitFor` ожидает последующего изменения интерфейса, например окончания запроса и новой отрисовки.
+2. `await screen.findBy...` или `waitFor` ожидает последующего асинхронного результата приложения.
 
 ```tsx
-test('показывает профиль после загрузки', async () => {
-  const user = userEvent.setup();
-  render(<Profile />);
+test(
+  "показывает профиль после загрузки",
+  async () => {
+    const user =
+      userEvent.setup();
 
-  await user.click(screen.getByRole('button', { name: 'Загрузить' }));
+    render(<Profile />);
 
-  expect(await screen.findByRole('heading', { name: 'Ada' }))
-    .toBeInTheDocument();
+    await user.click(
+      screen.getByRole(
+        "button",
+        {
+          name: "Загрузить",
+        },
+      ),
+    );
+
+    expect(
+      await screen.findByRole(
+        "heading",
+        {
+          name: "Ada",
+        },
+      ),
+    ).toBeInTheDocument();
+  },
+);
+```
+
+`await user.click(...)` не означает, что завершились:
+
+- HTTP-запрос;
+- Promise бизнес-логики;
+- timer;
+- фоновая загрузка;
+- последующая отрисовка результата.
+
+Он ожидает только моделируемое пользовательское взаимодействие и непосредственно связанные с ним шаги `userEvent`.
+
+Упрощённый сценарий:
+
+```text
+await user.click(...)
+→ события пользователя завершились
+→ обработчик запустил запрос
+→ запрос завершился позже
+→ React обновил интерфейс
+→ findBy нашёл результат
+```
+
+Testing Library предоставляет три основных семейства запросов:
+
+| Запрос | Один элемент найден | Элемент отсутствует | Найдено несколько | Когда применять |
+| --- | --- | --- | --- | --- |
+| `getBy...` | Возвращает сразу | Сразу бросает ошибку | Бросает ошибку | Элемент уже должен находиться в DOM |
+| `queryBy...` | Возвращает сразу | Возвращает `null` | Бросает ошибку | Проверить отсутствие одного элемента |
+| `findBy...` | Возвращает Promise с элементом | Ждёт до timeout и отклоняет Promise | Ждёт до timeout и отклоняет Promise | Один элемент появится асинхронно |
+
+Если ожидается несколько элементов, используют:
+
+```text
+getAllBy...
+queryAllBy...
+findAllBy...
+```
+
+Например, для синхронно существующего элемента:
+
+```tsx
+const button =
+  screen.getByRole(
+    "button",
+    {
+      name: "Save",
+    },
+  );
+```
+
+Для проверки отсутствия:
+
+```tsx
+expect(
+  screen.queryByRole(
+    "alert",
+  ),
+).not.toBeInTheDocument();
+```
+
+Для асинхронного появления:
+
+```tsx
+const alert =
+  await screen.findByRole(
+    "alert",
+  );
+```
+
+`findBy...` по смыслу объединяет:
+
+```text
+waitFor
++
+getBy...
+```
+
+Для простого появления одного элемента он обычно читается лучше ручного `waitFor`:
+
+```tsx
+expect(
+  await screen.findByText(
+    "Профиль сохранён",
+  ),
+).toBeInTheDocument();
+```
+
+Вместо:
+
+```tsx
+await waitFor(() => {
+  expect(
+    screen.getByText(
+      "Профиль сохранён",
+    ),
+  ).toBeInTheDocument();
 });
 ```
 
-Testing Library предоставляет три семейства запросов:
+`waitFor` нужен для произвольной проверки, которую нельзя выразить одним поиском элемента.
 
-| Запрос | Элемент найден | Элемент отсутствует | Когда применять |
-|---|---|---|---|
-| `getBy...` | возвращает сразу | сразу бросает ошибку | элемент уже должен быть в DOM |
-| `queryBy...` | возвращает сразу | возвращает `null` | проверить отсутствие элемента |
-| `findBy...` | возвращает Promise | ждёт до истечения времени ожидания (timeout) и бросает ошибку | элемент появится асинхронно |
-
-`findBy...` по смыслу объединяет `waitFor` и `getBy...`. Для простого появления одного элемента он читается лучше ручного `waitFor`.
-
-`waitFor` нужен для ожидания произвольной проверки, например изменения атрибута или количества вызовов. Он повторяет callback, пока тот не перестанет бросать ошибку или не истечёт время ожидания:
+Например:
 
 ```ts
 await waitFor(() => {
-  expect(saveDraft).toHaveBeenCalledTimes(1);
+  expect(
+    saveDraft,
+  ).toHaveBeenCalledTimes(1);
 });
 ```
 
-Callback `waitFor` должен содержать проверку, а не действие. Если поместить туда `user.click`, запрос или изменение состояния, действие может выполниться много раз, потому что callback повторяется. Фиксированная задержка вроде `await sleep(1000)` тоже плоха: она замедляет быстрый случай и всё равно ломается, если CI работает дольше секунды.
+Или для изменения атрибута:
 
-Таймеры являются отдельным источником асинхронности. С реальными таймерами можно ждать видимого результата через `findBy`; с поддельными таймерами (fake timers) тест продвигает виртуальное время и затем ожидает обновление React. Если callback таймера запускает Promise, используют асинхронный API таймеров Jest.
+```tsx
+await waitFor(() => {
+  expect(
+    screen.getByRole(
+      "button",
+      {
+        name: "Save",
+      },
+    ),
+  ).toBeEnabled();
+});
+```
+
+`waitFor` работает так:
+
+1. Сразу вызывает callback.
+2. Если callback не бросил ошибку, Promise завершается успешно.
+3. Если callback бросил ошибку, Testing Library ждёт следующую попытку.
+4. Callback повторяется по интервалу и при подходящих изменениях DOM.
+5. После timeout последняя ошибка становится ошибкой теста.
+
+Значения по умолчанию:
+
+```text
+interval
+→ 50 мс
+
+timeout
+→ 1000 мс
+```
+
+Повтор запускается только тогда, когда callback бросает ошибку.
+
+Возврат:
+
+```ts
+false
+```
+
+не запускает новую попытку:
+
+```ts
+await waitFor(() => {
+  return saveDraft.mock.calls.length > 0;
+});
+```
+
+Такой callback завершится сразу.
+
+Нужно использовать assertion:
+
+```ts
+await waitFor(() => {
+  expect(
+    saveDraft,
+  ).toHaveBeenCalled();
+});
+```
+
+Если callback `waitFor` возвращает Promise, следующая попытка не начнётся, пока этот Promise не завершится с rejection.
+
+```ts
+await waitFor(async () => {
+  await expect(
+    getStatus(),
+  ).resolves.toBe("ready");
+});
+```
+
+Асинхронный callback допустим, но часто усложняет тест. Действие обычно выполняют до `waitFor`, а внутри оставляют только проверку.
+
+Неправильно:
+
+```tsx
+await waitFor(async () => {
+  await user.click(
+    submitButton,
+  );
+
+  expect(
+    screen.getByText("Saved"),
+  ).toBeInTheDocument();
+});
+```
+
+Callback может выполниться несколько раз, поэтому кнопка тоже может быть нажата несколько раз.
+
+Правильно:
+
+```tsx
+await user.click(
+  submitButton,
+);
+
+expect(
+  await screen.findByText(
+    "Saved",
+  ),
+).toBeInTheDocument();
+```
+
+Callback `waitFor` не должен выполнять повторяемые побочные действия:
+
+- `user.click`;
+- `user.type`;
+- отправку запроса;
+- изменение mock;
+- изменение state;
+- создание сущности.
+
+Внутри оставляют идемпотентную проверку.
+
+Фиксированная задержка:
+
+```ts
+await sleep(1000);
+```
+
+обычно является плохим ожиданием.
+
+Она:
+
+- всегда замедляет быстрый тест;
+- всё равно может оказаться недостаточной на CI;
+- не объясняет, какое состояние ожидается;
+- скрывает зависание приложения до истечения времени.
+
+Вместо времени ожидают условие:
+
+```tsx
+await screen.findByRole(
+  "alert",
+);
+```
+
+или:
+
+```ts
+await waitFor(() => {
+  expect(
+    request,
+  ).toHaveBeenCalled();
+});
+```
+
+Таймеры являются отдельным источником асинхронности.
+
+С реальными таймерами тест может ожидать наблюдаемый результат через:
+
+```tsx
+findBy
+waitFor
+waitForElementToBeRemoved
+```
+
+Но длинные реальные задержки делают suite медленной.
+
+Для debounce, throttle, retry и timeout обычно используют fake timers:
+
+```ts
+jest.useFakeTimers();
+```
+
+После этого тест сам управляет виртуальным временем:
+
+```ts
+await jest.advanceTimersByTimeAsync(
+  300,
+);
+```
+
+Если timer callback запускает Promise, используют асинхронный API Jest:
+
+```ts
+advanceTimersByTimeAsync
+runAllTimersAsync
+runOnlyPendingTimersAsync
+```
+
+Методы с суффиксом `Async` позволяют Promise callbacks выполниться между timer callbacks.
+
+В React-тесте прямое продвижение таймера может вызвать обновление state.
+
+Такой шаг оборачивают в `act`:
+
+```tsx
+import {
+  act,
+} from "react";
+
+await act(async () => {
+  await jest.advanceTimersByTimeAsync(
+    300,
+  );
+});
+```
+
+После этого ожидают итоговое состояние интерфейса:
+
+```tsx
+expect(
+  await screen.findByText(
+    "Результаты",
+  ),
+).toBeInTheDocument();
+```
+
+React Testing Library оборачивает в `act` собственные helpers, но прямой вызов:
+
+```ts
+jest.advanceTimersByTime(...)
+```
+
+не является helper React Testing Library.
+
+При совместном использовании fake timers и `userEvent` экземпляру передают функцию продвижения времени:
+
+```ts
+jest.useFakeTimers();
+
+const user =
+  userEvent.setup({
+    advanceTimers:
+      jest.advanceTimersByTime,
+  });
+```
+
+Без этого отдельные шаги `userEvent`, использующие timer tasks, могут не завершиться.
+
+После теста виртуальное время возвращают в исходное состояние:
+
+```ts
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
+```
+
+Сначала выполняются оставшиеся виртуальные таймеры, затем возвращаются реальные.
+
+Это особенно важно для сторонних библиотек, которые могли незаметно поставить собственный timer.
+
+Если проверяемый контракт требует отмены отложенной работы, вместо выполнения таймеров используют:
+
+```ts
+jest.clearAllTimers();
+jest.useRealTimers();
+```
+
+Fake timers не делают синхронными:
+
+- HTTP;
+- произвольные Promise;
+- React-рендер;
+- обновление DOM;
+- Worker;
+- события внешнего хранилища.
+
+После продвижения времени всё равно нужно дождаться соответствующего результата.
 
 </dd>
 </dl>
@@ -81,19 +496,62 @@ Callback `waitFor` должен содержать проверку, а не д�
 <dd>
 <h2></h2>
 
-Если callback теста не возвращает цепочку Promise, Jest видит только завершение синхронной части и помечает тест успешным. Callback `.then` выполнится позже, когда тест уже закончен.
-
-Нужно вернуть Promise или использовать `await`:
+Если callback теста не возвращает цепочку Promise, Jest видит только завершение синхронной части:
 
 ```ts
-test('returns data', () => {
-  return loadData().then(data => {
-    expect(data).toEqual(expected);
+test("returns data", () => {
+  loadData().then((data) => {
+    expect(data).toEqual(
+      expected,
+    );
   });
 });
 ```
 
-`async/await` обычно легче читать, но оба варианта корректны, если Jest получает ожидаемый Promise.
+После вызова `loadData()` test callback сразу завершается.
+
+Callback `.then` выполнится позже, когда Jest уже мог пометить тест успешным.
+
+Нужно вернуть Promise:
+
+```ts
+test("returns data", () => {
+  return loadData().then(
+    (data) => {
+      expect(data).toEqual(
+        expected,
+      );
+    },
+  );
+});
+```
+
+Либо использовать `async/await`:
+
+```ts
+test(
+  "returns data",
+  async () => {
+    const data =
+      await loadData();
+
+    expect(data).toEqual(
+      expected,
+    );
+  },
+);
+```
+
+Оба варианта корректны, если Jest получает ожидаемый Promise.
+
+То же правило относится к:
+
+```ts
+expect(promise).resolves
+expect(promise).rejects
+```
+
+Их нужно вернуть или ожидать через `await`.
 
 <h2></h2>
 </dd>
@@ -108,18 +566,50 @@ test('returns data', () => {
 <dd>
 <h2></h2>
 
-Он проверяет, что в тесте выполнилось ожидаемое число assertions, то есть проверок. Это полезно в ветках callback-функций или при ручном `try/catch`, где Promise может неожиданно завершиться успешно и код с проверкой в `catch` вообще не запустится.
+`expect.assertions(number)` проверяет, что в тесте выполнилось точное количество assertions.
+
+Это полезно в callback-функциях или при ручном `try/catch`, где код с проверкой может вообще не выполниться:
 
 ```ts
-expect.assertions(1);
-try {
-  await loadUser(-1);
-} catch (error) {
-  expect(error).toMatchObject({ code: 'INVALID_ID' });
-}
+test(
+  "rejects invalid id",
+  async () => {
+    expect.assertions(1);
+
+    try {
+      await loadUser(-1);
+    } catch (error) {
+      expect(
+        error,
+      ).toMatchObject({
+        code: "INVALID_ID",
+      });
+    }
+  },
+);
 ```
 
-Если достаточно проверить отклонённый Promise через `await expect(promise).rejects...`, дополнительный счётчик обычно не нужен.
+Если `loadUser(-1)` неожиданно завершится успешно, `catch` не выполнится и Jest сообщит, что ожидалась одна проверка, но не выполнилось ни одной.
+
+`expect.hasAssertions()` проверяет, что выполнилась хотя бы одна assertion:
+
+```ts
+expect.hasAssertions();
+```
+
+Он подходит, когда точное количество неважно, но хотя бы один callback обязан выполниться.
+
+Если Promise удобно проверить через:
+
+```ts
+await expect(
+  loadUser(-1),
+).rejects.toMatchObject({
+  code: "INVALID_ID",
+});
+```
+
+дополнительный счётчик обычно не нужен: matcher сам упадёт, если Promise выполнится успешно.
 
 <h2></h2>
 </dd>
@@ -134,9 +624,53 @@ try {
 <dd>
 <h2></h2>
 
-`findBy` предназначен для появления одного DOM-элемента и возвращает его. Внутри он повторяет соответствующий `getBy`. `waitFor` принимает произвольный callback и подходит для утверждений, которые не выражаются одним поиском: изменился атрибут, завершилась анимационная стадия или mock был вызван.
+`findBy` предназначен для появления одного DOM-элемента и возвращает найденный элемент:
 
-Если нужен элемент, предпочтительнее `findByRole`. Если нужно дождаться исчезновения, используют `waitForElementToBeRemoved`. `waitFor` остаётся общим инструментом, но его не следует применять вокруг каждого асинхронного действия.
+```tsx
+const alert =
+  await screen.findByRole(
+    "alert",
+  );
+```
+
+Внутри он повторяет соответствующий `getBy` через механизм `waitFor`.
+
+`waitFor` принимает произвольный callback:
+
+```ts
+await waitFor(() => {
+  expect(
+    saveDraft,
+  ).toHaveBeenCalledTimes(1);
+});
+```
+
+Он подходит, когда нужно дождаться:
+
+- вызова mock;
+- изменения атрибута;
+- изменения количества элементов;
+- другого утверждения, которое не выражается одним поиском.
+
+Если ожидается элемент, предпочтительнее:
+
+```tsx
+findByRole
+```
+
+Если ожидается исчезновение, используют:
+
+```tsx
+waitForElementToBeRemoved
+```
+
+`findBy` не используют для проверки отсутствия элемента после ожидания.
+
+Для немедленной проверки отсутствия применяется:
+
+```tsx
+queryBy
+```
 
 <h2></h2>
 </dd>
@@ -151,9 +685,47 @@ try {
 <dd>
 <h2></h2>
 
-Testing Library сначала вызывает callback сразу, затем повторяет его по интервалу и при изменениях DOM. Повтор происходит, если callback бросил ошибку. Возвращённое `false` повтор не запускает, поэтому внутри используют проверку, которая бросает ошибку при несовпадении.
+Testing Library сначала вызывает callback сразу.
 
-Если callback возвращает Promise, следующий повтор начнётся только после его rejection. Асинхронный callback допустим, но часто скрывает лишнюю операцию; действия лучше выполнить до `waitFor`, оставив внутри одну проверку.
+Если он бросил ошибку, callback повторяется:
+
+- по интервалу;
+- после подходящих изменений DOM;
+- пока не истечёт timeout.
+
+По умолчанию:
+
+```text
+interval
+→ 50 мс
+
+timeout
+→ 1000 мс
+```
+
+Assertion бросает ошибку при несовпадении:
+
+```ts
+await waitFor(() => {
+  expect(
+    saveDraft,
+  ).toHaveBeenCalled();
+});
+```
+
+Поэтому Testing Library понимает, что нужно повторить попытку.
+
+Возвращённое значение:
+
+```ts
+false
+```
+
+не означает «попробовать ещё раз».
+
+Если callback возвращает Promise, Testing Library не запускает следующую попытку, пока этот Promise не завершится с rejection.
+
+Действия выполняют до `waitFor`, потому что callback может запускаться несколько раз.
 
 <h2></h2>
 </dd>
@@ -168,13 +740,63 @@ Testing Library сначала вызывает callback сразу, затем 
 <dd>
 <h2></h2>
 
-Используют `waitForElementToBeRemoved`, передав существующий элемент или функцию поиска:
+Используют:
 
-```ts
-await waitForElementToBeRemoved(() => screen.queryByText('Загрузка...'));
+```tsx
+waitForElementToBeRemoved
 ```
 
-Элемент должен существовать до начала ожидания. Если передать `null` или уже удалённый узел, ожидать нечего и helper сообщит об ошибке. После удаления отдельно проверяют следующий значимый результат, если именно он является целью сценария.
+Например:
+
+```tsx
+await waitForElementToBeRemoved(
+  () =>
+    screen.queryByText(
+      "Загрузка...",
+    ),
+);
+```
+
+Элемент должен существовать до начала ожидания.
+
+Если он уже отсутствует:
+
+```tsx
+screen.queryByText(
+  "Загрузка...",
+)
+// null
+```
+
+ожидать нечего, и helper сообщит об ошибке.
+
+Можно сначала сохранить элемент:
+
+```tsx
+const loader =
+  screen.getByText(
+    "Загрузка...",
+  );
+
+await waitForElementToBeRemoved(
+  loader,
+);
+```
+
+После удаления при необходимости отдельно проверяют значимый результат:
+
+```tsx
+expect(
+  await screen.findByRole(
+    "heading",
+    {
+      name: "Профиль",
+    },
+  ),
+).toBeInTheDocument();
+```
+
+Само исчезновение loader не всегда доказывает успешное завершение сценария.
 
 <h2></h2>
 </dd>
@@ -189,9 +811,52 @@ await waitForElementToBeRemoved(() => screen.queryByText('Загрузка...'))
 <dd>
 <h2></h2>
 
-Реальное действие пользователя состоит из нескольких событий и может включать изменение фокуса, выделения текста и значения элемента. `userEvent` воспроизводит эту последовательность асинхронно. Без `await` проверка может выполниться между событиями и увидеть промежуточное состояние.
+Пользовательское действие может состоять из нескольких событий.
 
-Экземпляр обычно создают внутри теста через `const user = userEvent.setup()`. Это даёт ему подготовленный document и позволяет передать настройки, например интеграцию с fake timers.
+Например, click способен включать:
+
+```text
+pointerover
+→ pointerenter
+→ pointerdown
+→ focus
+→ pointerup
+→ click
+```
+
+Ввод текста включает последовательность клавиатурных и input-событий.
+
+Методы экземпляра `userEvent` выполняют взаимодействие асинхронно, поэтому их ожидают:
+
+```tsx
+await user.click(button);
+
+await user.type(
+  input,
+  "React",
+);
+
+await user.keyboard(
+  "{Enter}",
+);
+```
+
+Без `await` assertion может выполниться между отдельными событиями и увидеть промежуточное состояние.
+
+Экземпляр рекомендуется создавать перед `render`, но внутри теста или общей функции `setup`:
+
+```tsx
+test("submits form", async () => {
+  const user =
+    userEvent.setup();
+
+  render(<Form />);
+
+  // ...
+});
+```
+
+Не следует выполнять пользовательские действия в `beforeEach`, потому что сценарий становится скрытым и сложнее читается.
 
 <h2></h2>
 </dd>
@@ -206,9 +871,50 @@ await waitForElementToBeRemoved(() => screen.queryByText('Загрузка...'))
 <dd>
 <h2></h2>
 
-`fireEvent` отправляет одно указанное DOM-событие. `userEvent` моделирует пользовательское действие как последовательность событий и проверяет часть ограничений интерфейса: нельзя напечатать в disabled-поле, click меняет focus и может запускать pointer-события.
+`fireEvent` отправляет одно конкретное DOM-событие:
 
-Для обычных кликов, ввода и клавиатуры используют `userEvent`. `fireEvent` остаётся полезен для низкоуровневого события, которое `userEvent` не моделирует, например отдельного `transitionEnd`, либо для точного unit-теста обработчика DOM.
+```tsx
+fireEvent.change(input, {
+  target: {
+    value: "React",
+  },
+});
+```
+
+`userEvent` моделирует пользовательское действие как последовательность связанных событий:
+
+```tsx
+await user.type(
+  input,
+  "React",
+);
+```
+
+Он также учитывает часть ограничений интерфейса:
+
+- disabled-элемент нельзя использовать как активный;
+- click может изменить focus;
+- ввод изменяет selection и value;
+- взаимодействие может включать pointer- и keyboard-события.
+
+Для обычных:
+
+- кликов;
+- ввода;
+- выбора;
+- клавиатуры;
+- загрузки файла;
+
+предпочтительнее `userEvent`.
+
+`fireEvent` остаётся полезен:
+
+- для низкоуровневого события, которого нет в `userEvent`;
+- для отдельного `transitionEnd`;
+- для специфичного browser event;
+- когда тест намеренно проверяет один конкретный DOM-event.
+
+`userEvent` тоже не является настоящим браузером и не воспроизводит полноценный layout или hit testing.
 
 <h2></h2>
 </dd>
@@ -223,18 +929,78 @@ await waitForElementToBeRemoved(() => screen.queryByText('Загрузка...'))
 <dd>
 <h2></h2>
 
-Включают fake timers до создания `userEvent`, передают ему `advanceTimers`, выполняют ввод, затем продвигают время debounce и ожидают результат:
+Fake timers включают до создания экземпляра `userEvent`.
 
-```ts
-jest.useFakeTimers();
-const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+Ему передают функцию продвижения времени:
 
-await user.type(screen.getByRole('searchbox'), 'react');
-await jest.advanceTimersByTimeAsync(300);
-expect(await screen.findByText('Результаты')).toBeInTheDocument();
+```tsx
+import {
+  act,
+} from "react";
+
+test(
+  "показывает результаты после debounce",
+  async () => {
+    jest.useFakeTimers();
+
+    const user =
+      userEvent.setup({
+        advanceTimers:
+          jest.advanceTimersByTime,
+      });
+
+    render(<Search />);
+
+    await user.type(
+      screen.getByRole(
+        "searchbox",
+      ),
+      "react",
+    );
+
+    expect(
+      screen.queryByText(
+        "Результаты",
+      ),
+    ).not.toBeInTheDocument();
+
+    await act(async () => {
+      await jest
+        .advanceTimersByTimeAsync(
+          300,
+        );
+    });
+
+    expect(
+      await screen.findByText(
+        "Результаты",
+      ),
+    ).toBeInTheDocument();
+  },
+);
 ```
 
-В `afterEach` выполняют оставшиеся таймеры и возвращают реальные. Если debounce является только внутренней оптимизацией и не нужен для контракта, иногда устойчивее передать в тест настраиваемую задержку `0`.
+Если callback debounce запускает HTTP-запрос, продвижение таймера запускает только сам запрос.
+
+Ответ сети и следующий React-рендер всё равно ожидают отдельно через:
+
+```tsx
+findBy
+waitFor
+```
+
+В cleanup выполняют или отменяют ожидающие таймеры, а затем возвращают реальные:
+
+```ts
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
+```
+
+Если debounce является внутренней оптимизацией и тестируемый компонент позволяет передать задержку параметром, значение `0` иногда упрощает компонентный тест.
+
+Но нельзя менять задержку, если именно поведение debounce является проверяемым контрактом.
 
 <h2></h2>
 </dd>
@@ -249,9 +1015,49 @@ expect(await screen.findByText('Результаты')).toBeInTheDocument();
 <dd>
 <h2></h2>
 
-`act` гарантирует, что связанные обновления React и effects обработаны до проверки. React Testing Library автоматически оборачивает свои `render`, `userEvent` и многие асинхронные helpers, поэтому вручную добавлять `act` вокруг всего теста обычно не нужно.
+`act` гарантирует, что связанные React-обновления и effects обработаны до assertion.
 
-Предупреждение часто означает, что тест не дождался асинхронного действия, вручную продвинул таймер вне ожидаемого шага или update произошёл после завершения теста. Сначала находят незавершённый Promise или timer. Ручной `act` нужен для низкоуровневого внешнего источника обновления, который библиотека не может обернуть сама.
+В современном React его импортируют из:
+
+```tsx
+import {
+  act,
+} from "react";
+```
+
+React Testing Library оборачивает в `act` свои основные helpers, поэтому вручную оборачивать каждый:
+
+```tsx
+render
+user.click
+findBy
+```
+
+обычно не нужно.
+
+Предупреждение часто означает, что:
+
+- действие `userEvent` не было awaited;
+- тест завершился до Promise;
+- timer был продвинут напрямую;
+- внешний store вызвал listener вне Testing Library;
+- асинхронное обновление произошло после окончания теста;
+- остался незавершённый callback.
+
+Сначала ищут незавершённую операцию, а не просто добавляют `act` вокруг всего теста.
+
+Для прямого продвижения fake timers:
+
+```tsx
+await act(async () => {
+  await jest
+    .advanceTimersByTimeAsync(
+      300,
+    );
+});
+```
+
+Ручной `act` также может понадобиться для низкоуровневого внешнего источника обновления, который Testing Library не контролирует.
 
 <h2></h2>
 </dd>
@@ -266,9 +1072,47 @@ expect(await screen.findByText('Результаты')).toBeInTheDocument();
 <dd>
 <h2></h2>
 
-Сначала выясняют, какое условие никогда не выполняется. Частые причины: запрос не перехвачен, действие не awaited, fake timer не продвинут, ожидается неверная accessible name или приложение действительно застряло в loading state.
+Сначала нужно понять, какой timeout сработал.
 
-Увеличение timeout оправдано для заведомо долгой внешней операции, но не лечит логическую ошибку. В компонентных тестах реальные сетевые запросы и многосекундные ожидания обычно указывают на неверную границу теста.
+Jest timeout ограничивает весь тест:
+
+```ts
+test(
+  "long operation",
+  async () => {
+    // ...
+  },
+  10_000,
+);
+```
+
+Timeout `waitFor` или `findBy` ограничивает конкретное ожидание:
+
+```tsx
+await screen.findByRole(
+  "alert",
+  {},
+  {
+    timeout: 3000,
+  },
+);
+```
+
+Перед увеличением проверяют:
+
+- запрос перехвачен MSW;
+- действие `userEvent` awaited;
+- ожидается правильная accessible name;
+- fake timer продвинут;
+- компонент не застрял в loading;
+- handler возвращает нужный ответ;
+- assertion действительно может стать истинной.
+
+Увеличение timeout оправдано для заведомо долгой операции или медленного E2E-сценария.
+
+В компонентном тесте многосекундное ожидание часто указывает на логическую ошибку или неверную границу теста.
+
+Глобальное увеличение timeout замедляет диагностику: сломанный тест просто падает позднее.
 
 <h2></h2>
 </dd>
@@ -283,22 +1127,77 @@ expect(await screen.findByText('Результаты')).toBeInTheDocument();
 <dd>
 <h2></h2>
 
-Тест должен завершаться только после вызова callback. Если API возвращает Promise, ожидают его. Для callback-style API можно использовать аргумент `done`, но нельзя одновременно возвращать Promise: Jest не сможет однозначно определить способ завершения.
+Если API возвращает Promise, его ожидают или возвращают.
+
+Для callback-style API можно использовать аргумент:
 
 ```ts
-test('calls callback', done => {
-  subscribe(value => {
-    try {
-      expect(value).toBe('ready');
-      done();
-    } catch (error) {
-      done(error);
-    }
-  });
-});
+done
 ```
 
-Для современного кода предпочтительнее обернуть callback API в Promise, если это не искажает проверяемый контракт.
+Jest не завершит тест, пока callback не будет вызван:
+
+```ts
+test(
+  "calls callback",
+  (done) => {
+    subscribe((value) => {
+      try {
+        expect(
+          value,
+        ).toBe("ready");
+
+        done();
+      } catch (error) {
+        done(error);
+      }
+    });
+  },
+);
+```
+
+`try/catch` нужен, чтобы ошибка assertion была передана Jest через:
+
+```ts
+done(error)
+```
+
+Нельзя одновременно использовать `done` и возвращать Promise:
+
+```ts
+test(
+  "invalid",
+  async (done) => {
+    // Нельзя смешивать
+  },
+);
+```
+
+У Jest появятся два конкурирующих способа определить завершение теста.
+
+Для современного API предпочтительнее Promise, если обёртка не искажает проверяемый контракт:
+
+```ts
+await new Promise<string>(
+  (resolve) => {
+    subscribe(resolve);
+  },
+);
+```
+
+Также можно использовать:
+
+```ts
+expect.assertions(1);
+```
+
+или:
+
+```ts
+expect.hasAssertions();
+```
+
+чтобы убедиться, что callback действительно дошёл до проверки.
 
 <h2></h2>
 </dd>
@@ -309,14 +1208,17 @@ test('calls callback', done => {
 ## Где это встречается во frontend
 
 | Сценарий | Что ожидает тест |
-|---|---|
+| --- | --- |
 | Загрузка данных | Promise запроса и появление результата через `findBy` |
-| Отправка формы | `user.click`, затем success или server error в DOM |
+| Отправка формы | `await user.click`, затем success или server error в DOM |
 | Исчезновение индикатора загрузки | `waitForElementToBeRemoved` |
-| Debounce поиска | виртуальный интервал и результат запроса |
-| Toast по таймеру | появление, продвижение времени, исчезновение |
-| Ошибка Promise | `await expect(...).rejects` |
-| Асинхронная callback-функция | возвращённый Promise или `done` |
+| Debounce поиска | Виртуальный интервал внутри `act` и последующий результат |
+| Toast по таймеру | Появление, продвижение времени, исчезновение |
+| Ошибка Promise | Возвращённый или awaited `expect(...).rejects` |
+| Асинхронная callback-функция | Возвращённый Promise или `done` |
+| Произвольное асинхронное утверждение | `waitFor` без повторяемых действий |
+| Пользовательский ввод | Экземпляр `userEvent` и `await` каждого действия |
+| Предупреждение `act` | Поиск незавершённого Promise, timer или внешнего update |
 
 ## Связанные темы
 
@@ -328,11 +1230,15 @@ test('calls callback', done => {
 
 ## Источники
 
-- [Jest: Testing Asynchronous Code](https://jestjs.io/docs/asynchronous)
+- [Jest 30: Testing Asynchronous Code](https://jestjs.io/docs/30.0/asynchronous)
+- [Jest 30: Expect](https://jestjs.io/docs/30.0/expect)
+- [Jest 30: Timer APIs](https://jestjs.io/docs/30.0/jest-object#fake-timers)
 - [Testing Library: Async Methods](https://testing-library.com/docs/dom-testing-library/api-async/)
 - [Testing Library: Query Types](https://testing-library.com/docs/queries/about/)
 - [Testing Library: user-event Introduction](https://testing-library.com/docs/user-event/intro/)
+- [Testing Library: user-event Options](https://testing-library.com/docs/user-event/options/)
 - [Testing Library: Using Fake Timers](https://testing-library.com/docs/using-fake-timers/)
+- [React: `act`](https://react.dev/reference/react/act)
 
 ---
 
