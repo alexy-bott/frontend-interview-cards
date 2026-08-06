@@ -1,14 +1,14 @@
-# postMessage iframe open redirect tabnabbing
+# JSX SyntheticEvent и декларативность
 
 <!-- CARD-NAV-TOP:START -->
-[← 10 JWT sessions OAuth authorization basics](<./10 JWT sessions OAuth authorization basics.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>)
+[← 22 Performance profiling и оптимизация React](<./22 Performance profiling и оптимизация React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [24 HOC render props PureComponent Component lifecycle →](<./24 HOC render props PureComponent Component lifecycle.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
 
 <br>
 
- 💬 **Как безопасно работать с `postMessage`, iframe, внешними перенаправлениями и ссылками, открывающими новую вкладку?**
+ 💬 **Что такое JSX и SyntheticEvent? Как React обрабатывает события декларативного интерфейса?**
 
 <h2></h2>
 
@@ -16,42 +16,34 @@
 <dl>
 <dd>
 
-`window.postMessage` позволяет документам из разных origins обмениваться данными, несмотря на same-origin policy. Механизм используют OAuth popup, платежный iframe, встроенный внешний виджет и связь между приложением и контейнером. Безопасность не возникает автоматически: отправитель ограничивает получателя, а получатель проверяет источник и содержимое каждого сообщения.
+JSX является расширением синтаксиса JavaScript для описания React-элементов. Он похож на HTML, но не является строкой разметки и не обрабатывается браузером напрямую. Инструмент сборки применяет современное преобразование JSX и создаёт вызовы служебных функций React. Результатом становятся объекты с типом, `props` и дочерними элементами.
 
-При отправке указывают точный `targetOrigin`, например `https://pay.example`, а не `*`. Браузер доставит сообщение только если окно-получатель в этот момент имеет ожидаемый origin.
-
-Получатель проверяет:
-
-1. `event.origin` по точному allowlist схемы, host и port.
-2. `event.source`, чтобы подтвердить конкретное окно или iframe, с которым установлен процесс обмена.
-3. Тип и структуру `event.data` с помощью проверки во время выполнения или валидатора схемы (schema validator).
-4. Допустимость действия в текущем состоянии: например, нельзя дважды подтвердить уже завершенный платеж.
-
-```ts
-const paymentOrigin = 'https://pay.example';
-const paymentWindow = iframe.contentWindow;
-
-paymentWindow?.postMessage(
-  { type: 'payment:status:request', orderId },
-  paymentOrigin,
-);
-
-window.addEventListener('message', (event) => {
-  if (event.origin !== paymentOrigin) return;
-  if (event.source !== paymentWindow) return;
-  if (!isPaymentResult(event.data)) return;
-
-  applyPaymentResult(event.data);
-});
+```tsx
+const button = <Button disabled={isSaving}>Save</Button>;
 ```
 
-Проверенное сообщение все равно остается данными. Строку из `event.data` не передают в `innerHTML`, `eval` или URL без соответствующей проверки. `postMessage` может стать source для DOM XSS, если доверие к отправителю ошибочно или его данные используются как код.
+JSX следует правилам JavaScript и React:
 
-Iframe ограничивают атрибутом `sandbox` и выдают только необходимые возможности. Пустой `sandbox` максимально ограничивает вложенный документ; флаги вроде `allow-forms`, `allow-popups` и `allow-scripts` возвращают отдельные возможности. Сочетание `allow-scripts` и `allow-same-origin` особенно опасно для содержимого того же origin: такой документ может получить достаточно полномочий, чтобы снять `sandbox`. Для независимого виджета предпочтителен отдельный origin.
+- компонент пишется с заглавной буквы, а строка `"button"` обозначает DOM-элемент;
+- JavaScript-выражение помещается в `{}`, а инструкция вроде `if` выполняется до `return`;
+- несколько соседних узлов оборачиваются в общий элемент или Fragment;
+- DOM-свойства используют имена вроде `className`, `htmlFor`, `onClick`;
+- массив элементов получает стабильные `key`;
+- `props` и React-элементы являются снимками данных только для чтения и не мутируются после создания.
 
-**Open redirect**, или открытое перенаправление, возникает, когда приложение принимает URL пользователя и без ограничений выполняет redirect. Ссылка на доверенный домен может отправить жертву на фишинговый сайт, а в процессе OAuth через перенаправление иногда утекают code или другие данные. Безопаснее принимать относительный внутренний path либо выбирать внешний адрес по точному allowlist после разбора через `URL`.
+React по умолчанию экранирует строки, вставленные в JSX, поэтому текст пользователя не интерпретируется как HTML. Риск XSS появляется при `dangerouslySetInnerHTML` или другом обходе этой модели. HTML из внешнего источника нужно санитизировать проверенной библиотекой и дополнительно ограничивать политикой безопасности контента (Content Security Policy, CSP); TypeScript-тип `string` не делает разметку безопасной.
 
-**Reverse tabnabbing** использует доступ новой вкладки к `window.opener`: открытая внешняя страница заменяет исходную вкладку фишинговой. Для недоверенных ссылок, открывающих новый контекст окна, применяют `rel="noopener"`; `noreferrer` дополнительно не передает `Referer`. Современные браузеры обычно трактуют `target="_blank"` как неявный `noopener`, но явный атрибут фиксирует намерение и поддерживает старые окружения и нестандартные способы открытия.
+Декларативность означает, что JSX описывает результат для текущих `props` и состояния. Обработчик события обновляет состояние, React повторно вычисляет JSX и синхронизирует DOM. Код не должен одновременно вручную менять тот же DOM-узел и ожидать, что React будет считать это источником истины.
+
+SyntheticEvent является объектом события, который React передаёт JSX-обработчику. Он предоставляет знакомые поля и методы: `target`, `currentTarget`, `preventDefault()`, `stopPropagation()` и `nativeEvent`. `nativeEvent` содержит исходное браузерное событие. Начиная с React 17 SyntheticEvent больше не использует старый пул объектов событий, поэтому `event.persist()` в современном React ничего не делает.
+
+React устанавливает общие слушатели событий на корневой контейнер и сопоставляет DOM-событие с React-деревом. Обработчики фазы всплытия записываются как `onClick`, а фазы перехвата как `onClickCapture`. Большинство событий React всплывает, но нужно знать исключения конкретного события, например `onScroll` работает только на назначенном элементе.
+
+`event.target` является исходным DOM-узлом, где произошло событие. `event.currentTarget` является узлом, чей обработчик сейчас выполняется. Если пользователь нажал на `<span>` внутри `<button onClick>`, `target` может быть `span`, а `currentTarget` будет `button`. В TypeScript `currentTarget` обычно даёт более полезный тип обработчика.
+
+`preventDefault()` отменяет стандартное действие браузера, например переход по ссылке или обычную отправку формы. Он не останавливает всплытие. `stopPropagation()` останавливает дальнейшее распространение, но не отменяет стандартное действие. `return false` в обработчике React не выполняет ни одну из этих операций.
+
+Portal сохраняет React-родительство, поэтому события React всплывают через владельцев Portal, хотя DOM расположен в другом контейнере. Нативный слушатель вне соответствующего корневого узла React следует фактическому DOM-пути, что важно при смешивании React и стороннего императивного кода.
 
 </dd>
 </dl>
@@ -61,13 +53,13 @@ Iframe ограничивают атрибутом `sandbox` и выдают т�
 ## Дополнительные вопросы
 
 <details>
-<summary><strong>Что такое <code>postMessage</code> и зачем он нужен?</strong></summary>
+<summary><strong>Обязателен ли JSX для React?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Same-origin policy не дает странице напрямую читать DOM другого origin. `postMessage` создает контролируемый канал: окно отправляет сериализуемые данные другому window object, а получатель обрабатывает событие `message`. Доступ к данным разрешает код получателя, поэтому обе стороны обязаны явно проверить контекст.
+Нет. React-элементы можно создавать через `createElement` или служебные функции JSX напрямую. JSX делает вложенное дерево и `props` читаемее. В production-сборке браузер получает преобразованный JavaScript, а не исходный JSX.
 
 <h2></h2>
 </dd>
@@ -76,13 +68,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Почему опасно использовать <code>targetOrigin: '*'</code>?</strong></summary>
+<summary><strong>Почему обычный <code>if</code> нельзя написать внутри <code>{}</code>?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Ссылка на окно может сохранить тот же window object после навигации на другой сайт. `*` разрешает доставку независимо от текущего origin, и чувствительное сообщение может получить новая страница. Точный `targetOrigin` заставляет браузер проверить назначение в момент отправки.
+В фигурных скобках JSX ожидается выражение, то есть конструкция со значением. `if` является инструкцией: он управляет выполнением, но не возвращает значение. Условие выполняют до `return`, используют тернарный оператор или выделяют отдельный компонент. Длинная цепочка `&&` и тернарных операторов читается хуже, чем ясная переменная.
 
 <h2></h2>
 </dd>
@@ -91,13 +83,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Почему проверки только <code>event.origin</code> недостаточно?</strong></summary>
+<summary><strong>Чем SyntheticEvent отличается от нативного события?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-На разрешенном origin может быть несколько окон, iframe или параллельных процессов, а доверенный сайт сам может содержать менее надежную страницу. `event.source` связывает сообщение с конкретным открытым popup или `iframe.contentWindow`. Идентификатор операции и текущее состояние дополнительно не позволяют применить правильное по форме сообщение к чужому процессу.
+Нативное событие создаёт браузер, например `PointerEvent` или `SubmitEvent`. SyntheticEvent создаёт React для JSX-обработчика и предоставляет согласованный интерфейс, связанный с React-деревом. Исходный объект доступен через `event.nativeEvent`, но соответствие типов событий не всегда один к одному.
 
 <h2></h2>
 </dd>
@@ -106,13 +98,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Как правильно сравнивать <code>event.origin</code>?</strong></summary>
+<summary><strong>Как работают фазы перехвата и всплытия в React?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-С точным ожидаемым значением вида `https://pay.example` или с элементом небольшого allowlist. Нельзя проверять через `includes('example.com')`: `https://example.com.attacker.test` пройдет такую проверку. Если origins настраиваются динамически, их разбирают через `URL` и сравнивают схему, hostname и port по явным правилам.
+`onClickCapture` вызывается при движении события сверху вниз по React-дереву до `target`. Затем обработчик целевого элемента и `onClick` родителей вызываются снизу вверх. Фаза перехвата полезна для общей диагностики или инфраструктуры, но прикладные обработчики обычно используют фазу всплытия.
 
 <h2></h2>
 </dd>
@@ -121,13 +113,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Зачем валидировать <code>event.data</code>, если origin доверенный?</strong></summary>
+<summary><strong>Чем <code>target</code> отличается от <code>currentTarget</code>?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Доверенный отправитель может иметь баг, другую версию протокола или собственную компрометацию. Получатель не должен падать или выполнять произвольное действие из-за неизвестного `type`, отсутствующего поля или слишком большого значения. Проверка схемы превращает внешнее значение типа `unknown` в известную структуру до изменения state.
+`target` указывает на самый глубокий элемент, где началось событие, и остаётся тем же при всплытии. `currentTarget` меняется и указывает на элемент текущего обработчика. Для значения формы часто читают `currentTarget`, если обработчик назначен непосредственно полю или форме.
 
 <h2></h2>
 </dd>
@@ -136,13 +128,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Нужно ли использовать <code>JSON.stringify</code> для <code>postMessage</code>?</strong></summary>
+<summary><strong>Чем <code>preventDefault()</code> отличается от <code>stopPropagation()</code>?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Обычно нет. API использует алгоритм структурированного клонирования (structured clone) и передает объекты, массивы и многие встроенные типы без ручной JSON-сериализации. Однако передаваемое значение все равно приходит во время выполнения и требует проверки. Алгоритм не поддерживает функции и DOM-узлы.
+Первый отменяет действие браузера, но событие продолжает всплывать. Второй останавливает переход к следующим обработчикам, но браузерное действие может выполниться. Иногда нужны оба вызова, но каждый должен соответствовать конкретному поведению.
 
 <h2></h2>
 </dd>
@@ -151,13 +143,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Как <code>postMessage</code> может привести к XSS?</strong></summary>
+<summary><strong>Защищает ли JSX от XSS?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Если обработчик принимает сообщение от любого origin или без проверки вставляет `event.data.html` в `innerHTML`, атакующий превращает межоконный канал в source для DOM XSS. Защита включает точный origin и source, schema validation и безопасный sink, например `textContent` или обычный React render для текста.
+React экранирует строковые значения в JSX, поэтому `<script>` из строки отображается как текст. Это не защищает `dangerouslySetInnerHTML`, опасный URL, прямую DOM-инъекцию или уязвимость стороннего виджета. Непроверенный HTML санитизируют, а не считают безопасным из-за JSX.
 
 <h2></h2>
 </dd>
@@ -166,13 +158,13 @@ Same-origin policy не дает странице напрямую читать 
 </details>
 
 <details>
-<summary><strong>Что делает атрибут <code>sandbox</code> у iframe?</strong></summary>
+<summary><strong>Почему событие Portal доходит до React-родителя?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Без флагов он помещает вложенный документ в уникальный origin и ограничивает scripts, forms, popups, навигацию родителя и другие возможности. Каждый `allow-*` возвращает конкретное право. Нужные флаги выбирают от сценария, а не начинают с полного набора разрешений.
+React хранит Portal в прежнем React-дереве и вызывает обработчики по этой иерархии. DOM-предки при этом другие. Поэтому всплывающий компонент не является изолированным и должен учитывать родительские JSX-обработчики.
 
 <h2></h2>
 </dd>
@@ -180,104 +172,34 @@ Same-origin policy не дает странице напрямую читать 
 
 </details>
 
+## Мини-задача
+
+```tsx
+function Form() {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    console.log(event.target);
+    console.log(event.currentTarget);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <button type="submit">
+        <span>Save</span>
+      </button>
+    </form>
+  );
+}
+```
+
 <details>
-<summary><strong>Почему сочетание <code>allow-scripts</code> и <code>allow-same-origin</code> опасно?</strong></summary>
+<summary><strong>Что означают <code>target</code> и <code>currentTarget</code>, если нажать на текст внутри <code>span</code>?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Для iframe с содержимым того же origin scripts получают обычный origin и могут обращаться к родительскому DOM. Тогда вложенный код способен удалить свой атрибут `sandbox` или обойти ожидаемую изоляцию. Ненадежное активное содержимое размещают на отдельном origin и не выдают ему одновременно обе возможности без строгой причины.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Чем CSP <code>frame-src</code> и <code>frame-ancestors</code> связаны с iframe?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-`frame-src` ограничивает origins, которые текущая страница может загрузить во вложенный frame. `frame-ancestors` определяет, кто может встроить саму текущую страницу, и защищает ее от clickjacking. `sandbox` ограничивает возможности уже загруженного iframe, поэтому три механизма решают разные задачи.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Что такое open redirect и чем он опасен?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Endpoint или client route перенаправляет на адрес из `next`, `returnUrl` или похожего параметра без проверки. Атакующий создает ссылку на доверенный домен, которая ведет на фишинговый сайт. В процессе аутентификации открытый redirect также может участвовать в краже authorization response или обходе allowlist.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Как безопасно обрабатывать <code>returnUrl</code> после login?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Самый надежный вариант - принимать только внутренний относительный path, начинающийся с одного `/`, но не с `//`, и исключать служебные callback routes. Если нужны внешние адреса, сервер выбирает их из точного allowlist origins. Проверка `startsWith` по сырой строке недостаточна из-за разных представлений URL и пользовательской части адреса.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Что такое reverse tabnabbing?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Внешняя страница, открытая из приложения в новой вкладке, получает ссылку `window.opener` и пытается перенаправить исходную вкладку на поддельную форму входа. Пользователь возвращается и видит знакомую вкладку с другим адресом. `noopener` разрывает эту ссылку между вкладками.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Чем <code>noopener</code> отличается от <code>noreferrer</code>?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-`noopener` не предоставляет новой странице доступ к `window.opener`. `noreferrer` также скрывает адрес исходной страницы в HTTP `Referer` и в современных браузерах подразумевает поведение `noopener`. Если referrer нужен системе аналитики, но opener не нужен, достаточно `noopener`.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Достаточно ли проверить, что ссылка начинается с <code>https://</code>?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Нет. Это исключает часть опасных схем URL, но позволяет любой HTTPS-домен, включая фишинговый сайт. Правило зависит от назначения: для произвольной внешней ссылки проверяют безопасный протокол и показывают понятный адрес, а для перенаправления или привилегированной интеграции разрешают только точные origins и paths.
+Точный нативный `target` может быть `span` или вложенным узлом, на котором началось событие. `currentTarget` в `handleSubmit` всегда является `<form>`, потому что обработчик `submit` назначен форме. `preventDefault()` отменит стандартную отправку, но не остановит всплытие события.
 
 <h2></h2>
 </dd>
@@ -287,33 +209,34 @@ Endpoint или client route перенаправляет на адрес из `
 
 ## Где это встречается во frontend
 
-| Сценарий | Безопасное решение |
+| Ситуация | Что важно |
 | --- | --- |
-| OAuth login через popup | Точные origins, проверка popup через `event.source`, `state` и закрытие процесса после одного ответа |
-| Платежный виджет в iframe | Отдельный origin, минимальный `sandbox`, схема сообщений и ID текущей операции |
-| Переход после login | Внутренний относительный path или точный allowlist адресов перенаправления |
-| Ссылка на пользовательский сайт | Проверка протокола, `target="_blank"` и `rel="noopener noreferrer"` с учетом требований к `Referer` |
-| Встроенное стороннее содержимое | CSP `frame-src`, iframe `sandbox` и ограниченный `Permissions-Policy` |
+| Условная разметка | JavaScript-выражения и ясные ветви до `return` |
+| Список элементов | Стабильные `key` из данных |
+| Отправка формы | `preventDefault` или `action` формы React 19 |
+| Кнопка с иконкой | Различать `target` и `currentTarget` |
+| Общий обработчик контейнера | Всплытие, перехват и делегирование |
+| HTML из CMS | Санитизация перед `dangerouslySetInnerHTML` |
+| Portal | React и DOM-иерархии событий различаются |
 
 ## Связанные темы
 
-- [01 Frontend threat model](<./01 Frontend threat model.md>)
-- [02 XSS reflected stored DOM React](<./02 XSS reflected stored DOM React.md>)
-- [09 iframe sandbox security](<../HTML/09 iframe sandbox security.md>)
-- [05 CORS same-origin preflight credentials](<./05 CORS same-origin preflight credentials.md>)
-- [06 CSP security headers clickjacking](<./06 CSP security headers clickjacking.md>)
-- [10 JWT sessions OAuth authorization basics](<./10 JWT sessions OAuth authorization basics.md>)
+- [01 Что такое React и зачем он нужен](<./01 Что такое React и зачем он нужен.md>)
+- [03 Reconciliation key и списки](<./03 Reconciliation key и списки.md>)
+- [13 Portal](<./13 Portal.md>)
+- [31 DOM events](<../JavaScript/31 DOM events.md>)
+- [03 Event delegation capture bubble](<../Browser Internals/03 Event delegation capture bubble.md>)
+- [02 XSS reflected stored DOM React](<../Security/02 XSS reflected stored DOM React.md>)
 
 ## Источники
 
-- [WHATWG HTML: Cross-document messaging](https://html.spec.whatwg.org/multipage/web-messaging.html#web-messaging)
-- [WHATWG HTML: The iframe element](https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element)
-- [OWASP: HTML5 Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html)
-- [OWASP: Unvalidated Redirects and Forwards Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html)
-- [WHATWG HTML: Link type noopener](https://html.spec.whatwg.org/multipage/links.html#link-type-noopener)
+- [React: Writing Markup with JSX](https://react.dev/learn/writing-markup-with-jsx)
+- [React: Responding to Events](https://react.dev/learn/responding-to-events)
+- [React: `SyntheticEvent`](https://react.dev/reference/react-dom/components/common#react-event-object)
+- [React: `dangerouslySetInnerHTML`](https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html)
 
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 10 JWT sessions OAuth authorization basics](<./10 JWT sessions OAuth authorization basics.md>) · [↑ Security](<./README.md>) · [⌂ Все разделы](<../../README.md>)
+[← 22 Performance profiling и оптимизация React](<./22 Performance profiling и оптимизация React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [24 HOC render props PureComponent Component lifecycle →](<./24 HOC render props PureComponent Component lifecycle.md>)
 <!-- CARD-NAV-BOTTOM:END -->
