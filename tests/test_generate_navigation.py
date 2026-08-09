@@ -34,6 +34,14 @@ def without_managed_blocks(content: str, markers: tuple[tuple[str, str], ...]) -
     return content
 
 
+def without_managed_blocks_bytes(
+    content: bytes,
+    markers: tuple[tuple[str, str], ...],
+) -> bytes:
+    text = content.decode("utf-8")
+    return without_managed_blocks(text, markers).encode("utf-8")
+
+
 def snapshot(root: Path) -> dict[str, bytes]:
     return {
         path.relative_to(root).as_posix(): path.read_bytes()
@@ -174,6 +182,28 @@ class ServiceGenerationTests(RepositoryFixture):
         self.assertIn("> [!NOTE]", first_after)
         self.assertIn("База из **2 карточек**", self.root_readme.read_text(encoding="utf-8"))
 
+    def test_generation_preserves_bom_and_crlf_outside_managed_blocks(self) -> None:
+        managed_files = (
+            (self.first_card, CARD_MARKERS),
+            (self.section_readme, SECTION_MARKERS),
+        )
+        before: dict[Path, bytes] = {}
+        for path, _ in managed_files:
+            content = path.read_text(encoding="utf-8").replace("\n", "\r\n")
+            path.write_bytes(b"\xef\xbb\xbf" + content.encode("utf-8"))
+            before[path] = path.read_bytes()
+
+        navigation.generate(self.root)
+
+        for path, markers in managed_files:
+            with self.subTest(path=path.name):
+                generated = path.read_bytes()
+                self.assertEqual(
+                    without_managed_blocks_bytes(generated, markers),
+                    without_managed_blocks_bytes(before[path], markers),
+                )
+                self.assertNotIn(b"\n", generated.replace(b"\r\n", b""))
+
     def test_generation_aborts_before_any_write_when_marker_is_missing(self) -> None:
         content = self.second_card.read_text(encoding="utf-8")
         content = re.sub(
@@ -220,6 +250,30 @@ class RepositoryValidationTests(RepositoryFixture):
 
         self.assertTrue(any("missing related target" in issue for issue in issues), issues)
 
+    def test_check_rejects_external_related_target(self) -> None:
+        content = self.first_card.read_text(encoding="utf-8")
+        content = content.replace(
+            "- [Second](<./02 Second.md>)",
+            "- [External](https://example.com/topic)",
+        )
+        self.first_card.write_text(content, encoding="utf-8")
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(any("missing related target" in issue for issue in issues), issues)
+
+    def test_check_rejects_fragment_only_related_target(self) -> None:
+        content = self.first_card.read_text(encoding="utf-8")
+        content = content.replace(
+            "- [Second](<./02 Second.md>)",
+            "- [Fragment](#local-heading)",
+        )
+        self.first_card.write_text(content, encoding="utf-8")
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(any("missing related target" in issue for issue in issues), issues)
+
     def test_self_link_does_not_satisfy_incoming_link_requirement(self) -> None:
         content = self.second_card.read_text(encoding="utf-8")
         content = content.replace(
@@ -255,6 +309,22 @@ class RepositoryValidationTests(RepositoryFixture):
             any("section README links to missing card" in issue for issue in issues),
             issues,
         )
+
+    def test_check_reports_missing_card_outside_current_section_path(self) -> None:
+        original = self.section_readme.read_text(encoding="utf-8")
+        for destination in ("../CSS/99 Missing.md", "./nested/99 Missing.md"):
+            with self.subTest(destination=destination):
+                self.section_readme.write_text(
+                    original + f"3. [Missing](<{destination}>)\n",
+                    encoding="utf-8",
+                )
+
+                issues = navigation.validate_repository(self.root)
+
+                self.assertTrue(
+                    any("section README links to missing card" in issue for issue in issues),
+                    issues,
+                )
 
     def test_check_reports_stale_root_readme(self) -> None:
         self.root_readme.write_text(

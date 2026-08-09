@@ -72,7 +72,8 @@ SECTION_NAV_RE = re.compile(
 
 
 def read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8-sig")
+    with path.open("r", encoding="utf-8", newline="") as file:
+        return file.read()
 
 
 def markdown_label(value: str) -> str:
@@ -134,7 +135,11 @@ def replace_managed_block(
     pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.DOTALL)
     if pattern.search(content) is None:
         raise ValueError(f"{source}: malformed {name} block")
-    block = f"{start}\n{replacement.rstrip()}\n{end}"
+    newline_match = re.search(r"\r\n|\n|\r", content)
+    newline = newline_match.group(0) if newline_match is not None else "\n"
+    normalized_replacement = replacement.replace("\r\n", "\n").replace("\r", "\n")
+    normalized_replacement = normalized_replacement.rstrip("\n").replace("\n", newline)
+    block = f"{start}{newline}{normalized_replacement}{newline}{end}"
     return pattern.sub(lambda _: block, content, count=1)
 
 
@@ -293,10 +298,14 @@ def internal_target(source: Path, destination: str) -> Path | None:
     return (source.parent / path_part).resolve()
 
 
+def markdown_destinations(content: str) -> list[str]:
+    return [match.group(1) for match in MARKDOWN_LINK_RE.finditer(content)]
+
+
 def markdown_targets(source: Path, content: str) -> list[Path]:
     targets: list[Path] = []
-    for match in MARKDOWN_LINK_RE.finditer(content):
-        target = internal_target(source, match.group(1))
+    for destination in markdown_destinations(content):
+        target = internal_target(source, destination)
         if target is not None:
             targets.append(target)
     return targets
@@ -327,22 +336,32 @@ def validate_generated_files(root: Path) -> list[str]:
 
 def validate_section_readmes(root: Path, topics: list[Path]) -> list[str]:
     issues: list[str] = []
+    cards_root = (root / "cards").resolve()
+    repository_card_set = {
+        card.resolve()
+        for repository_topic in topics
+        for card in repository_cards(repository_topic)
+    }
     for topic in topics:
-        cards = set(repository_cards(topic))
+        cards = {card.resolve() for card in repository_cards(topic)}
         readme = topic / "README.md"
         if not readme.is_file():
             continue
         body = SECTION_NAV_RE.sub("", read_text(readme), count=1)
         linked_cards: set[Path] = set()
         for target in markdown_targets(readme, body):
-            if target.parent != topic.resolve() or target.name.casefold() == "readme.md":
+            if (
+                target.suffix.casefold() != ".md"
+                or target.name.casefold() == "readme.md"
+                or not target.is_relative_to(cards_root)
+            ):
                 continue
-            if target not in cards:
+            if target not in repository_card_set:
                 issues.append(
                     f"{relative_path(root, readme)}: section README links to missing card "
-                    f"{target.name}"
+                    f"{relative_path(root, target)}"
                 )
-            else:
+            elif target in cards:
                 linked_cards.add(target)
         for card in sorted(cards - linked_cards, key=lambda path: path.name.casefold()):
             issues.append(
@@ -361,8 +380,13 @@ def validate_related_topics(root: Path, topics: list[Path]) -> list[str]:
         match = RELATED_TOPICS_RE.search(read_text(source))
         if match is None:
             continue
-        for target in markdown_targets(source, match.group("body")):
-            if target not in card_set:
+        for destination in markdown_destinations(match.group("body")):
+            target = internal_target(source, destination)
+            if target is None:
+                issues.append(
+                    f"{relative_path(root, source)}: missing related target {destination}"
+                )
+            elif target not in card_set:
                 issues.append(
                     f"{relative_path(root, source)}: missing related target "
                     f"{relative_path(root, target)}"
