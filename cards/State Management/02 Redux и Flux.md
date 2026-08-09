@@ -8,7 +8,7 @@
 
 <br>
 
- 💬 **В чём идея Flux и Redux? Зачем нужны store, actions и reducers?**
+ 💬 **Что такое Flux и Redux, из каких частей состоит Redux и как в нём обновляются данные?**
 
 <h2></h2>
 
@@ -16,1855 +16,96 @@
 <dl>
 <dd>
 
-**Flux** — архитектурный подход к управлению состоянием с однонаправленным потоком данных.
-
-Классический Flux flow выглядит так:
+**Flux** — архитектурный подход к управлению состоянием с однонаправленным потоком данных. В классическом Flux событие проходит по цепочке:
 
 ```text
 View
-→ создаёт Action
-
-Action
-→ поступает в Dispatcher
-
-Dispatcher
-→ передаёт Action Stores
-
-Stores
-→ обновляют состояние
-  и сообщают об изменении
-
-View
-→ читает новое состояние
-  и обновляет интерфейс
+  → Action
+  → Dispatcher
+  → Stores
+  → View
 ```
 
-Главная идея:
+Представление не изменяет store напрямую. Оно создаёт action, dispatcher передаёт его stores, а те обновляют данные и уведомляют View. Одно направление упрощает поиск причины изменения.
+
+**Redux** развивает ту же идею, но устроен иначе:
+
+- обычно используется один store с единым деревом состояния;
+- отдельного Dispatcher нет — action отправляют через `store.dispatch()`;
+- reducers вычисляют следующее состояние;
+- существующее состояние не изменяют напрямую;
+- побочные эффекты выносят за пределы reducers.
+
+Поток обновления Redux:
 
 ```text
-данные изменяются
-по одному предсказуемому пути
+Пользователь или внешнее событие
+  → dispatch(action)
+  → middleware
+  → root reducer
+  → новое состояние в store
+  → уведомление подписчиков
+  → selectors
+  → обновление нужных React-компонентов
 ```
 
-Компоненты не изменяют общее состояние произвольно и не связывают разные части приложения двусторонними зависимостями.
+Основные сущности:
 
-Это упрощает ответ на вопросы:
-
-```text
-Что произошло?
-
-Кто инициировал изменение?
-
-Какая логика изменила состояние?
-
-Почему интерфейс получил
-именно такое значение?
-```
-
-### Redux и Flux
-
-Redux вдохновлён Flux, но не является точной реализацией классической Flux-архитектуры.
-
-| Классический Flux | Redux |
+| Сущность | Назначение |
 | --- | --- |
-| Отдельный Dispatcher | `store.dispatch` |
-| Обычно несколько stores | Обычно один store |
-| Store содержит состояние и update logic | Состояние хранит store, update logic описывают reducers |
-| Stores уведомляют View | Store уведомляет subscribers |
-| Stores являются объектами | Reducers являются функциями |
-| Подход зависит от конкретной Flux-реализации | Небольшое фиксированное core API |
-| Изменяемое состояние зависело от реализации | Immutable updates являются основным правилом |
+| **Store** | Хранит текущее дерево состояния и предоставляет `getState`, `dispatch` и `subscribe` |
+| **State** | Данные приложения в конкретный момент времени |
+| **Action** | Обычный объект с полем `type`, который описывает произошедшее событие |
+| **Action creator** | Функция, создающая action |
+| **Reducer** | Чистая функция `(state, action) => nextState` |
+| **Dispatch** | Отправка action в Redux |
+| **Middleware** | Слой между `dispatch` и reducer для асинхронной логики, логирования и других эффектов |
+| **Selector** | Функция, которая читает или вычисляет данные из state |
+| **Subscriber** | Код, который Redux уведомляет после обработки action |
 
-Упрощённый Redux flow:
-
-```text
-UI или другой источник
-→ dispatch(action)
-
-middleware
-→ обрабатывают action
-  и побочные эффекты
-
-root reducer
-→ вычисляет новое state
-
-store
-→ сохраняет новое state
-
-subscribers
-→ получают уведомление
-
-React Redux
-→ повторно запускает selectors
-
-React
-→ обновляет нужные компоненты
-```
-
-Redux делает изменение состояния явным:
-
-```text
-произошло событие
-
-→ оно представлено action
-
-→ reducers вычислили результат
-
-→ store сохранил результат
-```
-
-### Основные сущности Redux
-
-| Сущность | Ответственность |
-| --- | --- |
-| Store | Хранит текущее дерево состояния и координирует dispatch |
-| State | Данные, которыми управляет Redux |
-| Action | Обычный объект, описывающий произошедшее событие |
-| Action creator | Функция, создающая action |
-| Reducer | Вычисляет новое состояние из предыдущего state и action |
-| Root reducer | Объединяет update logic всего Redux state |
-| Dispatch | Передаёт action в Redux pipeline |
-| Middleware | Расширяет dispatch и выполняет побочные эффекты |
-| Subscriber | Получает уведомление после обработки action |
-| Selector | Читает или вычисляет данные из state |
-| React Redux | Связывает Redux store с React-компонентами |
-
----
-
-### Store
-
-**Store** хранит текущее дерево Redux state.
-
-Основные методы:
-
-```text
-store.getState()
-
-store.dispatch(action)
-
-store.subscribe(listener)
-```
-
-#### `getState`
-
-Возвращает текущее состояние:
+В современном приложении Redux настраивают через **Redux Toolkit**:
 
 ```ts
-const state =
-  store.getState();
-```
+import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-#### `dispatch`
-
-Запускает обработку action:
-
-```ts
-store.dispatch({
-  type: "cart/itemAdded",
-  payload: {
-    productId: "product-42",
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    incremented(state) {
+      state.value += 1;
+    },
+    amountAdded(state, action) {
+      state.value += action.payload;
+    },
   },
 });
-```
 
-#### `subscribe`
+export const { incremented, amountAdded } = counterSlice.actions;
 
-Добавляет listener, который Redux вызывает после обработки action:
-
-```ts
-const unsubscribe =
-  store.subscribe(() => {
-    const state =
-      store.getState();
-
-    console.log(state);
-  });
-```
-
-Отписка:
-
-```ts
-unsubscribe();
-```
-
-В React-приложении вручную использовать `subscribe` обычно не требуется.
-
-Подписками управляет React Redux через:
-
-- `<Provider>`;
-- `useSelector`;
-- `connect`.
-
-### Store не содержит всю логику приложения
-
-Store координирует процесс:
-
-```text
-получить action
-
-→ вызвать reducer
-
-→ сохранить результат
-
-→ уведомить subscribers
-```
-
-Update logic описывается в reducers.
-
-Побочные эффекты выполняются middleware.
-
-Чтение и получение производных данных выполняют selectors.
-
-```text
-Store
-≠
-объект со всеми бизнес-методами
-```
-
-### Один Redux store
-
-Обычно приложение использует один Redux store.
-
-```text
-store
-├── auth
-├── cart
-├── editor
-├── notifications
-└── api
-```
-
-Состояние логически разделяется на **slices**.
-
-Преимущества одного store:
-
-- одна последовательность actions;
-- единая точка подключения middleware;
-- единая интеграция с Redux DevTools;
-- простой обмен событиями между features;
-- единый root state;
-- централизованная отладка.
-
-Но это не означает:
-
-```text
-всё состояние приложения
-обязано находиться в Redux
-```
-
-Локальное состояние модалки или input может оставаться в `useState`.
-
-Server state может находиться в RTK Query cache.
-
-Form state может находиться в React Hook Form.
-
-Несколько Redux stores технически возможны, но обычно нужны только для действительно независимых приложений или изолированных виджетов.
-
----
-
-### State
-
-Redux state — текущее значение дерева данных, которым управляет store.
-
-Пример:
-
-```ts
-type RootState = {
-  cart: {
-    productIds: string[];
-  };
-  editor: {
-    selectedId:
-      string | null;
-  };
-};
-```
-
-State должен описывать данные, а не содержать команды выполнения.
-
-Обычно Redux state делают serializable:
-
-- strings;
-- numbers;
-- booleans;
-- arrays;
-- plain objects;
-- идентификаторы;
-- `null`.
-
-Без необходимости не помещают:
-
-- functions;
-- React elements;
-- DOM nodes;
-- `Promise`;
-- `WebSocket`;
-- `AbortController`;
-- class instances;
-- timers;
-- mutable SDK objects.
-
-Например:
-
-```text
-connectionStatus
-→ можно хранить в Redux
-
-WebSocket instance
-→ service, middleware или ref
-```
-
----
-
-### Action
-
-**Action** — обычный JavaScript-объект, описывающий произошедшее событие.
-
-```ts
-const action = {
-  type: "cart/itemAdded",
-  payload: {
-    productId:
-      "product-42",
-  },
-};
-```
-
-Обязательное поле:
-
-```text
-type
-```
-
-В современном Redux `type` должен быть строкой.
-
-Остальная структура определяется приложением.
-
-Распространённая конвенция:
-
-```ts
-type Action = {
-  type: string;
-  payload?: unknown;
-  meta?: unknown;
-  error?: unknown;
-};
-```
-
-Но Redux core не требует обязательного поля `payload`.
-
-`payload` — распространённый способ передать данные события.
-
-### Action описывает событие
-
-Хорошее имя отвечает на вопрос:
-
-```text
-Что произошло?
-```
-
-Например:
-
-```text
-cart/itemAdded
-
-user/loggedOut
-
-order/submitted
-
-editor/documentClosed
-```
-
-Менее выразительный вариант:
-
-```text
-setData
-
-updateValue
-
-changeState
-```
-
-Action, названный как событие, сохраняет бизнес-контекст.
-
-```ts
-dispatch(
-  orderSubmitted({
-    orderId,
-  }),
-);
-```
-
-понятнее, чем:
-
-```ts
-dispatch(
-  setStatus(
-    "submitted",
-  ),
-);
-```
-
-В первом случае DevTools показывает произошедшее событие.
-
-Во втором — только техническую операцию записи значения.
-
-### События и команды
-
-Actions часто моделируют как события:
-
-```text
-userLoggedOut
-
-paymentCompleted
-```
-
-Но action может выражать и намерение:
-
-```text
-checkoutRequested
-
-reportExportRequested
-```
-
-Главное, чтобы название однозначно описывало смысл для всей системы.
-
-Redux не требует грамматически использовать только прошедшее время.
-
-Практическое правило:
-
-```text
-Если действие уже произошло
-→ event name.
-
-Если middleware должен начать процесс
-→ command-like name допустим.
-```
-
-### Один action могут обработать несколько slices
-
-Например:
-
-```text
-user/loggedOut
-```
-
-может одновременно:
-
-- очистить authentication state;
-- очистить cart;
-- закрыть editor;
-- удалить notifications;
-- сбросить RTK Query cache.
-
-```text
-один action
-
-→ несколько независимых
-  частей системы реагируют
-  на одно событие
-```
-
-Это уменьшает связанность.
-
-Feature, отправившая action, не обязана знать обо всех reducers и middleware, которые на него реагируют.
-
----
-
-### Action creator
-
-Action creator — функция, создающая action.
-
-```ts
-const itemAdded = (
-  productId: string,
-) => {
-  return {
-    type:
-      "cart/itemAdded",
-    payload: {
-      productId,
-    },
-  };
-};
-```
-
-Использование:
-
-```ts
-dispatch(
-  itemAdded(
-    "product-42",
-  ),
-);
-```
-
-Преимущества:
-
-- скрывает структуру action;
-- обеспечивает единое имя `type`;
-- уменьшает дублирование;
-- упрощает типизацию;
-- позволяет подготовить `payload`;
-- упрощает рефакторинг.
-
-Redux Toolkit `createSlice` автоматически генерирует:
-
-- action types;
-- action creators;
-- slice reducer.
-
-Например, reducer с именем:
-
-```text
-itemAdded
-```
-
-создаёт action type примерно такого вида:
-
-```text
-cart/itemAdded
-```
-
-и соответствующий action creator.
-
----
-
-### Reducer
-
-**Reducer** — функция:
-
-```text
-(previousState, action)
-→ nextState
-```
-
-Пример:
-
-```ts
-type CounterState = {
-  value: number;
-};
-
-type CounterAction = {
-  type:
-    "counter/incremented";
-};
-
-const initialState:
-  CounterState = {
-    value: 0,
-  };
-
-const counterReducer = (
-  state = initialState,
-  action: CounterAction,
-): CounterState => {
-  if (
-    action.type ===
-    "counter/incremented"
-  ) {
-    return {
-      ...state,
-      value:
-        state.value + 1,
-    };
-  }
-
-  return state;
-};
-```
-
-Reducer:
-
-1. Получает прежнее состояние.
-2. Получает action.
-3. Вычисляет следующее состояние.
-4. Возвращает результат.
-
-Reducer не самостоятельно вызывается UI.
-
-Его вызывает Redux store при обработке action.
-
-### Initial state
-
-При инициализации Redux вызывает reducer со значением state:
-
-```text
-undefined
-```
-
-Reducer должен вернуть initial state:
-
-```ts
-const reducer = (
-  state = initialState,
-  action: Action,
-) => {
-  // ...
-};
-```
-
-### Неизвестный action
-
-Reducer получает не только actions своей feature.
-
-Если action ему неизвестен, reducer возвращает прежнее состояние:
-
-```ts
-return state;
-```
-
-Плохо:
-
-```ts
-return initialState;
-```
-
-Так любой чужой action сбрасывал бы slice.
-
-Правило:
-
-```text
-известный action
-→ вычислить новое состояние
-
-неизвестный action
-→ вернуть прежнее состояние
-```
-
----
-
-### Чистота reducer
-
-Reducer должен быть чистой функцией.
-
-Одинаковые:
-
-```text
-state
-+
-action
-```
-
-должны приводить к одинаковому результату.
-
-Reducer не выполняет:
-
-- HTTP-запрос;
-- запись в `localStorage`;
-- запуск timer;
-- обращение к DOM;
-- отправку analytics;
-- `dispatch`;
-- генерацию случайного ID;
-- чтение текущего времени;
-- изменение внешней переменной;
-- работу с WebSocket.
-
-Плохо:
-
-```ts
-const reducer = (
-  state: State,
-  action: Action,
-) => {
-  localStorage.setItem(
-    "state",
-    JSON.stringify(state),
-  );
-
-  return state;
-};
-```
-
-Плохо:
-
-```ts
-const reducer = (
-  state: State,
-  action: Action,
-) => {
-  return {
-    ...state,
-    id:
-      crypto.randomUUID(),
-    createdAt:
-      Date.now(),
-  };
-};
-```
-
-Значения, зависящие от окружения, создают до reducer:
-
-- в event handler;
-- action creator с `prepare`;
-- thunk;
-- listener middleware;
-- RTK Query lifecycle.
-
-Затем передают готовыми в action:
-
-```ts
-dispatch({
-  type:
-    "documents/documentCreated",
-  payload: {
-    id,
-    createdAt,
+export const store = configureStore({
+  reducer: {
+    counter: counterSlice.reducer,
   },
 });
-```
-
-### Reducer может содержать business logic
-
-Чистота не означает, что reducer должен быть только простым setter.
-
-Reducer может:
-
-- проверять допустимость перехода;
-- пересчитывать итог;
-- менять несколько связанных полей;
-- обновлять нормализованные entities;
-- применять правила бизнес-процесса.
-
-Например:
-
-```text
-orderSubmitted
-
-→ изменить status
-
-→ сохранить submittedAt
-  из payload
-
-→ очистить validation errors
-
-→ запретить повторное редактирование
-```
-
-Если логика является чистым вычислением следующего state, её обычно удобно размещать в reducer.
-
-Побочные эффекты остаются вне reducer.
-
----
-
-### Root reducer и slice reducers
-
-Redux store получает один **root reducer**.
-
-```text
-rootReducer(
-  rootState,
-  action,
-)
-→ nextRootState
-```
-
-Для разделения состояния используют slice reducers:
-
-```text
-cartReducer
-
-authReducer
-
-editorReducer
-```
-
-`combineReducers` создаёт root reducer:
-
-```ts
-const rootReducer =
-  combineReducers({
-    cart:
-      cartReducer,
-    auth:
-      authReducer,
-    editor:
-      editorReducer,
-  });
-```
-
-Ключи определяют структуру root state:
-
-```ts
-type RootState = {
-  cart:
-    CartState;
-  auth:
-    AuthState;
-  editor:
-    EditorState;
-};
-```
-
-### Каждый action передаётся всем slice reducers
-
-При использовании `combineReducers` каждый slice reducer получает:
-
-- свой участок state;
-- тот же action.
-
-Упрощённо root reducer работает так:
-
-```ts
-const rootReducer = (
-  state: RootState,
-  action: Action,
-) => {
-  return {
-    cart:
-      cartReducer(
-        state.cart,
-        action,
-      ),
-    auth:
-      authReducer(
-        state.auth,
-        action,
-      ),
-    editor:
-      editorReducer(
-        state.editor,
-        action,
-      ),
-  };
-};
-```
-
-Redux не ищет один reducer по имени action.
-
-```text
-dispatch(action)
-
-→ каждый slice reducer
-  получает action
-
-→ заинтересованные reducers
-  возвращают новое значение
-
-→ остальные возвращают
-  прежний state
-```
-
-Именно поэтому несколько slices могут независимо реагировать на:
-
-```text
-user/loggedOut
-```
-
----
-
-### Dispatch
-
-`dispatch` запускает Redux data flow.
-
-```ts
-dispatch(
-  itemAdded(
-    "product-42",
-  ),
-);
-```
-
-Без middleware базовый dispatch принимает обычный action object.
-
-Он синхронно:
-
-1. Передаёт текущий state и action root reducer.
-2. Получает следующее state.
-3. Сохраняет его.
-4. Уведомляет subscribers.
-5. Возвращает переданный action.
-
-```text
-обычный action dispatch
-
-→ reducer выполняется синхронно
-```
-
-К моменту завершения:
-
-```ts
-store.dispatch(action);
-
-const state =
-  store.getState();
-```
-
-`getState()` уже возвращает результат этого action.
-
-### Dispatch внутри reducer
-
-Reducer не может вызвать:
-
-```ts
-dispatch(...)
-```
-
-Это побочный эффект и нарушение чистоты.
-
-Redux также блокирует такой вызов во время выполнения reducer.
-
-Если один процесс должен вызвать несколько событий, это делает:
-
-- thunk;
-- listener middleware;
-- event handler;
-- другой middleware.
-
----
-
-### Middleware
-
-Middleware расширяет поведение `dispatch`.
-
-Он располагается между:
-
-```text
-вызовом dispatch
-
-и:
-
-попаданием action
-в root reducer
-```
-
-Упрощённая сигнатура:
-
-```ts
-const middleware =
-  (
-    storeApi: {
-      dispatch:
-        AppDispatch;
-      getState:
-        () => RootState;
-    },
-  ) =>
-  (
-    next:
-      AppDispatch,
-  ) =>
-  (
-    action:
-      unknown,
-  ) => {
-    return next(
-      action,
-    );
-  };
-```
-
-Middleware может:
-
-- логировать action;
-- читать state;
-- выполнять API request;
-- запускать timer;
-- отправлять analytics;
-- преобразовать action;
-- задержать action;
-- отправить другие actions;
-- полностью обработать значение;
-- не передать его reducer.
-
-### `dispatch` и `next`
-
-Внутри middleware:
-
-```text
-next(action)
-```
-
-передаёт action следующему middleware.
-
-Если middleware последний, action попадает в базовый dispatch и reducer.
-
-```text
-dispatch(action)
-→ начинает pipeline сначала
-```
-
-Это различие важно.
-
-Например:
-
-```ts
-const logger =
-  (storeApi: StoreApi) =>
-  (next: AppDispatch) =>
-  (action: unknown) => {
-    console.log(
-      "before",
-      storeApi.getState(),
-    );
-
-    const result =
-      next(action);
-
-    console.log(
-      "after",
-      storeApi.getState(),
-    );
-
-    return result;
-  };
-```
-
-До `next(action)` store содержит прежнее состояние.
-
-После `next(action)` reducer уже мог сохранить новое состояние.
-
-### Middleware chain
-
-Если подключены:
-
-```text
-middlewareA
-
-middlewareB
-
-middlewareC
-```
-
-flow выглядит так:
-
-```text
-dispatch
-
-→ A before
-  → B before
-    → C before
-      → reducer
-    ← C after
-  ← B after
-← A after
-```
-
-Middleware образуют вложенный pipeline вокруг базового dispatch.
-
-### Middleware может остановить action
-
-Если middleware не вызвал:
-
-```ts
-next(action);
-```
-
-action не дойдёт до следующих middleware и reducer.
-
-Например, thunk middleware получает function:
-
-```ts
-dispatch(
-  async (
-    dispatch,
-    getState,
-  ) => {
-    // async logic
-  },
-);
-```
-
-Function не является обычным Redux action.
-
-Thunk middleware перехватывает её, вызывает и не передаёт reducer.
-
-Reducers в итоге получают только обычные actions, которые thunk отправит позже.
-
----
-
-### Синхронность и асинхронность
-
-Redux core обновляет state синхронно при обработке обычного action.
-
-```text
-dispatch plain action
-→ reducer
-→ новое state
-→ subscribers
-```
-
-Асинхронную логику добавляют middleware.
-
-Например:
-
-```text
-dispatch thunk
-
-→ thunk начинает request
-
-→ request завершается
-
-→ thunk dispatch pending/fulfilled/rejected actions
-
-→ reducers обновляют state
-```
-
-Сам reducer никогда не становится `async`.
-
-Плохо:
-
-```ts
-const reducer =
-  async (
-    state,
-    action,
-  ) => {
-    const response =
-      await fetch(url);
-
-    return response;
-  };
-```
-
-Reducer должен вернуть state сразу, а не `Promise`.
-
-### Расширенный dispatch
-
-После подключения middleware `dispatch` может принимать не только обычный action.
-
-Например, thunk middleware позволяет передавать function.
-
-Возвращаемое значение также зависит от middleware:
-
-```text
-обычный action
-→ dispatch обычно возвращает action
-
-thunk
-→ dispatch возвращает
-  результат thunk
-
-createAsyncThunk
-→ dispatch возвращает Promise-like result
-```
-
-Поэтому TypeScript-тип `AppDispatch` получают из настроенного store, а не описывают вручную как функцию только для plain actions.
-
----
-
-### Побочные эффекты
-
-**Побочный эффект** — действие, которое взаимодействует с миром вне чистого расчёта state.
-
-Примеры:
-
-- API request;
-- `localStorage`;
-- timer;
-- analytics;
-- navigation;
-- WebSocket;
-- уведомление;
-- чтение текущего времени;
-- генерация случайного значения.
-
-Современные варианты Redux:
-
-| Задача | Подходящий инструмент |
-| --- | --- |
-| Получение и cache server data | RTK Query |
-| Простой async flow с `dispatch` и `getState` | Thunk |
-| Request lifecycle с `pending/fulfilled/rejected` | `createAsyncThunk` |
-| Реакция на actions и изменение state | Listener middleware |
-| Логирование и интеграция SDK | Custom middleware |
-
-В современном Redux для обычного получения server state предпочтительно сначала рассмотреть RTK Query.
-
-Ручной thunk полезен, когда требуется custom imperative workflow.
-
-Listener middleware подходит для логики вида:
-
-```text
-произошёл action A
-
-→ проверить state
-
-→ выполнить effect
-
-→ отправить action B
-```
-
----
-
-### Subscriber
-
-Subscriber — функция, которую store уведомляет после обработки action.
-
-```ts
-store.subscribe(
-  listener,
-);
-```
-
-Важно:
-
-```text
-subscriber получает уведомление
-
-но не получает автоматически
-state или action аргументами
-```
-
-Текущее состояние читают через:
-
-```ts
-store.getState();
-```
-
-Redux вызывает subscribers после завершения root reducer.
-
-Уведомление subscriber не означает, что state обязательно изменился по ссылке.
-
-Store уведомляет о завершении dispatch, а конкретный consumer сам решает, изменились ли интересующие его данные.
-
----
-
-### React Redux
-
-React Redux связывает store с React.
-
-Store передаётся через:
-
-```tsx
-<Provider store={store}>
-  <App />
-</Provider>
-```
-
-Компонент отправляет actions:
-
-```ts
-const dispatch =
-  useDispatch();
-```
-
-Компонент читает state через selector:
-
-```ts
-const total =
-  useSelector(
-    (state: RootState) =>
-      state.cart.total,
-  );
-```
-
-`useSelector`:
-
-1. Подписывает компонент на Redux store.
-2. Выполняет selector.
-3. Получает выбранный результат.
-4. После dispatch проверяет новое значение.
-5. Запускает render, если результат изменился.
-
-### Store update не равен render всех компонентов
-
-После action Redux уведомляет subscribers.
-
-Но React Redux не обязан перерисовать все компоненты.
-
-Каждый `useSelector` выбирает свой результат:
-
-```ts
-const total =
-  useSelector(
-    selectCartTotal,
-  );
-```
-
-Если `selectCartTotal` после action вернул прежнее значение, компонент обычно не перерисуется из-за этого selector.
-
-```text
-store получил action
-≠
-весь React UI обязательно
-перерисовался
-```
-
-### Сравнение результата `useSelector`
 
-По умолчанию `useSelector` использует строгое сравнение:
+store.dispatch(amountAdded(3));
 
-```text
-previousResult
-===
-nextResult
+console.log(store.getState());
+// { counter: { value: 3 } }
 ```
 
-Для primitive это обычно удобно:
+В reducers примера видна запись, похожая на мутацию. `createSlice` использует Immer: изменения применяются к draft, а результатом становится новое неизменяемое состояние с сохранением ссылок на нетронутые части.
 
-```ts
-const count =
-  useSelector(
-    (state: RootState) =>
-      state.counter.value,
-  );
-```
-
-Опасный selector:
-
-```ts
-const data =
-  useSelector(
-    (state: RootState) => ({
-      user:
-        state.auth.user,
-      cart:
-        state.cart,
-    }),
-  );
-```
-
-Он создаёт новый объект при каждом вызове:
-
-```text
-{} !== {}
-```
-
-Поэтому компонент может перерисовываться после любого action.
-
-Варианты:
-
-- вызвать несколько `useSelector`;
-- использовать memoized selector;
-- применить `shallowEqual`, если это соответствует задаче.
-
----
-
-### Selector
-
-Selector — функция, читающая или вычисляющая данные из state.
-
-```ts
-const selectCartItems = (
-  state: RootState,
-) => {
-  return state.cart.items;
-};
-```
-
-Производный selector:
-
-```ts
-const selectCartTotal = (
-  state: RootState,
-) => {
-  return state.cart.items.reduce(
-    (
-      total,
-      item,
-    ) =>
-      total +
-      item.price *
-        item.quantity,
-    0,
-  );
-};
-```
-
-Selectors:
-
-- скрывают структуру store;
-- переиспользуют правила чтения;
-- вычисляют производные данные;
-- используются в React, thunks и middleware;
-- могут мемоизироваться.
-
-Производные значения обычно не хранят в Redux отдельно.
-
-```text
-items
-→ хранятся
-
-total
-→ вычисляется selector
-```
-
-Иначе пришлось бы синхронизировать:
-
-```text
-items
-
-и:
-
-total
-```
-
-после каждого изменения.
-
----
-
-### Иммутабельность
-
-Redux reducers не изменяют прежнее state напрямую.
-
-Плохо:
-
-```ts
-state.items.push(
-  newItem,
-);
-
-return state;
-```
-
-Ссылка на state осталась прежней, хотя содержимое изменилось.
-
-Без Immer правильно:
-
-```ts
-return {
-  ...state,
-  items: [
-    ...state.items,
-    newItem,
-  ],
-};
-```
-
-Изменённые части получают новые ссылки.
-
-Неизменённые части сохраняют прежние ссылки.
-
-Это называется **structural sharing**.
-
-```text
-root state
-├── cart         новая ссылка
-│   └── items    новая ссылка
-└── auth         прежняя ссылка
-```
-
-Structural sharing позволяет быстро определить, какие ветви могли измениться.
-
-### Почему ссылки важны
-
-React Redux и selectors часто используют сравнение ссылок:
-
-```text
-oldValue === newValue
-```
-
-Если reducer изменил объект на месте:
-
-```text
-содержимое изменилось
-
-но:
-
-ссылка осталась прежней
-```
-
-consumer может не заметить обновление.
-
-Если reducer без необходимости создаёт новые объекты для всех ветвей:
-
-```text
-данные не изменились
-
-но:
-
-ссылки везде новые
-```
-
-появляются лишние recalculations и renders.
-
-Правильный immutable update:
-
-```text
-новые ссылки
-→ только для изменённых частей
-
-старые ссылки
-→ для неизменённых частей
-```
-
----
-
-### Immer в Redux Toolkit
-
-Redux Toolkit использует Immer внутри:
-
-- `createSlice`;
-- `createReducer`.
-
-Это позволяет писать:
-
-```ts
-itemAdded(
-  state,
-  action,
-) {
-  state.items.push(
-    action.payload,
-  );
-}
-```
-
-Код выглядит как mutation.
-
-Но `state` здесь является Immer draft.
-
-Immer:
-
-1. Отслеживает изменения draft.
-2. Не изменяет исходный Redux state.
-3. Создаёт новый immutable result.
-4. Сохраняет ссылки неизменённых ветвей.
-
-```text
-mutating syntax
-≠
-реальная mutation Redux state
-```
-
-Такой синтаксис безопасен только внутри API, использующего Immer.
-
-За пределами reducer нельзя изменять объект, полученный из:
-
-```ts
-store.getState();
-```
-
-или `useSelector`.
-
----
-
-### DevTools и воспроизводимость
-
-Actions являются данными, а reducers — чистыми функциями.
-
-Поэтому Redux DevTools могут показывать:
-
-- список actions;
-- payload;
-- state до action;
-- state после action;
-- разницу состояний;
-- место dispatch;
-- повторное воспроизведение последовательности.
-
-Flow:
-
-```text
-initial state
-
-+ action 1
-→ state 1
-
-+ action 2
-→ state 2
-
-+ action 3
-→ state 3
-```
-
-Если reducer зависит от:
-
-- API;
-- случайного значения;
-- текущего времени;
-- mutable global variable;
-
-повторное воспроизведение может дать другой результат.
-
-Именно поэтому side effects выносятся до dispatch или в middleware, а готовый результат передаётся action.
-
----
+Три базовых принципа Redux:
 
-### Redux Toolkit
+1. Общее состояние хранится в одном store.
+2. Изменение начинается с отправки action.
+3. Следующее состояние вычисляют reducers.
 
-Современный Redux пишут через **Redux Toolkit, RTK**.
+Это не означает, что **все** данные приложения должны находиться в Redux. Локальное состояние кнопки или модального окна обычно остаётся в компоненте, данные backend удобнее хранить в query cache, а фильтр для общей ссылки — в URL.
 
-Основные API:
-
-```text
-configureStore
-
-createSlice
-
-createAsyncThunk
-
-createListenerMiddleware
-
-createEntityAdapter
-
-createApi
-```
-
-`configureStore`:
-
-- создаёт Redux store;
-- объединяет slice reducers;
-- подключает thunk;
-- включает Redux DevTools;
-- добавляет development-проверки;
-- улучшает TypeScript inference.
-
-`createSlice`:
-
-- создаёт slice reducer;
-- создаёт action types;
-- создаёт action creators;
-- использует Immer;
-- позволяет обрабатывать внешние actions через `extraReducers`.
-
-Redux Toolkit не является другой архитектурой.
-
-```text
-RTK
-→ рекомендуемый способ
-  писать тот же Redux
-```
-
-Основные принципы сохраняются:
-
-- один store;
-- actions;
-- dispatch;
-- reducers;
-- immutable updates;
-- middleware;
-- selectors.
-
----
-
-### Полный Redux data flow
-
-#### Инициализация
-
-```text
-configureStore
-
-→ создаёт store
-
-→ root reducer получает
-  initialization action
-
-→ slice reducers возвращают
-  initial state
-
-→ store сохраняет root state
-```
-
-#### Чтение в React
-
-```text
-Provider
-→ передаёт store
-
-useSelector
-→ читает выбранные данные
-
-React
-→ отображает UI
-```
-
-#### Пользовательское событие
-
-```text
-пользователь нажал кнопку
-
-→ event handler
-```
-
-#### Dispatch
-
-```ts
-dispatch(
-  itemAdded({
-    productId:
-      "product-42",
-  }),
-);
-```
-
-#### Middleware
-
-```text
-action проходит middleware
-в порядке подключения
-```
-
-Middleware может:
-
-- выполнить effect;
-- отправить другие actions;
-- остановить action;
-- передать его дальше.
-
-#### Root reducer
-
-Если обычный action дошёл до базового dispatch:
-
-```text
-root reducer получает:
-
-previous root state
-+
-action
-```
-
-#### Slice reducers
-
-```text
-каждый slice reducer
-получает тот же action
-```
-
-Заинтересованные slices возвращают новые значения.
-
-Остальные возвращают прежние ссылки.
-
-#### Сохранение
-
-```text
-store сохраняет
-результат root reducer
-```
-
-#### Уведомление
-
-```text
-store уведомляет subscribers
-```
-
-#### React Redux
-
-```text
-useSelector
-→ получает новый snapshot
-→ запускает selectors
-→ сравнивает результаты
-```
-
-#### Render
-
-```text
-если выбранное значение изменилось
-
-→ React обновляет компонент
-```
-
-Кратко:
-
-```text
-Event
-
-→ dispatch
-
-→ middleware
-
-→ reducers
-
-→ store
-
-→ selectors
-
-→ render
-```
-
----
-
-### Когда Redux оправдан
-
-Redux полезен, когда:
-
-- состояние используют удалённые части приложения;
-- действия образуют сложный бизнес-процесс;
-- несколько features реагируют на одни события;
-- важна история изменений;
-- нужны middleware;
-- нужны selectors;
-- важна централизованная отладка;
-- нужны DevTools;
-- нужен предсказуемый общий update flow;
-- над проектом работает большая команда;
-- состояние удобно представить событиями.
-
-Примеры:
-
-- сложный редактор;
-- корзина и checkout;
-- управление несколькими связанными сущностями;
-- массовые операции;
-- undo/redo;
-- сложная authentication lifecycle;
-- синхронизация нескольких features после logout;
-- длительный workflow с несколькими этапами.
-
-### Когда Redux не нужен
-
-Redux обычно избыточен для:
-
-- одной локальной модалки;
-- локального dropdown;
-- hover;
-- небольшого input;
-- простой формы;
-- состояния одного компонента;
-- данных, которые удобно поднять к ближайшему родителю.
-
-Также не нужно вручную переносить server state в обычный Redux slice, если задачу уже решает:
-
-- RTK Query;
-- TanStack Query;
-- router data API;
-- другой query layer.
-
-Практическое правило:
-
-```text
-Redux выбирают
-не по важности данных,
-
-а по сложности
-совместного владения,
-событий и обновлений.
-```
-
-### Главная модель
-
-```text
-Action:
-что произошло
-
-Dispatch:
-передать событие
-в Redux pipeline
-
-Middleware:
-обработать эффекты
-и расширить dispatch
-
-Reducer:
-вычислить новое state
-
-Store:
-сохранить state
-и уведомить subscribers
-
-Selector:
-получить нужные данные
-
-React Redux:
-связать store с React
-```
-
-Главная идея Flux и Redux:
-
-```text
-Изменения состояния
-проходят по явному
-однонаправленному пути.
-
-Это делает приложение
-предсказуемым,
-тестируемым
-и удобным для отладки.
-```
+Redux оправдан, когда общим состоянием пользуются удалённые части приложения, переходы сложны, несколько features реагируют на одни события либо нужны middleware, selectors и DevTools. Для небольшого локального состояния он создаёт лишний уровень абстракции.
 
 </dd>
 </dl>
@@ -1874,93 +115,22 @@ React Redux:
 ## Дополнительные вопросы
 
 <details>
-<summary><strong>Чем однонаправленный поток данных полезен на практике?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-У каждого изменения есть наблюдаемый путь:
-
-```text
-источник события
-
-→ dispatch
-
-→ middleware
-
-→ reducers
-
-→ новое state
-
-→ selectors
-
-→ UI
-```
-
-При ошибке можно:
-
-1. Найти action в Redux DevTools.
-2. Проверить его payload.
-3. Сравнить state до и после.
-4. Найти reducer, изменивший данные.
-5. Проверить middleware, выполнивший effect.
-
-Это проще, чем искать произвольные изменения общего mutable object из разных частей приложения.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
 <summary><strong>Чем Redux отличается от классического Flux?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-В классическом Flux обычно есть:
+Flux — общий архитектурный подход, а Redux — конкретная библиотека с более строгой моделью.
 
-```text
-Actions
-Dispatcher
-несколько Stores
-Views
-```
+| Классический Flux | Redux |
+| --- | --- |
+| Несколько stores | Обычно один store |
+| Отдельный Dispatcher | Метод `store.dispatch` |
+| Store содержит состояние и логику обновления | Логика обновления вынесена в reducers |
+| Реализации могут различаться | Определённый API и набор правил |
 
-Redux обычно использует:
-
-```text
-один Store
-одно дерево state
-один root reducer
-чистые slice reducers
-```
-
-В Redux нет отдельного Dispatcher object.
-
-Его роль частично выполняет:
-
-```text
-store.dispatch
-```
-
-Flux stores обычно одновременно храняли state, обрабатывали actions и уведомляли listeners.
-
-Redux разделяет ответственности:
-
-```text
-store
-→ хранит и координирует
-
-reducers
-→ вычисляют state
-
-middleware
-→ выполняют effects
-```
+Redux вдохновлён Flux, но не является его точной реализацией.
 
 <h2></h2>
 </dd>
@@ -1969,47 +139,21 @@ middleware
 </details>
 
 <details>
-<summary><strong>Почему actions часто называют как произошедшие события?</strong></summary>
+<summary><strong>Зачем нужен однонаправленный поток данных?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Название:
+Он делает изменения предсказуемыми:
 
 ```text
-cartItemAdded
+событие → action → новое state → новый UI
 ```
 
-описывает бизнес-факт.
+Если интерфейс показывает неправильные данные, можно проверить action, состояние до него и состояние после. Компоненты не меняют общее состояние произвольно, поэтому причинно-следственную цепочку проще воспроизвести, протестировать и отладить.
 
-На этот факт могут независимо реагировать:
-
-- cart reducer;
-- analytics middleware;
-- notification listener;
-- persistence layer.
-
-Название:
-
-```text
-setCartItems
-```
-
-описывает только технический способ изменения state.
-
-Event-oriented actions:
-
-- лучше читаются в DevTools;
-- сохраняют контекст;
-- уменьшают связанность;
-- позволяют нескольким features реагировать независимо.
-
-Command-like actions допустимы, если они действительно обозначают намерение начать процесс:
-
-```text
-checkoutRequested
-```
+Однонаправленность не означает отсутствие обратной связи: новое действие пользователя запускает следующий проход по той же цепочке.
 
 <h2></h2>
 </dd>
@@ -2018,35 +162,316 @@ checkoutRequested
 </details>
 
 <details>
-<summary><strong>Что такое action creator и зачем он нужен?</strong></summary>
+<summary><strong>За что отвечает store и почему обычно используется один store?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Это функция, создающая action.
+Store координирует Redux:
+
+- хранит текущее состояние;
+- принимает actions через `dispatch`;
+- вызывает root reducer;
+- сохраняет результат;
+- уведомляет подписчиков;
+- возвращает состояние через `getState`.
+
+Один store даёт единую точку отправки событий, подключения middleware и работы DevTools. Само состояние при этом делят на slices, а root reducer объединяет их reducers.
+
+Несколько stores возможны технически, но обычно усложняют согласованные обновления и наблюдение за общим потоком событий.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Нужно ли хранить в Redux всё состояние приложения?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Нет. В Redux помещают данные, которым действительно нужен общий владелец и централизованные переходы.
+
+```text
+Открыта локальная подсказка
+→ useState
+
+Фильтр должен сохраняться в ссылке
+→ URL
+
+Данные принадлежат backend
+→ query cache
+
+Корзину используют разные части приложения,
+а её изменения должны быть наблюдаемыми
+→ Redux может быть полезен
+```
+
+Также не следует хранить в state функции, DOM-узлы, Promise, экземпляры WebSocket и другие несерилизуемые объекты. Обычно в Redux оставляют данные, а активные ресурсы — в services или middleware.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Что такое action и action creator?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Action — обычный объект с обязательным строковым `type`:
 
 ```ts
-const itemAdded = (
-  productId: string,
-) => ({
-  type:
-    "cart/itemAdded",
-  payload: {
-    productId,
+const action = {
+  type: "cart/itemAdded",
+  payload: { productId: "p-42" },
+};
+```
+
+Название лучше описывает произошедшее событие — `itemAdded`, `orderSubmitted`, `userLoggedOut`. Тогда один action могут осмысленно обработать несколько частей приложения.
+
+Action creator создаёт action:
+
+```ts
+const itemAdded = (productId: string) => ({
+  type: "cart/itemAdded",
+  payload: { productId },
+});
+```
+
+`createSlice` генерирует action creators автоматически.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Что такое reducer и почему он должен быть чистым?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Reducer получает предыдущее состояние и action, а возвращает следующее:
+
+```ts
+type Reducer = (state, action) => nextState;
+```
+
+Для одинаковых аргументов результат должен быть одинаковым. В reducer нельзя выполнять запросы, запускать таймеры, читать случайное значение, изменять внешние переменные или отправлять analytics.
+
+При этом обычная синхронная бизнес-логика допустима: проверки, расчёты, циклы и согласованное изменение нескольких полей. Запрещены не сложные вычисления, а побочные эффекты и непредсказуемость.
+
+Чистота позволяет повторно проигрывать actions, тестировать reducer как функцию и корректно работать DevTools.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Что происходит, если action неизвестен reducer?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Reducer возвращает прежнее состояние:
+
+```ts
+function counterReducer(state = initialState, action) {
+  if (action.type === "counter/incremented") {
+    return { ...state, value: state.value + 1 };
+  }
+
+  return state;
+}
+```
+
+При dispatch root reducer вызывает все slice reducers. Каждый из них сам решает, относится ли к нему action. Поэтому одно событие могут обработать несколько slices, а остальные сохранят прежние ссылки.
+
+Это позволяет, например, одним `userLoggedOut` очистить auth, cart и редактор.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Синхронен ли dispatch?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Базовый `store.dispatch(action)` синхронно передаёт обычный action reducers. После его завершения `getState()` уже возвращает обновлённое состояние.
+
+```ts
+store.dispatch(counterIncremented());
+console.log(store.getState());
+```
+
+Middleware может расширить допустимые значения и поведение `dispatch`. Например, thunk принимает функцию, внутри которой можно дождаться запроса и затем отправить обычные actions.
+
+Поэтому точный return type и асинхронность зависят от установленного middleware, но сами reducers всегда остаются синхронными.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Для чего нужен middleware?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Middleware работает между вызовом `dispatch` и reducer pipeline:
+
+```text
+dispatch
+  → middleware A
+  → middleware B
+  → reducers
+```
+
+Через него реализуют:
+
+- асинхронную координацию;
+- логирование и analytics;
+- обработку WebSocket-событий;
+- реакцию на actions;
+- преобразование или остановку действий.
+
+Побочный эффект выполняется в middleware, thunk, listener или другом внешнем слое. Когда результат готов, этот слой отправляет обычный action с данными для reducer.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Чем <code>next</code> отличается от <code>dispatch</code> внутри middleware?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+`next(action)` передаёт action следующему middleware в текущей цепочке. `dispatch(action)` начинает обработку нового action с начала цепочки.
+
+```ts
+const auditMiddleware = (store) => (next) => (action) => {
+  const result = next(action);
+
+  if (action.type === "order/submitted") {
+    store.dispatch({ type: "audit/eventRecorded" });
+  }
+
+  return result;
+};
+```
+
+Если не вызвать `next(action)`, исходный action не дойдёт до следующих middleware и reducers. Это допустимый, но намеренный контроль потока. Бездумный `dispatch(action)` для того же action создаст бесконечную рекурсию.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Что такое selector и как <code>useSelector</code> влияет на render?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Selector извлекает или вычисляет данные из store:
+
+```ts
+const selectCartTotal = (state: RootState) =>
+  state.cart.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+```
+
+`useSelector` подписывает React-компонент на store и после dispatch сравнивает прошлый и новый результат selector. По умолчанию используется сравнение по ссылке `===`.
+
+Если selector каждый раз создаёт новый объект или массив, компонент может перерисовываться без изменения данных. В таком случае возвращают примитив, вызывают несколько `useSelector` или применяют мемоизированный selector.
+
+Производные данные обычно вычисляют selector, а не хранят отдельной копией в state.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Зачем Redux нужны immutable updates и structural sharing?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Redux определяет изменения по ссылкам. При обновлении создают новые объекты только на изменённом пути, а ссылки на остальные части сохраняют:
+
+```text
+root — новая ссылка
+├── cart — новая ссылка
+│   └── items — новая ссылка
+└── user — прежняя ссылка
+```
+
+Это называется structural sharing. Оно позволяет быстро понять, какие данные изменились, и не копировать всё дерево целиком.
+
+Прямая мутация существующего state нарушает эту модель: ссылка остаётся прежней, хотя содержимое уже другое. Вручную обновления пишут через копирование, а reducers Redux Toolkit используют Immer.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Почему в reducers Redux Toolkit можно писать «мутации»?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+`createSlice` передаёт reducer не исходный state, а draft от Immer:
+
+```ts
+const todosSlice = createSlice({
+  name: "todos",
+  initialState: [],
+  reducers: {
+    todoAdded(state, action) {
+      state.push(action.payload);
+    },
   },
 });
 ```
 
-Она:
+Immer записывает операции над draft и создаёт корректное новое immutable state. Неизменённые ветви сохраняют прежние ссылки.
 
-- скрывает структуру action;
-- устраняет дублирование `type`;
-- улучшает типизацию;
-- подготавливает payload;
-- упрощает изменение формата.
-
-Redux Toolkit `createSlice` генерирует action creators автоматически.
+Такой синтаксис разрешён только там, где state обёрнут Immer. Он не делает обычные JavaScript-объекты неизменяемыми и не разрешает менять Redux state вне reducer.
 
 <h2></h2>
 </dd>
@@ -2055,33 +480,51 @@ Redux Toolkit `createSlice` генерирует action creators автомат�
 </details>
 
 <details>
-<summary><strong>Почему reducer должен быть чистым?</strong></summary>
+<summary><strong>Означает ли обновление store, что перерисуется всё приложение?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Чистый reducer:
+Нет. После dispatch Redux уведомляет подписчиков, но уведомление ещё не равно React render.
+
+React Redux повторно запускает selectors подписанных компонентов и сравнивает результаты. Компонент обновляется, если изменилось выбранное им значение или его собственные props/state.
+
+Поэтому важны:
+
+- узкие selectors;
+- сохранение ссылок на неизменённые данные;
+- мемоизация вычислений, которые создают новые объекты;
+- отсутствие случайных копий в selector.
+
+Один store не означает один общий render.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
+<summary><strong>Как actions и immutable state помогают DevTools?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+Actions фиксируют, **что произошло**, а снимки state показывают результат. Redux DevTools может представить обновления как последовательность:
 
 ```text
-одинаковый state
-+
-одинаковый action
-
-→ одинаковый result
+state₀
+  + cart/itemAdded
+→ state₁
+  + order/submitted
+→ state₂
 ```
 
-Его легко:
+Чистые reducers позволяют повторно применить actions и получить тот же результат. Сериализуемые actions и state удобно логировать, сохранять и передавать между инструментами.
 
-- тестировать обычным вызовом;
-- повторно выполнять;
-- исследовать через DevTools;
-- использовать для undo/redo;
-- запускать в разных окружениях.
-
-HTTP-запрос, timer, random и запись в storage делают результат зависимым от внешней среды.
-
-Reducer должен только вычислять следующее state.
+Несериализуемые значения, текущее время и случайность внутри reducer делают такое воспроизведение ненадёжным. Их вычисляют заранее и передают в payload либо обрабатывают вне reducer.
 
 <h2></h2>
 </dd>
@@ -2090,605 +533,25 @@ Reducer должен только вычислять следующее state.
 </details>
 
 <details>
-<summary><strong>Может ли reducer содержать бизнес-логику?</strong></summary>
+<summary><strong>Когда стоит выбирать Redux и почему начинать нужно с Redux Toolkit?</strong></summary>
 
 <dl>
 <dd>
 <h2></h2>
 
-Да, если логика является чистым вычислением следующего state.
+Redux полезен, если одновременно важны несколько факторов:
 
-Reducer может:
+- общие данные используют удалённые части приложения;
+- переходы состояния сложны и должны быть явными;
+- на одно событие реагируют несколько features;
+- нужны middleware, selectors и мощная отладка;
+- команда хочет единые правила управления состоянием.
 
-- проверить допустимый переход;
-- пересчитать итог;
-- обновить связанные поля;
-- применить бизнес-правило;
-- изменить несколько entities.
+Если состояние локально и переходы просты, достаточно `useState`, `useReducer`, Context или URL.
 
-Например:
+Для нового Redux-кода официально рекомендован Redux Toolkit. `configureStore` настраивает store и middleware, `createSlice` сокращает шаблонный код и использует Immer, а RTK Query решает задачи загрузки и кеширования server state.
 
-```text
-orderSubmitted
-
-→ status = submitted
-
-→ editingDisabled = true
-
-→ validationErrors = []
-```
-
-API request и analytics остаются в middleware или другом effect layer.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Где в Redux выполняются побочные эффекты?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Побочные эффекты выполняются вне reducers.
-
-Основные инструменты:
-
-- RTK Query — server data fetching и cache;
-- thunk — imperative async logic;
-- `createAsyncThunk` — request lifecycle;
-- listener middleware — реакция на actions и state;
-- custom middleware — интеграция с внешней системой.
-
-Результат effect возвращается в Redux через обычный action.
-
-```text
-effect завершился
-
-→ dispatch result action
-
-→ reducer обновил state
-```
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Что происходит после <code>dispatch(action)</code>?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Обычный flow:
-
-1. Action входит в middleware pipeline.
-2. Middleware могут обработать его.
-3. При вызове `next(action)` он движется дальше.
-4. Базовый dispatch вызывает root reducer.
-5. Все slice reducers получают action.
-6. Root reducer возвращает новое state.
-7. Store сохраняет результат.
-8. Store уведомляет subscribers.
-9. React Redux запускает selectors.
-10. Компоненты с изменившимся результатом обновляются.
-
-Если middleware не передало action дальше, reducer его не получит.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Все ли slice reducers получают каждый action?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-При обычном `combineReducers` — да.
-
-Каждый slice reducer получает:
-
-```text
-свой slice state
-+
-общий action
-```
-
-Если action неизвестен, reducer возвращает прежний state.
-
-Это позволяет нескольким slices обрабатывать одно событие:
-
-```text
-userLoggedOut
-```
-
-При этом feature, отправившая action, не вызывает reducers напрямую и не обязана знать, кто на него отреагирует.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Что должен вернуть reducer для неизвестного action?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Прежнее состояние:
-
-```ts
-return state;
-```
-
-Нельзя возвращать:
-
-```ts
-return initialState;
-```
-
-иначе любой action другой feature сбросит slice.
-
-Reducer должен быть способен безопасно получить любой action из общей Redux-системы.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Является ли <code>dispatch</code> синхронным?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Базовый dispatch обычного action синхронно:
-
-```text
-вызывает reducer
-
-→ сохраняет state
-
-→ уведомляет subscribers
-```
-
-После завершения:
-
-```ts
-dispatch(action);
-
-const state =
-  store.getState();
-```
-
-`state` уже содержит результат action.
-
-Асинхронным может быть процесс внутри middleware или thunk.
-
-Например, thunk запускает request, а reducers позже получают отдельные result actions.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Чем <code>next(action)</code> отличается от <code>dispatch(action)</code> внутри middleware?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-```ts
-next(action);
-```
-
-передаёт action следующему middleware в текущем pipeline.
-
-```ts
-dispatch(action);
-```
-
-начинает новый Redux pipeline с первого middleware.
-
-Обычно исходный action передают через `next`.
-
-`dispatch` используют, чтобы отправить новое событие.
-
-Неправильное использование `dispatch` для того же action может создать бесконечный цикл.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Может ли middleware не передать action reducer?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Да.
-
-Если middleware не вызвало:
-
-```ts
-next(action);
-```
-
-текущий action не дойдёт до следующих middleware и root reducer.
-
-Например, thunk middleware перехватывает function:
-
-```ts
-dispatch(
-  (
-    dispatch,
-    getState,
-  ) => {
-    // logic
-  },
-);
-```
-
-Function выполняется middleware и не передаётся reducers.
-
-Reducers получают обычные actions, отправленные из thunk.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Зачем Redux требует неизменяемость состояния?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Immutable update создаёт новые ссылки только для изменённых частей.
-
-Это позволяет:
-
-- быстро сравнивать значения;
-- корректно работать React Redux;
-- мемоизировать selectors;
-- хранить историю состояний;
-- реализовать undo/redo;
-- воспроизводить actions.
-
-Изменение прежнего объекта на месте оставляет ту же ссылку, поэтому consumer может не обнаружить обновление.
-
-Redux Toolkit использует Immer, чтобы записывать immutable updates через mutating syntax.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Что такое structural sharing?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-При immutable update новые ссылки получают только изменённые ветви.
-
-```text
-до:
-root
-├── cart
-└── auth
-
-изменился cart
-
-после:
-new root
-├── new cart
-└── old auth
-```
-
-`auth` сохраняет прежнюю ссылку, потому что его данные не изменились.
-
-Это позволяет selectors и React Redux быстро понимать, какие значения остались прежними.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Почему Immer разрешает изменять <code>state</code> в reducer?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-В `createSlice` reducer получает не исходный object, а Immer draft.
-
-Код:
-
-```ts
-state.items.push(
-  action.payload,
-);
-```
-
-изменяет draft.
-
-Immer затем создаёт новое immutable state и сохраняет ссылки неизменённых ветвей.
-
-За пределами Immer изменять Redux state напрямую нельзя.
-
-```text
-mutating syntax в createSlice
-→ допустима
-
-реальная mutation store state
-→ запрещена
-```
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Чем subscriber отличается от React render?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Store вызывает subscribers после завершения dispatch.
-
-React Redux является одним из механизмов подписки.
-
-После уведомления `useSelector` сравнивает:
-
-```text
-предыдущий selected result
-
-и:
-
-новый selected result
-```
-
-Если результат не изменился, компонент обычно не перерисуется.
-
-```text
-dispatch
-→ уведомление store
-
-не означает:
-
-render каждого компонента
-```
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Зачем нужны selectors?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Selector получает Redux state и возвращает нужные данные.
-
-Он:
-
-- скрывает структуру store;
-- переиспользует правила чтения;
-- вычисляет производные значения;
-- используется React-компонентами и middleware;
-- может быть memoized.
-
-Например, итог корзины лучше вычислять из items через selector, а не хранить отдельную копию, которую нужно постоянно синхронизировать.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Почему selector, возвращающий новый объект, может вызывать лишний render?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-`useSelector` по умолчанию сравнивает результат через:
-
-```text
-===
-```
-
-Selector:
-
-```ts
-(state) => ({
-  user:
-    state.auth.user,
-  cart:
-    state.cart,
-})
-```
-
-создаёт новый object при каждом вызове.
-
-Даже если вложенные значения прежние:
-
-```text
-previousObject
-!== 
-newObject
-```
-
-Варианты решения:
-
-- несколько `useSelector`;
-- memoized selector;
-- `shallowEqual`, если он подходит задаче.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Почему обычно используют один store?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Один store даёт:
-
-- единое root state;
-- одну последовательность actions;
-- один middleware pipeline;
-- одну интеграцию DevTools;
-- возможность features реагировать на общие события.
-
-Логическое разделение выполняют slices.
-
-Несколько stores усложняют обмен событиями, типизацию и общую отладку.
-
-Они нужны редко — обычно для полностью независимых приложений или изолированных widgets.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Нужно ли хранить всё состояние приложения в Redux?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Нет.
-
-В Redux помещают состояние, которому полезна общая событийная модель и централизованное управление.
-
-Локально обычно остаются:
-
-- dropdown;
-- hover;
-- локальная модалка;
-- простой input;
-- временное состояние одного компонента.
-
-Server state может находиться в RTK Query cache.
-
-Form state — в React Hook Form.
-
-URL state — в URL.
-
-Один Redux store не означает один storage для вообще всех данных frontend.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Когда Redux не нужен?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Если состояние:
-
-- используется одним компонентом;
-- имеет простые transitions;
-- не требует общей событийной модели;
-- не требует middleware;
-- не требует DevTools;
-- легко поднимается к ближайшему родителю.
-
-Тогда понятнее использовать:
-
-- `useState`;
-- `useReducer`;
-- Context;
-- URL;
-- form library;
-- query library.
-
-Redux выбирают по сложности взаимодействий, а не по важности отдельного значения.
-
-<h2></h2>
-</dd>
-</dl>
-
-</details>
-
-<details>
-<summary><strong>Почему современный Redux пишут через Redux Toolkit?</strong></summary>
-
-<dl>
-<dd>
-<h2></h2>
-
-Redux Toolkit является официальным рекомендуемым способом писать Redux logic.
-
-Он предоставляет:
-
-- `configureStore`;
-- `createSlice`;
-- Immer;
-- thunk;
-- DevTools configuration;
-- development checks;
-- RTK Query;
-- listener middleware;
-- хорошую TypeScript inference.
-
-RTK уменьшает boilerplate и предотвращает распространённые ошибки, но сохраняет основные идеи Redux:
-
-```text
-store
-actions
-reducers
-dispatch
-middleware
-immutable updates
-```
+Классический Redux API полезно понимать для собеседования и чтения старого кода, но вручную собирать современное приложение из `createStore`, строк типов и `switch` обычно не нужно.
 
 <h2></h2>
 </dd>
@@ -2698,26 +561,17 @@ immutable updates
 
 ## Где это встречается во frontend
 
-| Сценарий | Польза Redux |
+| Сценарий | Как применяется Redux |
 | --- | --- |
-| Корзина и оформление заказа | Общие события и согласованные изменения нескольких slices |
-| Сложный редактор | Централизованные transitions, selectors, undo/redo и DevTools |
-| Выход пользователя | Один `userLoggedOut` обрабатывают auth, cart, editor и API cache |
-| Массовый выбор объектов | Состояние используют toolbar, table и другие удалённые компоненты |
-| Несколько features реагируют на оплату | Один event обрабатывают reducers и listener middleware |
+| Корзина и оформление заказа | Несколько экранов используют общее состояние и согласованные события |
+| Выход пользователя | Один `userLoggedOut` очищает данные нескольких slices |
+| Сложный редактор | Централизованные переходы, history, undo/redo и DevTools |
+| Массовый выбор элементов | Таблица, toolbar и панели читают один источник истины |
 | Асинхронный бизнес-процесс | Thunk или listener middleware координирует несколько actions |
-| Server data и cache | RTK Query хранит query state внутри Redux store |
-| Большая команда | Единый способ описывать события и обновления |
-| Локальная модалка | Redux обычно не нужен; достаточно `useState` |
-| Простая форма | Form state остаётся локально или в form library |
-| Производные данные | Selector вместо отдельной копии в store |
-| React-компонент читает store | `useSelector` и typed hooks |
-| API request завершился | Middleware dispatch-ит result action, reducer обновляет state |
-| Action неизвестен slice | Slice reducer возвращает прежнее состояние |
-| Нужно логировать все события | Middleware наблюдает общий dispatch pipeline |
-| Нужна генерация ID или времени | Значение создаётся до reducer и передаётся в payload |
-| WebSocket прислал событие | Handler или middleware dispatch-ит обычный action |
-| Сам объект WebSocket | Не хранится в Redux state; используется service или middleware |
+| Server data | RTK Query хранит query state и cache в Redux store |
+| WebSocket | Service или middleware превращает сообщения в обычные actions |
+| Локальная модалка | Redux обычно не нужен — достаточно component state |
+| Производные данные | Selector вычисляет значение без отдельной копии в store |
 
 ## Связанные темы
 
@@ -2725,24 +579,19 @@ immutable updates
 - [03 Основы Redux Toolkit](<./03 Основы Redux Toolkit.md>)
 - [04 Асинхронная логика Redux Toolkit](<./04 Асинхронная логика Redux Toolkit.md>)
 - [05 Селекторы и нормализация данных в Redux](<./05 Селекторы и нормализация данных в Redux.md>)
+- [07 Кеш и обновление данных в RTK Query](<./07 Кеш и обновление данных в RTK Query.md>)
 
 ## Источники
 
-- [Redux docs: Redux Fundamentals — Concepts and Data Flow](https://redux.js.org/tutorials/fundamentals/part-2-concepts-data-flow)
-- [Redux docs: State, Actions and Reducers](https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers)
-- [Redux docs: Store](https://redux.js.org/api/store)
-- [Redux docs: Store and Middleware](https://redux.js.org/tutorials/fundamentals/part-4-store)
-- [Redux docs: Side Effects Approaches](https://redux.js.org/usage/side-effects-approaches)
-- [Redux docs: Redux Style Guide](https://redux.js.org/style-guide/)
-- [Redux docs: Prior Art — Flux](https://redux.js.org/understanding/history-and-design/prior-art)
-- [Redux docs: Deriving Data with Selectors](https://redux.js.org/usage/deriving-data-selectors)
-- [Redux docs: Modern Redux with Redux Toolkit](https://redux.js.org/tutorials/fundamentals/part-8-modern-redux)
-- [Redux Toolkit: Why Redux Toolkit Is How to Use Redux Today](https://redux.js.org/introduction/why-rtk-is-redux-today)
-- [Redux Toolkit: configureStore](https://redux-toolkit.js.org/api/configureStore)
-- [Redux Toolkit: createSlice](https://redux-toolkit.js.org/api/createSlice)
+- [Redux: Concepts and Data Flow](https://redux.js.org/tutorials/fundamentals/part-2-concepts-data-flow)
+- [Redux: State, Actions and Reducers](https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers)
+- [Redux: Store and Middleware](https://redux.js.org/tutorials/fundamentals/part-4-store)
+- [Redux: Style Guide](https://redux.js.org/style-guide/)
+- [Redux: Side Effects Approaches](https://redux.js.org/usage/side-effects-approaches)
+- [Redux: Prior Art — Flux](https://redux.js.org/understanding/history-and-design/prior-art)
+- [Redux: Why Redux Toolkit Is How to Use Redux Today](https://redux.js.org/introduction/why-rtk-is-redux-today)
 - [Redux Toolkit: Writing Reducers with Immer](https://redux-toolkit.js.org/usage/immer-reducers)
 - [React Redux: Hooks](https://react-redux.js.org/api/hooks)
-- [React Redux: Provider](https://react-redux.js.org/api/provider)
 
 ---
 
