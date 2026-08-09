@@ -1,0 +1,243 @@
+section;number;old_title;new_title
+JavaScript;09;this call apply bind;this и привязка контекста
+JavaScript;11;class new constructor extends super;Классы и наследование в JavaScript
+JavaScript;14;Object descriptors getters setters freeze seal;Дескрипторы свойств и ограничения объектов
+JavaScript;18;Iterables iterators generators;Протокол итерации и генераторы
+JavaScript;23;Ошибки try catch;Обработка ошибок в JavaScript
+JavaScript;29;Fetch AbortController и ошибки API;fetch отмена запросов и обработка ошибок
+JavaScript;34;Garbage collection;Сборка мусора и утечки памяти
+JavaScript;36;CustomEvent EventTarget dispatchEvent;EventTarget и пользовательские события
+JavaScript;37;URL URLSearchParams History API;URL и навигация через History API
+JavaScript;38;Web Workers postMessage structured clone;Web Workers и передача данных
+JavaScript;39;Cookies document.cookie SameSite credentials;Cookies в браузере и HTTP-запросах
+JavaScript;40;FormData Blob FileReader;Работа с файлами в браузере
+JavaScript;41;postMessage BroadcastChannel;Обмен сообщениями в браузере
+JavaScript;42;Execution context lexical environment scope chain;Контекст выполнения и области видимости
+JavaScript;44;ToPrimitive valueOf toString Symbol.toPrimitive;Преобразование объектов в примитивы
+JavaScript;45;DOM API innerHTML layout thrashing;Безопасная и производительная работа с DOM
+JavaScript;46;Streams API ReadableStream;Потоки данных и ReadableStream
+JavaScript;47;Service Worker Cache API PWA;Service Worker и кеширование в PWA
+JavaScript;48;WebSocket EventSource realtime;WebSocket и обновления данных в реальном времени
+JavaScript;49;Microtasks queueMicrotask nextTick и rejection;Микрозадачи и обработка Promise rejection
+JavaScript;50;IIFE HOF currying compose first-class functions;Продвинутые приёмы работы с функциями
+JavaScript;51;OOP classes new static instanceof;ООП в JavaScript
+JavaScript;55;ArrayBuffer TypedArray DataView;Бинарные данные в JavaScript
+Next.js;02;App Router pages layouts loading error route handlers;Структура App Router
+Next.js;03;Server Components Client Components и use client;Server и Client Components
+Next.js;04;SSR SSG ISR Streaming и hydration;Рендеринг в Next.js
+Next.js;05;Data fetching fetch cache no-store revalidate;Загрузка и кеширование данных в Next.js
+Next.js;06;Кэширование Data Cache Full Route Cache Router Cache;Уровни кеширования в Next.js
+Next.js;07;Server Actions forms mutations revalidatePath revalidateTag;Server Actions и изменение данных
+Next.js;08;Route Handlers Middleware Edge и Node runtime;Серверные обработчики и runtime в Next.js
+Next.js;09;Dynamic routes params searchParams metadata;Динамические маршруты и metadata
+Next.js;10;Next.js 14 15 16 версии Turbopack Cache Components PPR;Версии Next.js 14 15 и 16
+Next.js;11;Pages Router getServerSideProps getStaticProps getStaticPaths;Pages Router и загрузка данных
+Next.js;12;Route Groups Parallel и Intercepting Routes;Сложные маршруты в App Router
+Next.js;13;Image Font Link Script и оптимизация;Оптимизация ресурсов в Next.js
+Next.js;14;Environment variables next config standalone и deployment;Настройка и развёртывание Next.js
+TypeScript;02;Типы данных и inference;Типы данных и вывод типов
+TypeScript;03;any unknown never void;Специальные типы TypeScript
+TypeScript;05;Union intersection discriminated unions;Union-типы и моделирование состояний
+TypeScript;06;Narrowing type guards assertions;Сужение типов и type guards
+TypeScript;08;keyof typeof indexed access;Операторы типов keyof typeof и indexed access
+TypeScript;10;Conditional types и infer;Условные типы и infer
+TypeScript;11;Structural typing и excess property checks;Структурная типизация и лишние свойства
+TypeScript;13;Function overloads;Перегрузки функций
+TypeScript;14;as const satisfies и type assertions;Утверждения и уточнение типов
+TypeScript;15;enum const enum и literal unions;enum и альтернативы
+TypeScript;16;tsconfig strict mode;Строгие настройки tsconfig
+TypeScript;17;import type isolatedModules declaration files;Типы модулей и файлы деклараций
+TypeScript;19;React TypeScript типизация;Типизация React-компонентов
+TypeScript;20;Формы события refs и DOM типы;Типизация форм и DOM в React
+TypeScript;21;Redux Toolkit RTK Query и typed hooks;Типизация Redux Toolkit и RTK Query
+TypeScript;22;Template literal types и branded types;Шаблонные и брендированные типы
+TypeScript;23;Array methods filter reduce и type predicates;Типизация методов массивов
+TypeScript;24;Async Promise Awaited и catch unknown;Типизация async-кода и ошибок
+TypeScript;25;React advanced types ComponentProps forwardRef polymorphic as;Продвинутая типизация React-компонентов
+TypeScript;26;tsconfig target lib moduleResolution paths jsx;Основные настройки tsconfig
+TypeScript;27;readonly optional properties и immutability;readonly и неизменяемость
+TypeScript;28;abstract classes implements decorators;Классы и декораторы в TypeScript
+TypeScript;29;TypeScript 6 и 7 migration;Миграция на TypeScript 6 и 7
+Tooling;01;package.json scripts dependencies devDependencies;package.json и зависимости
+Tooling;02;lock files npm ci и воспроизводимая установка;Lock-файлы и воспроизводимая установка
+Tooling;03;Semver caret tilde exact versions;Semver и диапазоны версий
+Tooling;04;Vite dev server build env proxy;Разработка и сборка с Vite
+Tooling;05;Webpack entry loaders plugins optimization;Конфигурация Webpack
+Tooling;06;Bundle code splitting tree shaking size budgets;Оптимизация размера бандла
+Tooling;07;Env variables frontend build runtime secrets;Переменные окружения во frontend
+Tooling;08;Source maps production debugging security;Source maps в production
+Tooling;09;Production build assets hashing base publicPath;Проверка production-сборки
+Tooling;10;Babel transpilation polyfills browserslist;Babel полифилы и Browserslist
+Tooling;11;npm Yarn pnpm workspaces и monorepo;Менеджеры пакетов и monorepo
+Tooling;12;ESLint Prettier typecheck и quality gates;Проверки качества frontend-кода
+Performance;02;Core Web Vitals LCP INP CLS;Метрики Core Web Vitals
+Performance;03;Critical rendering path render pipeline;Критический путь рендеринга
+Performance;04;Bundle size code splitting tree shaking loading strategy;Размер бандла и стратегия загрузки
+Performance;05;Images fonts resource priority preload lazy loading;Оптимизация изображений и шрифтов
+Performance;06;React performance rerenders memo profiler virtualization;Производительность React
+Performance;07;Main thread long tasks Web Workers;Главный поток и тяжёлые задачи
+Performance;08;Network caching CDN compression HTTP cache;Сетевая производительность и кеширование
+Performance;09;Performance budgets CI monitoring RUM;Бюджет производительности и мониторинг
+Performance;10;Performance debugging DevTools Lighthouse profiling;Диагностика производительности
+Git;02;Working tree index commit history remote HEAD branch;Путь изменений в Git
+Git;03;Branching strategy feature branch main trunk git flow;Стратегии ветвления
+Git;04;Merge vs rebase fast-forward squash;Merge и rebase
+Git;05;Cherry-pick revert reset restore stash reflog;Отмена сохранение и восстановление изменений
+Git;07;Merge request GitLab protected branches approvals;Merge request и защита веток в GitLab
+Git;08;Commit history squash fixup conventional commits;Понятная история коммитов
+Git;09;Поиск регрессии log show blame bisect;Поиск регрессий в Git
+Architecture;02;FSD layers slices segments import rule;Структура Feature-Sliced Design
+Architecture;03;FSD public API import boundaries;Public API и границы импортов в FSD
+Architecture;04;API слой contracts DTO mapping;API-слой и преобразование DTO
+Architecture;05;Где хранить state local server global URL;Выбор места хранения состояния
+Architecture;07;Error handling observability logging monitoring;Обработка ошибок и наблюдаемость
+Architecture;09;Shared UI design system Radix UI;Design system и общий UI
+Architecture;10;Architecture anti-patterns utils dump circular dependencies;Архитектурные антипаттерны
+Architecture;11;Atomic Design MVC MVP modular architecture;Подходы к организации frontend-архитектуры
+State Management;03;Redux Toolkit configureStore createSlice Immer;Основы Redux Toolkit
+State Management;04;Async logic createAsyncThunk listener middleware;Асинхронная логика Redux Toolkit
+State Management;05;Selectors normalization и createEntityAdapter;Селекторы и нормализация данных в Redux
+State Management;06;RTK Query createApi query mutation tags;Основы RTK Query
+State Management;07;RTK Query cache lifecycle optimistic updates polling;Кеш и обновление данных в RTK Query
+State Management;08;Zustand store selectors middleware persist;Основы Zustand
+State Management;09;Redux Toolkit vs Zustand vs Context vs RTK Query;Выбор инструмента управления состоянием
+State Management;10;TanStack Query React Query vs RTK Query;TanStack Query и сравнение с RTK Query
+Security;01;Frontend threat model;Модель угроз во frontend
+Security;02;XSS reflected stored DOM React;XSS во frontend и React
+Security;03;CSRF cookies SameSite tokens;Защита от CSRF
+Security;04;Token storage cookies localStorage refresh access tokens;Хранение access и refresh tokens
+Security;05;CORS same-origin preflight credentials;Same-origin policy и CORS
+Security;06;CSP security headers clickjacking;CSP и защитные HTTP-заголовки
+Security;07;Auth permissions frontend backend responsibility;Ответственность frontend и backend в авторизации
+Security;08;Supply chain npm dependencies secrets third-party scripts;Защита цепочки поставки frontend
+Security;09;WebSocket security auth origin reconnect;Безопасность WebSocket
+Security;10;JWT sessions OAuth authorization basics;Механизмы аутентификации и авторизации
+Security;11;postMessage iframe open redirect tabnabbing;Безопасность окон iframe и внешних ссылок
+DevOps;02;CI CD pipeline stages jobs artifacts cache;Устройство CI CD pipeline
+DevOps;04;Docker для frontend multi-stage build;Docker-сборка frontend-приложения
+DevOps;05;Nginx static serving SPA fallback cache headers;Настройка Nginx для SPA
+DevOps;06;Env variables secrets build-time runtime;Переменные окружения и secrets в CI CD
+DevOps;07;Production troubleshooting logs rollback smoke tests;Диагностика проблем после deploy
+DevOps;08;Deployment strategies health checks rollback;Стратегии развёртывания и rollback
+Testing;02;Jest runner config environment transform;Конфигурация и запуск Jest
+Testing;03;Jest mocks spies fake timers;Моки и таймеры в Jest
+Testing;04;Async tests promises timers userEvent;Тестирование асинхронного кода
+Testing;05;React Testing Library queries user behavior;Тестирование React с React Testing Library
+Testing;07;Flaky tests isolation cleanup;Нестабильные тесты и изоляция
+Testing;08;Coverage CI и качество тестов;Покрытие кода и качество тестов
+Testing;09;E2E Playwright Cypress isolation locators;E2E-тесты с Playwright и Cypress
+Accessibility;01;Что такое accessibility WCAG POUR;Основы веб-доступности и WCAG
+Accessibility;02;Semantic HTML accessible name ARIA roles;Семантический HTML и ARIA
+Accessibility;03;Keyboard navigation focus management;Клавиатурная навигация и управление фокусом
+Accessibility;04;Visual accessibility contrast zoom motion;Визуальная доступность
+Accessibility;05;Forms labels errors validation accessibility;Доступность форм
+Accessibility;06;Dialog dropdown overlay accessibility;Доступность модальных окон и меню
+Accessibility;07;Images media alt captions;Доступность изображений и медиа
+Accessibility;08;Dynamic content aria-live status alert;Доступность динамического контента
+Accessibility;09;Accessibility testing manual automated screen reader;Тестирование веб-доступности
+Accessibility;10;Accessibility в React и Radix UI;Доступность в React и Radix UI
+React;02;Render commit и Fiber;Обновление интерфейса в React
+React;03;Reconciliation key и списки;Reconciliation и key в списках
+React;05;Причины рендера и batching;Повторный рендер и batching
+React;07;useEffect useLayoutEffect и cleanup;Эффекты React и cleanup
+React;08;Правила хуков и custom hooks;Правила хуков и пользовательские хуки
+React;09;useMemo useCallback и React memo;Мемоизация в React
+React;10;useRef ref prop forwardRef и imperative handle;Работа с ref в React
+React;14;Controlled и uncontrolled компоненты;Управляемые и неуправляемые компоненты
+React;15;Suspense lazy и code splitting;Suspense lazy и разделение кода
+React;17;Hydration SSR и SSG;SSR SSG и hydration в React
+React;19;React 18 19 и 19.2;Версии React 18 19 и 19.2
+React;22;Performance profiling и оптимизация React;Диагностика производительности React
+React;23;JSX SyntheticEvent и декларативность;JSX события и декларативность
+React;24;HOC render props PureComponent Component lifecycle;Классовые компоненты и паттерны React
+React;25;Advanced hooks useId useSyncExternalStore useOptimistic use;Специализированные хуки React
+React;26;useInsertionEffect useDebugValue flushSync startTransition;Специализированные API React
+React;27;React DOM form hooks useFormStatus useActionState;Формы и actions в React 19
+Forms;02;Controlled uncontrolled и FormData;Управляемые и неуправляемые формы
+Forms;03;React Hook Form register handleSubmit formState;Основы React Hook Form
+Forms;04;Controller и кастомные компоненты;Controller в React Hook Form
+Forms;05;Валидация форм schema resolver async validation;Валидация форм
+Forms;06;Submit lifecycle server errors reset defaultValues;Отправка и сброс формы
+Forms;07;Performance watch useWatch field arrays;Производительность больших форм
+Forms;08;Accessibility форм;Доступность форм
+Frontend System Design;03;Форма с async validation и server errors;Проектирование сложной формы
+Frontend System Design;04;Auth flow protected routes refresh tokens;Проектирование аутентификации
+Frontend System Design;05;Realtime экран WebSocket SSE polling;Проектирование realtime-экрана
+Frontend System Design;06;Dashboard performance caching error states;Проектирование dashboard
+Frontend System Design;07;Autocomplete поиск debounce cache accessibility;Проектирование autocomplete-поиска
+Frontend System Design;08;Загрузка файлов progress retry multipart;Проектирование загрузки файлов
+Frontend System Design;09;Infinite scroll cursor pagination scroll restoration;Проектирование бесконечной ленты
+HTML;02;Div span block inline;Блочные и строчные элементы div и span
+HTML;03;Семантическая верстка landmarks headings;Семантическая вёрстка и структура страницы
+HTML;04;Accessibility ARIA accessible name keyboard;Основы доступности в HTML
+HTML;05;HTML формы labels validation disabled readonly;HTML-формы и встроенная валидация
+HTML;06;Head meta SEO Open Graph resource hints;Содержимое head и метаданные страницы
+HTML;07;Images responsive media alt lazy loading;Изображения в HTML
+HTML;08;Script defer async module preload;Загрузка скриптов в HTML
+HTML;09;iframe sandbox security;Безопасность iframe
+HTML;10;Shadow DOM Web Components slots;Shadow DOM и Web Components
+CSS;01;Что такое CSS cascade inheritance specificity;Каскад наследование и специфичность CSS
+CSS;02;Box model display formatting contexts;Box model и типы отображения
+CSS;03;Flexbox оси выравнивание перенос;Основы Flexbox
+CSS;04;CSS Grid tracks areas auto-fit minmax;Основы CSS Grid
+CSS;06;Position sticky fixed absolute relative;Позиционирование элементов в CSS
+CSS;07;Stacking context z-index overflow;Stacking context и z-index
+CSS;08;Responsive design media container queries units;Адаптивный дизайн media и container queries
+CSS;09;CSS variables design tokens themes;CSS-переменные и темы
+CSS;10;Animations transitions transform performance;Анимации и transitions в CSS
+CSS;11;SCSS variables mixins functions nesting;Возможности SCSS
+CSS;12;SCSS modules use forward architecture;Модульная архитектура Sass
+CSS;13;CSS Modules BEM naming collisions;CSS Modules и BEM
+CSS;14;Debugging CSS DevTools common issues;Диагностика проблем CSS
+CSS;15;CSS selectors pseudo-classes pseudo-elements;CSS-селекторы псевдоклассы и псевдоэлементы
+CSS;16;CSS reset normalize browser defaults;CSS reset и normalize
+CSS;17;CSS preprocessors PostCSS Autoprefixer;Препроцессоры и PostCSS
+CSS;18;Intrinsic sizing min-content max-content fit-content;Intrinsic sizing в CSS
+Web Basics;01;HTTP request response headers body;Структура HTTP-запроса и ответа
+Web Basics;02;HTTP methods status codes safe idempotent;HTTP-методы и коды состояния
+Web Basics;03;HTTP vs HTTPS TLS certificates;HTTPS TLS и сертификаты
+Web Basics;04;URL origin domain path query fragment;Структура URL и origin
+Web Basics;06;HTTP cache cookies storage basics;Хранение и кеширование данных в браузере
+Web Basics;07;Web protocols HTTP WebSocket SSE polling;Обмен данными в реальном времени
+Web Basics;08;DNS TCP UDP HTTP2 basics;Сетевые протоколы при загрузке страницы
+Web Basics;09;SPA MPA CSR routing;SPA MPA и способы рендеринга
+Web API;02;HTTP методы safe idempotent cacheable;Свойства HTTP-методов
+Web API;03;HTTP status codes и ошибки API;HTTP-статусы и ошибки API
+Web API;04;Fetch API AbortController credentials headers;Fetch API и управление запросом
+Web API;05;CORS preflight credentials;CORS и preflight-запросы
+Web API;06;Cookies tokens auth flow refresh;Аутентификация и обновление токенов
+Web API;07;OpenAPI Swagger contracts codegen;OpenAPI и генерация клиента
+Web API;08;Pagination filtering sorting;Пагинация фильтрация и сортировка API
+Web API;09;WebSocket protocol lifecycle reconnect;Жизненный цикл WebSocket
+Web API;10;SSE WebSocket polling comparison;Выбор транспорта для realtime-обновлений
+Web API;12;WebRTC basics;Основы WebRTC
+Browser Internals;02;Rendering pipeline reflow repaint composite;Конвейер рендеринга браузера
+Browser Internals;03;Event delegation capture bubble;Распространение DOM-событий
+Browser Internals;04;Page lifecycle visibility bfcache background tabs;Жизненный цикл страницы и фоновые вкладки
+Browser Internals;05;Memory leaks и profiling;Утечки памяти и профилирование
+Browser Internals;06;Browser storage cookies localStorage IndexedDB Cache API;Хранилища данных в браузере
+Browser Internals;07;Service Worker PWA lifecycle cache network;Service Worker и стратегии кеширования
+Algorithms;01;Big O time space complexity;Big O и сложность алгоритмов
+Algorithms;03;Map Set Object выбор структуры данных;Выбор структуры данных Map Set или Object
+Algorithms;04;Linear search binary search и индексация;Линейный бинарный и индексный поиск
+Algorithms;05;Sorting comparator stable sort;Сортировка массивов в JavaScript
+Algorithms;06;Recursion stack DFS BFS tree traversal;Рекурсия и обход деревьев
+Algorithms;07;Trees DOM routes comments nested data;Деревья и вложенные данные во frontend
+Algorithms;10;Stack Queue Deque во frontend;Стек очередь и дек
+Algorithms;11;Two pointers sliding window frequency map;Алгоритмические шаблоны для массивов
+Patterns;01;Зачем нужны design patterns во frontend;Шаблоны проектирования во frontend
+Patterns;04;Observer PubSub EventTarget events;Observer PubSub и браузерные события
+Patterns;06;Factory Singleton lifecycle;Factory Singleton и жизненный цикл
+Patterns;07;Decorator Proxy Mixin Mediator Flyweight;Дополнительные паттерны во frontend
+Patterns;08;God Object Class Extraction REP CCP;Декомпозиция God Object и границы модулей
+Principles;02;Single Responsibility Principle во frontend;Принцип единственной ответственности
+Principles;03;Open Closed Principle composition strategy;Принцип открытости и закрытости
+Principles;04;Liskov и Interface Segregation в компонентах и типах;Принципы Liskov и Interface Segregation
+Principles;05;Dependency Inversion API adapters hooks;Инверсия зависимостей во frontend
+Principles;07;Composition over inheritance в React;Композиция вместо наследования в React
+Principles;08;Coupling cohesion и границы модулей;Связанность и цельность модулей
+Workflow;01;Agile Scrum Kanban для frontend;Agile Scrum и Kanban
+Workflow;02;Scrum sprint planning refinement daily review retro;События Scrum
+Workflow;03;Jira backlog issue story task acceptance criteria;Задачи и backlog в Jira
+Workflow;04;Definition of Ready Definition of Done frontend;Definition of Ready и Definition of Done
+Workflow;05;Estimation blockers risks communication;Оценка риски и коммуникация
