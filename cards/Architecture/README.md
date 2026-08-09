@@ -11,16 +11,16 @@
 ## Темы
 
 1. [Что такое frontend-архитектура](<./01 Что такое frontend architecture.md>)
-2. [FSD: слои, срезы, сегменты и правило импортов](<./02 FSD layers slices segments import rule.md>)
-3. [FSD: public API и границы импортов](<./03 FSD public API import boundaries.md>)
-4. [API-слой, контракт, DTO и преобразование данных](<./04 API слой contracts DTO mapping.md>)
-5. [Где хранить состояние: компонент, server state, глобальный store или URL](<./05 Где хранить state local server global URL.md>)
+2. [FSD: слои, срезы, сегменты и правило импортов](<./02 Структура Feature-Sliced Design.md>)
+3. [FSD: public API и границы импортов](<./03 Public API и границы импортов в FSD.md>)
+4. [API-слой, контракт, DTO и преобразование данных](<./04 API-слой и преобразование DTO.md>)
+5. [Где хранить состояние: компонент, server state, глобальный store или URL](<./05 Выбор места хранения состояния.md>)
 6. [Feature flags: постепенный rollout и эксперименты](<./06 Feature flags rollout experiments.md>)
-7. [Обработка ошибок и observability](<./07 Error handling observability logging monitoring.md>)
+7. [Обработка ошибок и observability](<./07 Обработка ошибок и наблюдаемость.md>)
 8. [Микрофронтенды: когда нужны и когда вредят](<./08 Microfrontends когда нужны и когда вредят.md>)
-9. [Shared UI, дизайн-система и Radix UI](<./09 Shared UI design system Radix UI.md>)
-10. [Архитектурные антипаттерны и циклические зависимости](<./10 Architecture anti-patterns utils dump circular dependencies.md>)
-11. [Atomic Design, MVC, MVP и модульная архитектура](<./11 Atomic Design MVC MVP modular architecture.md>)
+9. [Shared UI, дизайн-система и Radix UI](<./09 Design system и общий UI.md>)
+10. [Архитектурные антипаттерны и циклические зависимости](<./10 Архитектурные антипаттерны.md>)
+11. [Atomic Design, MVC, MVP и модульная архитектура](<./11 Подходы к организации frontend-архитектуры.md>)
 
 ## Как пользоваться
 

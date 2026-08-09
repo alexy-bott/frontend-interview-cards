@@ -1,7 +1,7 @@
 # Compound Components и Headless UI
 
 <!-- CARD-NAV-TOP:START -->
-[← 04 Observer PubSub EventTarget events](<./04 Observer PubSub EventTarget events.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Factory Singleton lifecycle →](<./06 Factory Singleton lifecycle.md>)
+[← 04 Observer PubSub и браузерные события](<./04 Observer PubSub и браузерные события.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Factory Singleton и жизненный цикл →](<./06 Factory Singleton и жизненный цикл.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1830,10 +1830,10 @@ Compound API оправдан реальной потребностью в ко�
 
 ## Связанные темы
 
-- [09 Shared UI design system Radix UI](<../Architecture/09 Shared UI design system Radix UI.md>)
+- [09 Design system и общий UI](<../Architecture/09 Design system и общий UI.md>)
 - [11 Context](<../React/11 Context.md>)
-- [14 Controlled и uncontrolled компоненты](<../React/14 Controlled и uncontrolled компоненты.md>)
-- [10 Accessibility в React и Radix UI](<../Accessibility/10 Accessibility в React и Radix UI.md>)
+- [14 Управляемые и неуправляемые компоненты](<../React/14 Управляемые и неуправляемые компоненты.md>)
+- [10 Доступность в React и Radix UI](<../Accessibility/10 Доступность в React и Radix UI.md>)
 
 ## Источники
 
@@ -1846,5 +1846,5 @@ Compound API оправдан реальной потребностью в ко�
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 04 Observer PubSub EventTarget events](<./04 Observer PubSub EventTarget events.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Factory Singleton lifecycle →](<./06 Factory Singleton lifecycle.md>)
+[← 04 Observer PubSub и браузерные события](<./04 Observer PubSub и браузерные события.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Factory Singleton и жизненный цикл →](<./06 Factory Singleton и жизненный цикл.md>)
 <!-- CARD-NAV-BOTTOM:END -->

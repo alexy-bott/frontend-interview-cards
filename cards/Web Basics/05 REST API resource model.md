@@ -1,7 +1,7 @@
 # REST API resource model
 
 <!-- CARD-NAV-TOP:START -->
-[← 04 URL origin domain path query fragment](<./04 URL origin domain path query fragment.md>) · [↑ Web Basics](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 HTTP cache cookies storage basics →](<./06 HTTP cache cookies storage basics.md>)
+[← 04 Структура URL и origin](<./04 Структура URL и origin.md>) · [↑ Web Basics](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Хранение и кеширование данных в браузере →](<./06 Хранение и кеширование данных в браузере.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -852,9 +852,9 @@ RPC естественно моделирует операции, которые
 ## Связанные темы
 
 - [01 REST API и ресурсная модель](<../Web API/01 REST API и ресурсная модель.md>)
-- [07 OpenAPI Swagger contracts codegen](<../Web API/07 OpenAPI Swagger contracts codegen.md>)
-- [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
-- [06 RTK Query createApi query mutation tags](<../State Management/06 RTK Query createApi query mutation tags.md>)
+- [07 OpenAPI и генерация клиента](<../Web API/07 OpenAPI и генерация клиента.md>)
+- [04 API-слой и преобразование DTO](<../Architecture/04 API-слой и преобразование DTO.md>)
+- [06 Основы RTK Query](<../State Management/06 Основы RTK Query.md>)
 - [11 GraphQL vs REST](<../Web API/11 GraphQL vs REST.md>)
 
 ## Источники
@@ -869,5 +869,5 @@ RPC естественно моделирует операции, которые
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 04 URL origin domain path query fragment](<./04 URL origin domain path query fragment.md>) · [↑ Web Basics](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 HTTP cache cookies storage basics →](<./06 HTTP cache cookies storage basics.md>)
+[← 04 Структура URL и origin](<./04 Структура URL и origin.md>) · [↑ Web Basics](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Хранение и кеширование данных в браузере →](<./06 Хранение и кеширование данных в браузере.md>)
 <!-- CARD-NAV-BOTTOM:END -->

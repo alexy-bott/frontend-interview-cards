@@ -251,7 +251,7 @@ let 2
 
 - [05 Hoisting и TDZ](<./05 Hoisting и TDZ.md>)
 - [08 Замыкание](<./08 Замыкание.md>)
-- [42 Execution context lexical environment scope chain](<./42 Execution context lexical environment scope chain.md>)
+- [42 Контекст выполнения и области видимости](<./42 Контекст выполнения и области видимости.md>)
 - [43 Strict mode use strict](<./43 Strict mode use strict.md>)
 
 ## Источники

@@ -1,7 +1,7 @@
 # Что происходит после ввода URL
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Browser Internals](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Rendering pipeline reflow repaint composite →](<./02 Rendering pipeline reflow repaint composite.md>)
+[↑ Browser Internals](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Конвейер рендеринга браузера →](<./02 Конвейер рендеринга браузера.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1236,14 +1236,14 @@ Site Isolation помогает размещать документы разны
 
 ## Связанные темы
 
-- [04 URL origin domain path query fragment](<../Web Basics/04 URL origin domain path query fragment.md>)
-- [08 DNS TCP UDP HTTP2 basics](<../Web Basics/08 DNS TCP UDP HTTP2 basics.md>)
+- [04 Структура URL и origin](<../Web Basics/04 Структура URL и origin.md>)
+- [08 Сетевые протоколы при загрузке страницы](<../Web Basics/08 Сетевые протоколы при загрузке страницы.md>)
 - [01 REST API и ресурсная модель](<../Web API/01 REST API и ресурсная модель.md>)
-- [08 Script defer async module preload](<../HTML/08 Script defer async module preload.md>)
-- [03 Critical rendering path render pipeline](<../Performance/03 Critical rendering path render pipeline.md>)
-- [37 URL URLSearchParams History API](<../JavaScript/37 URL URLSearchParams History API.md>)
-- [17 Hydration SSR и SSG](<../React/17 Hydration SSR и SSG.md>)
-- [07 Service Worker PWA lifecycle cache network](<./07 Service Worker PWA lifecycle cache network.md>)
+- [08 Загрузка скриптов в HTML](<../HTML/08 Загрузка скриптов в HTML.md>)
+- [03 Критический путь рендеринга](<../Performance/03 Критический путь рендеринга.md>)
+- [37 URL и навигация через History API](<../JavaScript/37 URL и навигация через History API.md>)
+- [17 SSR SSG и hydration в React](<../React/17 SSR SSG и hydration в React.md>)
+- [07 Service Worker и стратегии кеширования](<./07 Service Worker и стратегии кеширования.md>)
 
 ## Источники
 
@@ -1258,5 +1258,5 @@ Site Isolation помогает размещать документы разны
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Browser Internals](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Rendering pipeline reflow repaint composite →](<./02 Rendering pipeline reflow repaint composite.md>)
+[↑ Browser Internals](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Конвейер рендеринга браузера →](<./02 Конвейер рендеринга браузера.md>)
 <!-- CARD-NAV-BOTTOM:END -->

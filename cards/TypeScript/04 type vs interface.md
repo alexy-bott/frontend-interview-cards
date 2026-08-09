@@ -1,7 +1,7 @@
 # type vs interface
 
 <!-- CARD-NAV-TOP:START -->
-[← 03 any unknown never void](<./03 any unknown never void.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Union intersection discriminated unions →](<./05 Union intersection discriminated unions.md>)
+[← 03 Специальные типы TypeScript](<./03 Специальные типы TypeScript.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Union-типы и моделирование состояний →](<./05 Union-типы и моделирование состояний.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -289,10 +289,10 @@ class User implements UserModel {
 
 ## Связанные темы
 
-- [05 Union intersection discriminated unions](<./05 Union intersection discriminated unions.md>)
+- [05 Union-типы и моделирование состояний](<./05 Union-типы и моделирование состояний.md>)
 - [09 Mapped types и Utility Types](<./09 Mapped types и Utility Types.md>)
-- [17 import type isolatedModules declaration files](<./17 import type isolatedModules declaration files.md>)
-- [19 React TypeScript типизация](<./19 React TypeScript типизация.md>)
+- [17 Типы модулей и файлы деклараций](<./17 Типы модулей и файлы деклараций.md>)
+- [19 Типизация React-компонентов](<./19 Типизация React-компонентов.md>)
 
 ## Источники
 
@@ -304,5 +304,5 @@ class User implements UserModel {
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 03 any unknown never void](<./03 any unknown never void.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Union intersection discriminated unions →](<./05 Union intersection discriminated unions.md>)
+[← 03 Специальные типы TypeScript](<./03 Специальные типы TypeScript.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Union-типы и моделирование состояний →](<./05 Union-типы и моделирование состояний.md>)
 <!-- CARD-NAV-BOTTOM:END -->

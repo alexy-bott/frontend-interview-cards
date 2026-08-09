@@ -1,7 +1,7 @@
 # Feature flags rollout experiments
 
 <!-- CARD-NAV-TOP:START -->
-[← 05 Где хранить state local server global URL](<./05 Где хранить state local server global URL.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Error handling observability logging monitoring →](<./07 Error handling observability logging monitoring.md>)
+[← 05 Выбор места хранения состояния](<./05 Выбор места хранения состояния.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Обработка ошибок и наблюдаемость →](<./07 Обработка ошибок и наблюдаемость.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -297,9 +297,9 @@ Kill switch оставляет текущую версию в production, но �
 
 ## Связанные темы
 
-- [07 Error handling observability logging monitoring](<./07 Error handling observability logging monitoring.md>)
-- [04 SSR SSG ISR Streaming и hydration](<../Next.js/04 SSR SSG ISR Streaming и hydration.md>)
-- [07 Production troubleshooting logs rollback smoke tests](<../DevOps/07 Production troubleshooting logs rollback smoke tests.md>)
+- [07 Обработка ошибок и наблюдаемость](<./07 Обработка ошибок и наблюдаемость.md>)
+- [04 Рендеринг в Next.js](<../Next.js/04 Рендеринг в Next.js.md>)
+- [07 Диагностика проблем после deploy](<../DevOps/07 Диагностика проблем после deploy.md>)
 - [01 Стратегия тестирования frontend](<../Testing/01 Стратегия тестирования frontend.md>)
 
 ## Источники
@@ -310,5 +310,5 @@ Kill switch оставляет текущую версию в production, но �
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 05 Где хранить state local server global URL](<./05 Где хранить state local server global URL.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Error handling observability logging monitoring →](<./07 Error handling observability logging monitoring.md>)
+[← 05 Выбор места хранения состояния](<./05 Выбор места хранения состояния.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Обработка ошибок и наблюдаемость →](<./07 Обработка ошибок и наблюдаемость.md>)
 <!-- CARD-NAV-BOTTOM:END -->

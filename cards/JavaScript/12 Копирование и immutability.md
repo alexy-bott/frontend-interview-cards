@@ -1,7 +1,7 @@
 # Копирование и immutability
 
 <!-- CARD-NAV-TOP:START -->
-[← 11 class new constructor extends super](<./11 class new constructor extends super.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Проверка свойств объекта →](<./13 Проверка свойств объекта.md>)
+[← 11 Классы и наследование в JavaScript](<./11 Классы и наследование в JavaScript.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Проверка свойств объекта →](<./13 Проверка свойств объекта.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -302,10 +302,10 @@ console.log(next.theme === state.theme);
 ## Связанные темы
 
 - [07 Destructuring rest spread](<./07 Destructuring rest spread.md>)
-- [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
-- [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
+- [14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>)
+- [38 Web Workers и передача данных](<./38 Web Workers и передача данных.md>)
 - [04 Props state и однонаправленный поток данных](<../React/04 Props state и однонаправленный поток данных.md>)
-- [03 Redux Toolkit configureStore createSlice Immer](<../State Management/03 Redux Toolkit configureStore createSlice Immer.md>)
+- [03 Основы Redux Toolkit](<../State Management/03 Основы Redux Toolkit.md>)
 
 ## Источники
 
@@ -317,5 +317,5 @@ console.log(next.theme === state.theme);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 11 class new constructor extends super](<./11 class new constructor extends super.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Проверка свойств объекта →](<./13 Проверка свойств объекта.md>)
+[← 11 Классы и наследование в JavaScript](<./11 Классы и наследование в JavaScript.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Проверка свойств объекта →](<./13 Проверка свойств объекта.md>)
 <!-- CARD-NAV-BOTTOM:END -->

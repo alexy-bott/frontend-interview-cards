@@ -1,7 +1,7 @@
 # Array methods
 
 <!-- CARD-NAV-TOP:START -->
-[← 16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [18 Iterables iterators generators →](<./18 Iterables iterators generators.md>)
+[← 16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [18 Протокол итерации и генераторы →](<./18 Протокол итерации и генераторы.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -380,8 +380,8 @@ console.log(first === numbers);
 - [12 Копирование и immutability](<./12 Копирование и immutability.md>)
 - [16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>)
 - [26 Promise](<./26 Promise.md>)
-- [01 Big O time space complexity](<../Algorithms/01 Big O time space complexity.md>)
-- [23 Array methods filter reduce и type predicates](<../TypeScript/23 Array methods filter reduce и type predicates.md>)
+- [01 Big O и сложность алгоритмов](<../Algorithms/01 Big O и сложность алгоритмов.md>)
+- [23 Типизация методов массивов](<../TypeScript/23 Типизация методов массивов.md>)
 
 ## Источники
 
@@ -394,5 +394,5 @@ console.log(first === numbers);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [18 Iterables iterators generators →](<./18 Iterables iterators generators.md>)
+[← 16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [18 Протокол итерации и генераторы →](<./18 Протокол итерации и генераторы.md>)
 <!-- CARD-NAV-BOTTOM:END -->

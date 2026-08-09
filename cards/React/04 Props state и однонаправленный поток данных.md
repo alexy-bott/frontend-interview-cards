@@ -1,7 +1,7 @@
 # Props state и однонаправленный поток данных
 
 <!-- CARD-NAV-TOP:START -->
-[← 03 Reconciliation key и списки](<./03 Reconciliation key и списки.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Причины рендера и batching →](<./05 Причины рендера и batching.md>)
+[← 03 Reconciliation и key в списках](<./03 Reconciliation и key в списках.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Повторный рендер и batching →](<./05 Повторный рендер и batching.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -502,10 +502,10 @@ const [
 
 ## Связанные темы
 
-- [03 Reconciliation key и списки](<./03 Reconciliation key и списки.md>)
+- [03 Reconciliation и key в списках](<./03 Reconciliation и key в списках.md>)
 - [06 useState и useReducer](<./06 useState и useReducer.md>)
 - [11 Context](<./11 Context.md>)
-- [14 Controlled и uncontrolled компоненты](<./14 Controlled и uncontrolled компоненты.md>)
+- [14 Управляемые и неуправляемые компоненты](<./14 Управляемые и неуправляемые компоненты.md>)
 - [01 Виды состояния во frontend](<../State Management/01 Виды состояния во frontend.md>)
 
 ## Источники
@@ -520,5 +520,5 @@ const [
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 03 Reconciliation key и списки](<./03 Reconciliation key и списки.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Причины рендера и batching →](<./05 Причины рендера и batching.md>)
+[← 03 Reconciliation и key в списках](<./03 Reconciliation и key в списках.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [05 Повторный рендер и batching →](<./05 Повторный рендер и batching.md>)
 <!-- CARD-NAV-BOTTOM:END -->

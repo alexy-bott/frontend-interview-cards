@@ -9,10 +9,10 @@
 ### Principles - карта раздела
 
 1. [SOLID во frontend](<./01 SOLID во frontend.md>)
-2. [Single Responsibility Principle](<./02 Single Responsibility Principle во frontend.md>)
-3. [Open/Closed Principle](<./03 Open Closed Principle composition strategy.md>)
-4. [Liskov Substitution и Interface Segregation](<./04 Liskov и Interface Segregation в компонентах и типах.md>)
-5. [Dependency Inversion](<./05 Dependency Inversion API adapters hooks.md>)
+2. [Single Responsibility Principle](<./02 Принцип единственной ответственности.md>)
+3. [Open/Closed Principle](<./03 Принцип открытости и закрытости.md>)
+4. [Liskov Substitution и Interface Segregation](<./04 Принципы Liskov и Interface Segregation.md>)
+5. [Dependency Inversion](<./05 Инверсия зависимостей во frontend.md>)
 6. [DRY, KISS и YAGNI](<./06 DRY KISS YAGNI во frontend.md>)
-7. [Composition over inheritance](<./07 Composition over inheritance в React.md>)
-8. [Coupling, cohesion и границы модулей](<./08 Coupling cohesion и границы модулей.md>)
+7. [Composition over inheritance](<./07 Композиция вместо наследования в React.md>)
+8. [Coupling, cohesion и границы модулей](<./08 Связанность и цельность модулей.md>)

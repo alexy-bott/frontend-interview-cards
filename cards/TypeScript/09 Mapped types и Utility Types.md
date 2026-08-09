@@ -1,7 +1,7 @@
 # Mapped types и Utility Types
 
 <!-- CARD-NAV-TOP:START -->
-[← 08 keyof typeof indexed access](<./08 keyof typeof indexed access.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Conditional types и infer →](<./10 Conditional types и infer.md>)
+[← 08 Операторы типов keyof typeof и indexed access](<./08 Операторы типов keyof typeof и indexed access.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Условные типы и infer →](<./10 Условные типы и infer.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -398,10 +398,10 @@ const labels: Record<Status, string> = {
 
 ## Связанные темы
 
-- [08 keyof typeof indexed access](<./08 keyof typeof indexed access.md>)
-- [10 Conditional types и infer](<./10 Conditional types и infer.md>)
-- [22 Template literal types и branded types](<./22 Template literal types и branded types.md>)
-- [27 readonly optional properties и immutability](<./27 readonly optional properties и immutability.md>)
+- [08 Операторы типов keyof typeof и indexed access](<./08 Операторы типов keyof typeof и indexed access.md>)
+- [10 Условные типы и infer](<./10 Условные типы и infer.md>)
+- [22 Шаблонные и брендированные типы](<./22 Шаблонные и брендированные типы.md>)
+- [27 readonly и неизменяемость](<./27 readonly и неизменяемость.md>)
 
 ## Источники
 
@@ -412,5 +412,5 @@ const labels: Record<Status, string> = {
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 08 keyof typeof indexed access](<./08 keyof typeof indexed access.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Conditional types и infer →](<./10 Conditional types и infer.md>)
+[← 08 Операторы типов keyof typeof и indexed access](<./08 Операторы типов keyof typeof и indexed access.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [10 Условные типы и infer →](<./10 Условные типы и infer.md>)
 <!-- CARD-NAV-BOTTOM:END -->

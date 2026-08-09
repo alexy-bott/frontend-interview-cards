@@ -392,12 +392,12 @@ Promise, возвращённый вторым `.then()`, становится f
 
 ## Связанные темы
 
-- [23 Ошибки try catch](<./23 Ошибки try catch.md>)
+- [23 Обработка ошибок в JavaScript](<./23 Обработка ошибок в JavaScript.md>)
 - [24 Event Loop](<./24 Event Loop.md>)
 - [27 Promise combinators](<./27 Promise combinators.md>)
 - [28 async await](<./28 async await.md>)
-- [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
-- [49 Microtasks queueMicrotask nextTick и rejection](<./49 Microtasks queueMicrotask nextTick и rejection.md>)
+- [29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>)
+- [49 Микрозадачи и обработка Promise rejection](<./49 Микрозадачи и обработка Promise rejection.md>)
 
 ## Источники
 

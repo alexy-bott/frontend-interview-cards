@@ -1,7 +1,7 @@
 # Что frontend должен понимать в DevOps
 
 <!-- CARD-NAV-TOP:START -->
-[↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 CI CD pipeline stages jobs artifacts cache →](<./02 CI CD pipeline stages jobs artifacts cache.md>)
+[↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Устройство CI CD pipeline →](<./02 Устройство CI CD pipeline.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1340,11 +1340,11 @@ Source maps должны соответствовать именно тому ar
 
 ## Связанные темы
 
-- [02 CI CD pipeline stages jobs artifacts cache](<./02 CI CD pipeline stages jobs artifacts cache.md>)
-- [04 Docker для frontend multi-stage build](<./04 Docker для frontend multi-stage build.md>)
-- [02 lock files npm ci и воспроизводимая установка](<../Tooling/02 lock files npm ci и воспроизводимая установка.md>)
-- [09 Production build assets hashing base publicPath](<../Tooling/09 Production build assets hashing base publicPath.md>)
-- [07 Error handling observability logging monitoring](<../Architecture/07 Error handling observability logging monitoring.md>)
+- [02 Устройство CI CD pipeline](<./02 Устройство CI CD pipeline.md>)
+- [04 Docker-сборка frontend-приложения](<./04 Docker-сборка frontend-приложения.md>)
+- [02 Lock-файлы и воспроизводимая установка](<../Tooling/02 Lock-файлы и воспроизводимая установка.md>)
+- [09 Проверка production-сборки](<../Tooling/09 Проверка production-сборки.md>)
+- [07 Обработка ошибок и наблюдаемость](<../Architecture/07 Обработка ошибок и наблюдаемость.md>)
 
 ## Источники
 
@@ -1355,5 +1355,5 @@ Source maps должны соответствовать именно тому ar
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 CI CD pipeline stages jobs artifacts cache →](<./02 CI CD pipeline stages jobs artifacts cache.md>)
+[↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Устройство CI CD pipeline →](<./02 Устройство CI CD pipeline.md>)
 <!-- CARD-NAV-BOTTOM:END -->

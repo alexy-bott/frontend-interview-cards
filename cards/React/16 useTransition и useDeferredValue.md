@@ -1,7 +1,7 @@
 # useTransition и useDeferredValue
 
 <!-- CARD-NAV-TOP:START -->
-[← 15 Suspense lazy и code splitting](<./15 Suspense lazy и code splitting.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [17 Hydration SSR и SSG →](<./17 Hydration SSR и SSG.md>)
+[← 15 Suspense lazy и разделение кода](<./15 Suspense lazy и разделение кода.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [17 SSR SSG и hydration в React →](<./17 SSR SSG и hydration в React.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -784,11 +784,11 @@ const deferredQuery =
 
 ## Связанные темы
 
-- [02 Render commit и Fiber](<./02 Render commit и Fiber.md>)
-- [15 Suspense lazy и code splitting](<./15 Suspense lazy и code splitting.md>)
-- [22 Performance profiling и оптимизация React](<./22 Performance profiling и оптимизация React.md>)
-- [38 Web Workers postMessage structured clone](<../JavaScript/38 Web Workers postMessage structured clone.md>)
-- [04 Fetch API AbortController credentials headers](<../Web API/04 Fetch API AbortController credentials headers.md>)
+- [02 Обновление интерфейса в React](<./02 Обновление интерфейса в React.md>)
+- [15 Suspense lazy и разделение кода](<./15 Suspense lazy и разделение кода.md>)
+- [22 Диагностика производительности React](<./22 Диагностика производительности React.md>)
+- [38 Web Workers и передача данных](<../JavaScript/38 Web Workers и передача данных.md>)
+- [04 Fetch API и управление запросом](<../Web API/04 Fetch API и управление запросом.md>)
 
 ## Источники
 
@@ -803,5 +803,5 @@ const deferredQuery =
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 15 Suspense lazy и code splitting](<./15 Suspense lazy и code splitting.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [17 Hydration SSR и SSG →](<./17 Hydration SSR и SSG.md>)
+[← 15 Suspense lazy и разделение кода](<./15 Suspense lazy и разделение кода.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [17 SSR SSG и hydration в React →](<./17 SSR SSG и hydration в React.md>)
 <!-- CARD-NAV-BOTTOM:END -->

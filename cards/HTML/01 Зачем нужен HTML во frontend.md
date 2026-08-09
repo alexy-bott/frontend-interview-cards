@@ -1,7 +1,7 @@
 # Зачем нужен HTML во frontend
 
 <!-- CARD-NAV-TOP:START -->
-[↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Div span block inline →](<./02 Div span block inline.md>)
+[↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Блочные и строчные элементы div и span →](<./02 Блочные и строчные элементы div и span.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -151,10 +151,10 @@ HTML даёт поисковой системе содержимое и стру
 
 ## Связанные темы
 
-- [02 Div span block inline](<./02 Div span block inline.md>)
-- [03 Семантическая верстка landmarks headings](<./03 Семантическая верстка landmarks headings.md>)
-- [04 Accessibility ARIA accessible name keyboard](<./04 Accessibility ARIA accessible name keyboard.md>)
-- [10 Shadow DOM Web Components slots](<./10 Shadow DOM Web Components slots.md>)
+- [02 Блочные и строчные элементы div и span](<./02 Блочные и строчные элементы div и span.md>)
+- [03 Семантическая вёрстка и структура страницы](<./03 Семантическая вёрстка и структура страницы.md>)
+- [04 Основы доступности в HTML](<./04 Основы доступности в HTML.md>)
+- [10 Shadow DOM и Web Components](<./10 Shadow DOM и Web Components.md>)
 
 ## Источники
 
@@ -166,5 +166,5 @@ HTML даёт поисковой системе содержимое и стру
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Div span block inline →](<./02 Div span block inline.md>)
+[↑ HTML](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Блочные и строчные элементы div и span →](<./02 Блочные и строчные элементы div и span.md>)
 <!-- CARD-NAV-BOTTOM:END -->

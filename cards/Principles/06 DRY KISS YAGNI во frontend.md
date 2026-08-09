@@ -1,7 +1,7 @@
 # DRY KISS YAGNI во frontend
 
 <!-- CARD-NAV-TOP:START -->
-[← 05 Dependency Inversion API adapters hooks](<./05 Dependency Inversion API adapters hooks.md>) · [↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Composition over inheritance в React →](<./07 Composition over inheritance в React.md>)
+[← 05 Инверсия зависимостей во frontend](<./05 Инверсия зависимостей во frontend.md>) · [↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Композиция вместо наследования в React →](<./07 Композиция вместо наследования в React.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -485,10 +485,10 @@ isUser
 
 ## Связанные темы
 
-- [10 Architecture anti-patterns utils dump circular dependencies](<../Architecture/10 Architecture anti-patterns utils dump circular dependencies.md>)
-- [03 Open Closed Principle composition strategy](<./03 Open Closed Principle composition strategy.md>)
-- [08 Coupling cohesion и границы модулей](<./08 Coupling cohesion и границы модулей.md>)
-- [05 Валидация форм schema resolver async validation](<../Forms/05 Валидация форм schema resolver async validation.md>)
+- [10 Архитектурные антипаттерны](<../Architecture/10 Архитектурные антипаттерны.md>)
+- [03 Принцип открытости и закрытости](<./03 Принцип открытости и закрытости.md>)
+- [08 Связанность и цельность модулей](<./08 Связанность и цельность модулей.md>)
+- [05 Валидация форм](<../Forms/05 Валидация форм.md>)
 - [08 Microfrontends когда нужны и когда вредят](<../Architecture/08 Microfrontends когда нужны и когда вредят.md>)
 
 ## Источники
@@ -499,5 +499,5 @@ isUser
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 05 Dependency Inversion API adapters hooks](<./05 Dependency Inversion API adapters hooks.md>) · [↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Composition over inheritance в React →](<./07 Composition over inheritance в React.md>)
+[← 05 Инверсия зависимостей во frontend](<./05 Инверсия зависимостей во frontend.md>) · [↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Композиция вместо наследования в React →](<./07 Композиция вместо наследования в React.md>)
 <!-- CARD-NAV-BOTTOM:END -->

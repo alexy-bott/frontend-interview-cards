@@ -1,7 +1,7 @@
 # Portal
 
 <!-- CARD-NAV-TOP:START -->
-[← 12 Error Boundaries](<./12 Error Boundaries.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [14 Controlled и uncontrolled компоненты →](<./14 Controlled и uncontrolled компоненты.md>)
+[← 12 Error Boundaries](<./12 Error Boundaries.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [14 Управляемые и неуправляемые компоненты →](<./14 Управляемые и неуправляемые компоненты.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1168,9 +1168,9 @@ event.stopPropagation()
 ## Связанные темы
 
 - [11 Context](<./11 Context.md>)
-- [23 JSX SyntheticEvent и декларативность](<./23 JSX SyntheticEvent и декларативность.md>)
+- [23 JSX события и декларативность](<./23 JSX события и декларативность.md>)
 - [31 DOM events](<../JavaScript/31 DOM events.md>)
-- [06 Dialog dropdown overlay accessibility](<../Accessibility/06 Dialog dropdown overlay accessibility.md>)
+- [06 Доступность модальных окон и меню](<../Accessibility/06 Доступность модальных окон и меню.md>)
 
 ## Источники
 
@@ -1180,5 +1180,5 @@ event.stopPropagation()
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 12 Error Boundaries](<./12 Error Boundaries.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [14 Controlled и uncontrolled компоненты →](<./14 Controlled и uncontrolled компоненты.md>)
+[← 12 Error Boundaries](<./12 Error Boundaries.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [14 Управляемые и неуправляемые компоненты →](<./14 Управляемые и неуправляемые компоненты.md>)
 <!-- CARD-NAV-BOTTOM:END -->

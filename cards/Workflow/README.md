@@ -1,7 +1,7 @@
 # Workflow
 
 <!-- SECTION-NAV:START -->
-[⌂ Все разделы](<../../README.md>) · [Начать с первой карточки →](<./01 Agile Scrum Kanban для frontend.md>)
+[⌂ Все разделы](<../../README.md>) · [Начать с первой карточки →](<./01 Agile Scrum и Kanban.md>)
 
 Карточек в разделе: **5**
 <!-- SECTION-NAV:END -->
@@ -12,8 +12,8 @@
 
 ## Последовательность вопросов
 
-1. [Agile, Scrum, Kanban для frontend](<./01 Agile Scrum Kanban для frontend.md>)
-2. [Scrum: sprint planning, refinement, daily, review, retro](<./02 Scrum sprint planning refinement daily review retro.md>)
-3. [Jira: backlog, issue, story, task, acceptance criteria](<./03 Jira backlog issue story task acceptance criteria.md>)
-4. [Definition of Ready и Definition of Done во frontend](<./04 Definition of Ready Definition of Done frontend.md>)
-5. [Estimation, blockers, risks, communication](<./05 Estimation blockers risks communication.md>)
+1. [Agile, Scrum, Kanban для frontend](<./01 Agile Scrum и Kanban.md>)
+2. [Scrum: sprint planning, refinement, daily, review, retro](<./02 События Scrum.md>)
+3. [Jira: backlog, issue, story, task, acceptance criteria](<./03 Задачи и backlog в Jira.md>)
+4. [Definition of Ready и Definition of Done во frontend](<./04 Definition of Ready и Definition of Done.md>)
+5. [Estimation, blockers, risks, communication](<./05 Оценка риски и коммуникация.md>)

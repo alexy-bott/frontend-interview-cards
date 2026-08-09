@@ -1,7 +1,7 @@
 # Server Components и Server Actions
 
 <!-- CARD-NAV-TOP:START -->
-[← 17 Hydration SSR и SSG](<./17 Hydration SSR и SSG.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 React 18 19 и 19.2 →](<./19 React 18 19 и 19.2.md>)
+[← 17 SSR SSG и hydration в React](<./17 SSR SSG и hydration в React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 Версии React 18 19 и 19.2 →](<./19 Версии React 18 19 и 19.2.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -673,10 +673,10 @@ Server Functions также не следует использовать для 
 
 ## Связанные темы
 
-- [17 Hydration SSR и SSG](<./17 Hydration SSR и SSG.md>)
-- [19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>)
-- [27 React DOM form hooks useFormStatus useActionState](<./27 React DOM form hooks useFormStatus useActionState.md>)
-- [03 Server Components Client Components и use client](<../Next.js/03 Server Components Client Components и use client.md>)
+- [17 SSR SSG и hydration в React](<./17 SSR SSG и hydration в React.md>)
+- [19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>)
+- [27 Формы и actions в React 19](<./27 Формы и actions в React 19.md>)
+- [03 Server и Client Components](<../Next.js/03 Server и Client Components.md>)
 - [18 Проверка данных с backend](<../TypeScript/18 Проверка данных с backend.md>)
 
 ## Источники
@@ -694,5 +694,5 @@ Server Functions также не следует использовать для 
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 17 Hydration SSR и SSG](<./17 Hydration SSR и SSG.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 React 18 19 и 19.2 →](<./19 React 18 19 и 19.2.md>)
+[← 17 SSR SSG и hydration в React](<./17 SSR SSG и hydration в React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 Версии React 18 19 и 19.2 →](<./19 Версии React 18 19 и 19.2.md>)
 <!-- CARD-NAV-BOTTOM:END -->

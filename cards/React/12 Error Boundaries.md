@@ -902,10 +902,10 @@ resetErrorBoundary = () => {
 
 ## Связанные темы
 
-- [15 Suspense lazy и code splitting](<./15 Suspense lazy и code splitting.md>)
-- [17 Hydration SSR и SSG](<./17 Hydration SSR и SSG.md>)
-- [19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>)
-- [07 Error handling observability logging monitoring](<../Architecture/07 Error handling observability logging monitoring.md>)
+- [15 Suspense lazy и разделение кода](<./15 Suspense lazy и разделение кода.md>)
+- [17 SSR SSG и hydration в React](<./17 SSR SSG и hydration в React.md>)
+- [19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>)
+- [07 Обработка ошибок и наблюдаемость](<../Architecture/07 Обработка ошибок и наблюдаемость.md>)
 
 ## Источники
 

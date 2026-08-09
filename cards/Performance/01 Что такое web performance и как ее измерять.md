@@ -1,7 +1,7 @@
 # Что такое web performance и как ее измерять
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Performance](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Core Web Vitals LCP INP CLS →](<./02 Core Web Vitals LCP INP CLS.md>)
+[↑ Performance](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Метрики Core Web Vitals →](<./02 Метрики Core Web Vitals.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -2289,10 +2289,10 @@ Profiler помогает определить:
 
 ## Связанные темы
 
-- [02 Core Web Vitals LCP INP CLS](<./02 Core Web Vitals LCP INP CLS.md>)
-- [10 Performance debugging DevTools Lighthouse profiling](<./10 Performance debugging DevTools Lighthouse profiling.md>)
-- [09 Performance budgets CI monitoring RUM](<./09 Performance budgets CI monitoring RUM.md>)
-- [07 Error handling observability logging monitoring](<../Architecture/07 Error handling observability logging monitoring.md>)
+- [02 Метрики Core Web Vitals](<./02 Метрики Core Web Vitals.md>)
+- [10 Диагностика производительности](<./10 Диагностика производительности.md>)
+- [09 Бюджет производительности и мониторинг](<./09 Бюджет производительности и мониторинг.md>)
+- [07 Обработка ошибок и наблюдаемость](<../Architecture/07 Обработка ошибок и наблюдаемость.md>)
 
 ## Источники
 
@@ -2311,5 +2311,5 @@ Profiler помогает определить:
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Performance](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Core Web Vitals LCP INP CLS →](<./02 Core Web Vitals LCP INP CLS.md>)
+[↑ Performance](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Метрики Core Web Vitals →](<./02 Метрики Core Web Vitals.md>)
 <!-- CARD-NAV-BOTTOM:END -->

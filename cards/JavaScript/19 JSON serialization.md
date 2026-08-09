@@ -1,7 +1,7 @@
 # JSON serialization
 
 <!-- CARD-NAV-TOP:START -->
-[← 18 Iterables iterators generators](<./18 Iterables iterators generators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [20 Date и Intl →](<./20 Date и Intl.md>)
+[← 18 Протокол итерации и генераторы](<./18 Протокол итерации и генераторы.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [20 Date и Intl →](<./20 Date и Intl.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -336,7 +336,7 @@ console.log(typeof parsed.createdAt);
 - [12 Копирование и immutability](<./12 Копирование и immutability.md>)
 - [16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>)
 - [20 Date и Intl](<./20 Date и Intl.md>)
-- [23 Ошибки try catch](<./23 Ошибки try catch.md>)
+- [23 Обработка ошибок в JavaScript](<./23 Обработка ошибок в JavaScript.md>)
 - [18 Проверка данных с backend](<../TypeScript/18 Проверка данных с backend.md>)
 
 ## Источники
@@ -349,5 +349,5 @@ console.log(typeof parsed.createdAt);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 18 Iterables iterators generators](<./18 Iterables iterators generators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [20 Date и Intl →](<./20 Date и Intl.md>)
+[← 18 Протокол итерации и генераторы](<./18 Протокол итерации и генераторы.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [20 Date и Intl →](<./20 Date и Intl.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -299,9 +299,9 @@ observer.observe(sentinel);
 
 - [24 Event Loop](<./24 Event Loop.md>)
 - [33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>)
-- [45 DOM API innerHTML layout thrashing](<./45 DOM API innerHTML layout thrashing.md>)
-- [02 Rendering pipeline reflow repaint composite](<../Browser Internals/02 Rendering pipeline reflow repaint composite.md>)
-- [05 Images fonts resource priority preload lazy loading](<../Performance/05 Images fonts resource priority preload lazy loading.md>)
+- [45 Безопасная и производительная работа с DOM](<./45 Безопасная и производительная работа с DOM.md>)
+- [02 Конвейер рендеринга браузера](<../Browser Internals/02 Конвейер рендеринга браузера.md>)
+- [05 Оптимизация изображений и шрифтов](<../Performance/05 Оптимизация изображений и шрифтов.md>)
 
 ## Источники
 

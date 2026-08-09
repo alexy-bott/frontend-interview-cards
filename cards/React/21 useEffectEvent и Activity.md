@@ -1,7 +1,7 @@
 # useEffectEvent и Activity
 
 <!-- CARD-NAV-TOP:START -->
-[← 20 React Compiler](<./20 React Compiler.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [22 Performance profiling и оптимизация React →](<./22 Performance profiling и оптимизация React.md>)
+[← 20 React Compiler](<./20 React Compiler.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [22 Диагностика производительности React →](<./22 Диагностика производительности React.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -693,9 +693,9 @@ Activity сохраняет ресурсы ради быстрого возвр�
 
 ## Связанные темы
 
-- [07 useEffect useLayoutEffect и cleanup](<./07 useEffect useLayoutEffect и cleanup.md>)
-- [15 Suspense lazy и code splitting](<./15 Suspense lazy и code splitting.md>)
-- [19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>)
+- [07 Эффекты React и cleanup](<./07 Эффекты React и cleanup.md>)
+- [15 Suspense lazy и разделение кода](<./15 Suspense lazy и разделение кода.md>)
+- [19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>)
 - [08 Замыкание](<../JavaScript/08 Замыкание.md>)
 
 ## Источники
@@ -708,5 +708,5 @@ Activity сохраняет ресурсы ради быстрого возвр�
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 20 React Compiler](<./20 React Compiler.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [22 Performance profiling и оптимизация React →](<./22 Performance profiling и оптимизация React.md>)
+[← 20 React Compiler](<./20 React Compiler.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [22 Диагностика производительности React →](<./22 Диагностика производительности React.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -341,10 +341,10 @@ Callback сможет запуститься только после завер�
 ## Связанные темы
 
 - [24 Event Loop](<./24 Event Loop.md>)
-- [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
+- [29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>)
 - [30 Debounce и throttle](<./30 Debounce и throttle.md>)
 - [33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>)
-- [04 Page lifecycle visibility bfcache background tabs](<../Browser Internals/04 Page lifecycle visibility bfcache background tabs.md>)
+- [04 Жизненный цикл страницы и фоновые вкладки](<../Browser Internals/04 Жизненный цикл страницы и фоновые вкладки.md>)
 
 ## Источники
 

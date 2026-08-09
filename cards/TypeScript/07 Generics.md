@@ -1,7 +1,7 @@
 # Generics
 
 <!-- CARD-NAV-TOP:START -->
-[← 06 Narrowing type guards assertions](<./06 Narrowing type guards assertions.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 keyof typeof indexed access →](<./08 keyof typeof indexed access.md>)
+[← 06 Сужение типов и type guards](<./06 Сужение типов и type guards.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 Операторы типов keyof typeof и indexed access →](<./08 Операторы типов keyof typeof и indexed access.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -304,10 +304,10 @@ function pluck<T, K extends keyof T>(
 
 ## Связанные темы
 
-- [08 keyof typeof indexed access](<./08 keyof typeof indexed access.md>)
-- [10 Conditional types и infer](<./10 Conditional types и infer.md>)
+- [08 Операторы типов keyof typeof и indexed access](<./08 Операторы типов keyof typeof и indexed access.md>)
+- [10 Условные типы и infer](<./10 Условные типы и infer.md>)
 - [12 Variance и совместимость функций](<./12 Variance и совместимость функций.md>)
-- [19 React TypeScript типизация](<./19 React TypeScript типизация.md>)
+- [19 Типизация React-компонентов](<./19 Типизация React-компонентов.md>)
 
 ## Источники
 
@@ -318,5 +318,5 @@ function pluck<T, K extends keyof T>(
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 06 Narrowing type guards assertions](<./06 Narrowing type guards assertions.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 keyof typeof indexed access →](<./08 keyof typeof indexed access.md>)
+[← 06 Сужение типов и type guards](<./06 Сужение типов и type guards.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [08 Операторы типов keyof typeof и indexed access →](<./08 Операторы типов keyof typeof и indexed access.md>)
 <!-- CARD-NAV-BOTTOM:END -->

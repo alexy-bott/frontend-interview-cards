@@ -1,7 +1,7 @@
 # SOLID во frontend
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Single Responsibility Principle во frontend →](<./02 Single Responsibility Principle во frontend.md>)
+[↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Принцип единственной ответственности →](<./02 Принцип единственной ответственности.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -554,11 +554,11 @@ component
 
 ## Связанные темы
 
-- [02 Single Responsibility Principle во frontend](<./02 Single Responsibility Principle во frontend.md>)
-- [04 Liskov и Interface Segregation в компонентах и типах](<./04 Liskov и Interface Segregation в компонентах и типах.md>)
-- [05 Dependency Inversion API adapters hooks](<./05 Dependency Inversion API adapters hooks.md>)
+- [02 Принцип единственной ответственности](<./02 Принцип единственной ответственности.md>)
+- [04 Принципы Liskov и Interface Segregation](<./04 Принципы Liskov и Interface Segregation.md>)
+- [05 Инверсия зависимостей во frontend](<./05 Инверсия зависимостей во frontend.md>)
 - [01 Что такое frontend architecture](<../Architecture/01 Что такое frontend architecture.md>)
-- [01 Зачем нужны design patterns во frontend](<../Patterns/01 Зачем нужны design patterns во frontend.md>)
+- [01 Шаблоны проектирования во frontend](<../Patterns/01 Шаблоны проектирования во frontend.md>)
 
 ## Источники
 
@@ -570,5 +570,5 @@ component
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Single Responsibility Principle во frontend →](<./02 Single Responsibility Principle во frontend.md>)
+[↑ Principles](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Принцип единственной ответственности →](<./02 Принцип единственной ответственности.md>)
 <!-- CARD-NAV-BOTTOM:END -->

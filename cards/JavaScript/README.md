@@ -18,26 +18,26 @@
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [07 Destructuring rest spread](<./07 Destructuring rest spread.md>)
 - [08 Замыкание](<./08 Замыкание.md>)
-- [09 this call apply bind](<./09 this call apply bind.md>)
-- [42 Execution context lexical environment scope chain](<./42 Execution context lexical environment scope chain.md>)
+- [09 this и привязка контекста](<./09 this и привязка контекста.md>)
+- [42 Контекст выполнения и области видимости](<./42 Контекст выполнения и области видимости.md>)
 - [43 Strict mode use strict](<./43 Strict mode use strict.md>)
-- [44 ToPrimitive valueOf toString Symbol.toPrimitive](<./44 ToPrimitive valueOf toString Symbol.toPrimitive.md>)
+- [44 Преобразование объектов в примитивы](<./44 Преобразование объектов в примитивы.md>)
 - [10 Prototype и наследование](<./10 Prototype и наследование.md>)
-- [11 class new constructor extends super](<./11 class new constructor extends super.md>)
+- [11 Классы и наследование в JavaScript](<./11 Классы и наследование в JavaScript.md>)
 
 ## Объекты, коллекции и встроенные API
 
 - [12 Копирование и immutability](<./12 Копирование и immutability.md>)
 - [13 Проверка свойств объекта](<./13 Проверка свойств объекта.md>)
-- [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
+- [14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>)
 - [15 Proxy Reflect](<./15 Proxy Reflect.md>)
 - [16 Map Set WeakMap WeakSet](<./16 Map Set WeakMap WeakSet.md>)
 - [17 Array methods](<./17 Array methods.md>)
-- [18 Iterables iterators generators](<./18 Iterables iterators generators.md>)
+- [18 Протокол итерации и генераторы](<./18 Протокол итерации и генераторы.md>)
 - [19 JSON serialization](<./19 JSON serialization.md>)
 - [20 Date и Intl](<./20 Date и Intl.md>)
 - [52 RegExp](<./52 RegExp.md>)
-- [55 ArrayBuffer, TypedArray и DataView](<./55 ArrayBuffer TypedArray DataView.md>)
+- [55 ArrayBuffer, TypedArray и DataView](<./55 Бинарные данные в JavaScript.md>)
 
 ## Модули и загрузка
 
@@ -46,13 +46,13 @@
 
 ## Асинхронность и API
 
-- [23 Ошибки try catch](<./23 Ошибки try catch.md>)
+- [23 Обработка ошибок в JavaScript](<./23 Обработка ошибок в JavaScript.md>)
 - [24 Event Loop](<./24 Event Loop.md>)
 - [25 Timers setTimeout setInterval](<./25 Timers setTimeout setInterval.md>)
 - [26 Promise](<./26 Promise.md>)
 - [27 Promise combinators](<./27 Promise combinators.md>)
 - [28 async await](<./28 async await.md>)
-- [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
+- [29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>)
 - [30 Debounce и throttle](<./30 Debounce и throttle.md>)
 
 ## Browser JS
@@ -60,32 +60,32 @@
 События и DOM:
 
 - [31 DOM events: клик, propagation, delegation](<./31 DOM events.md>)
-- [36 CustomEvent EventTarget dispatchEvent](<./36 CustomEvent EventTarget dispatchEvent.md>)
+- [36 EventTarget и пользовательские события](<./36 EventTarget и пользовательские события.md>)
 - [32 Observer APIs](<./32 Observer APIs.md>)
 - [33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>)
 
 URL, хранение и данные:
 
-- [37 URL URLSearchParams History API](<./37 URL URLSearchParams History API.md>)
+- [37 URL и навигация через History API](<./37 URL и навигация через History API.md>)
 - [35 localStorage sessionStorage IndexedDB](<./35 localStorage sessionStorage IndexedDB.md>)
-- [39 Cookies document.cookie SameSite credentials](<./39 Cookies document.cookie SameSite credentials.md>)
-- [40 FormData Blob FileReader](<./40 FormData Blob FileReader.md>)
-- [46 Streams API ReadableStream](<./46 Streams API ReadableStream.md>)
+- [39 Cookies в браузере и HTTP-запросах](<./39 Cookies в браузере и HTTP-запросах.md>)
+- [40 Работа с файлами в браузере](<./40 Работа с файлами в браузере.md>)
+- [46 Потоки данных и ReadableStream](<./46 Потоки данных и ReadableStream.md>)
 
 Фоновые задачи, сообщения и память:
 
-- [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
-- [47 Service Worker Cache API PWA](<./47 Service Worker Cache API PWA.md>)
-- [48 WebSocket EventSource realtime](<./48 WebSocket EventSource realtime.md>)
-- [41 postMessage BroadcastChannel](<./41 postMessage BroadcastChannel.md>)
-- [34 Garbage collection](<./34 Garbage collection.md>)
+- [38 Web Workers и передача данных](<./38 Web Workers и передача данных.md>)
+- [47 Service Worker и кеширование в PWA](<./47 Service Worker и кеширование в PWA.md>)
+- [48 WebSocket и обновления данных в реальном времени](<./48 WebSocket и обновления данных в реальном времени.md>)
+- [41 Обмен сообщениями в браузере](<./41 Обмен сообщениями в браузере.md>)
+- [34 Сборка мусора и утечки памяти](<./34 Сборка мусора и утечки памяти.md>)
 
 DOM, безопасность и rendering:
 
-- [45 DOM API innerHTML layout thrashing](<./45 DOM API innerHTML layout thrashing.md>)
+- [45 Безопасная и производительная работа с DOM](<./45 Безопасная и производительная работа с DOM.md>)
 
 Дополнительные вопросы из базового списка:
 
-- [49 Microtasks queueMicrotask nextTick и rejection](<./49 Microtasks queueMicrotask nextTick и rejection.md>)
-- [50 IIFE HOF currying compose first-class functions](<./50 IIFE HOF currying compose first-class functions.md>)
-- [51 OOP classes new static instanceof](<./51 OOP classes new static instanceof.md>)
+- [49 Микрозадачи и обработка Promise rejection](<./49 Микрозадачи и обработка Promise rejection.md>)
+- [50 Продвинутые приёмы работы с функциями](<./50 Продвинутые приёмы работы с функциями.md>)
+- [51 ООП в JavaScript](<./51 ООП в JavaScript.md>)

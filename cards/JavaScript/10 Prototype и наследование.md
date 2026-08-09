@@ -1,7 +1,7 @@
 # Prototype и наследование
 
 <!-- CARD-NAV-TOP:START -->
-[← 09 this call apply bind](<./09 this call apply bind.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [11 class new constructor extends super →](<./11 class new constructor extends super.md>)
+[← 09 this и привязка контекста](<./09 this и привязка контекста.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [11 Классы и наследование в JavaScript →](<./11 Классы и наследование в JavaScript.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -294,10 +294,10 @@ console.log(Object.getPrototypeOf(admin) === base);
 
 ## Связанные темы
 
-- [09 this call apply bind](<./09 this call apply bind.md>)
-- [11 class new constructor extends super](<./11 class new constructor extends super.md>)
+- [09 this и привязка контекста](<./09 this и привязка контекста.md>)
+- [11 Классы и наследование в JavaScript](<./11 Классы и наследование в JavaScript.md>)
 - [13 Проверка свойств объекта](<./13 Проверка свойств объекта.md>)
-- [51 OOP classes new static instanceof](<./51 OOP classes new static instanceof.md>)
+- [51 ООП в JavaScript](<./51 ООП в JavaScript.md>)
 
 ## Источники
 
@@ -309,5 +309,5 @@ console.log(Object.getPrototypeOf(admin) === base);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 09 this call apply bind](<./09 this call apply bind.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [11 class new constructor extends super →](<./11 class new constructor extends super.md>)
+[← 09 this и привязка контекста](<./09 this и привязка контекста.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [11 Классы и наследование в JavaScript →](<./11 Классы и наследование в JavaScript.md>)
 <!-- CARD-NAV-BOTTOM:END -->

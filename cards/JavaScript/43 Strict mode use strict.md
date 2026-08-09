@@ -1,7 +1,7 @@
 # Strict mode use strict
 
 <!-- CARD-NAV-TOP:START -->
-[← 42 Execution context lexical environment scope chain](<./42 Execution context lexical environment scope chain.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [44 ToPrimitive valueOf toString Symbol.toPrimitive →](<./44 ToPrimitive valueOf toString Symbol.toPrimitive.md>)
+[← 42 Контекст выполнения и области видимости](<./42 Контекст выполнения и области видимости.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [44 Преобразование объектов в примитивы →](<./44 Преобразование объектов в примитивы.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -382,8 +382,8 @@ TypeError
 
 ## Связанные темы
 
-- [09 this call apply bind](<./09 this call apply bind.md>)
-- [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
+- [09 this и привязка контекста](<./09 this и привязка контекста.md>)
+- [14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>)
 - [21 ES modules](<./21 ES modules.md>)
 
 ## Источники
@@ -395,5 +395,5 @@ TypeError
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 42 Execution context lexical environment scope chain](<./42 Execution context lexical environment scope chain.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [44 ToPrimitive valueOf toString Symbol.toPrimitive →](<./44 ToPrimitive valueOf toString Symbol.toPrimitive.md>)
+[← 42 Контекст выполнения и области видимости](<./42 Контекст выполнения и области видимости.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [44 Преобразование объектов в примитивы →](<./44 Преобразование объектов в примитивы.md>)
 <!-- CARD-NAV-BOTTOM:END -->

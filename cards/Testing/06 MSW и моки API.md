@@ -1,7 +1,7 @@
 # MSW и моки API
 
 <!-- CARD-NAV-TOP:START -->
-[← 05 React Testing Library queries user behavior](<./05 React Testing Library queries user behavior.md>) · [↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Flaky tests isolation cleanup →](<./07 Flaky tests isolation cleanup.md>)
+[← 05 Тестирование React с React Testing Library](<./05 Тестирование React с React Testing Library.md>) · [↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Нестабильные тесты и изоляция →](<./07 Нестабильные тесты и изоляция.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -947,11 +947,11 @@ MSW отвечает за воспроизводимые сетевые сцен
 ## Связанные темы
 
 - [01 Стратегия тестирования frontend](<./01 Стратегия тестирования frontend.md>)
-- [04 Async tests promises timers userEvent](<./04 Async tests promises timers userEvent.md>)
-- [05 React Testing Library queries user behavior](<./05 React Testing Library queries user behavior.md>)
-- [07 Flaky tests isolation cleanup](<./07 Flaky tests isolation cleanup.md>)
-- [07 RTK Query cache lifecycle optimistic updates polling](<../State Management/07 RTK Query cache lifecycle optimistic updates polling.md>)
-- [03 HTTP status codes и ошибки API](<../Web API/03 HTTP status codes и ошибки API.md>)
+- [04 Тестирование асинхронного кода](<./04 Тестирование асинхронного кода.md>)
+- [05 Тестирование React с React Testing Library](<./05 Тестирование React с React Testing Library.md>)
+- [07 Нестабильные тесты и изоляция](<./07 Нестабильные тесты и изоляция.md>)
+- [07 Кеш и обновление данных в RTK Query](<../State Management/07 Кеш и обновление данных в RTK Query.md>)
+- [03 HTTP-статусы и ошибки API](<../Web API/03 HTTP-статусы и ошибки API.md>)
 
 ## Источники
 
@@ -971,5 +971,5 @@ MSW отвечает за воспроизводимые сетевые сцен
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 05 React Testing Library queries user behavior](<./05 React Testing Library queries user behavior.md>) · [↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Flaky tests isolation cleanup →](<./07 Flaky tests isolation cleanup.md>)
+[← 05 Тестирование React с React Testing Library](<./05 Тестирование React с React Testing Library.md>) · [↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Нестабильные тесты и изоляция →](<./07 Нестабильные тесты и изоляция.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -374,8 +374,8 @@ Promise.race([fastError, slow]).catch(console.log);
 
 - [26 Promise](<./26 Promise.md>)
 - [28 async await](<./28 async await.md>)
-- [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
-- [46 Streams API ReadableStream](<./46 Streams API ReadableStream.md>)
+- [29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>)
+- [46 Потоки данных и ReadableStream](<./46 Потоки данных и ReadableStream.md>)
 
 ## Источники
 

@@ -1,7 +1,7 @@
 # Microfrontends когда нужны и когда вредят
 
 <!-- CARD-NAV-TOP:START -->
-[← 07 Error handling observability logging monitoring](<./07 Error handling observability logging monitoring.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Shared UI design system Radix UI →](<./09 Shared UI design system Radix UI.md>)
+[← 07 Обработка ошибок и наблюдаемость](<./07 Обработка ошибок и наблюдаемость.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Design system и общий UI →](<./09 Design system и общий UI.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -266,10 +266,10 @@ Ownership означает закреплённую ответственност
 
 ## Связанные темы
 
-- [02 FSD layers slices segments import rule](<./02 FSD layers slices segments import rule.md>)
-- [09 Shared UI design system Radix UI](<./09 Shared UI design system Radix UI.md>)
-- [06 Bundle code splitting tree shaking size budgets](<../Tooling/06 Bundle code splitting tree shaking size budgets.md>)
-- [02 CI CD pipeline stages jobs artifacts cache](<../DevOps/02 CI CD pipeline stages jobs artifacts cache.md>)
+- [02 Структура Feature-Sliced Design](<./02 Структура Feature-Sliced Design.md>)
+- [09 Design system и общий UI](<./09 Design system и общий UI.md>)
+- [06 Оптимизация размера бандла](<../Tooling/06 Оптимизация размера бандла.md>)
+- [02 Устройство CI CD pipeline](<../DevOps/02 Устройство CI CD pipeline.md>)
 
 ## Источники
 
@@ -279,5 +279,5 @@ Ownership означает закреплённую ответственност
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 07 Error handling observability logging monitoring](<./07 Error handling observability logging monitoring.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Shared UI design system Radix UI →](<./09 Shared UI design system Radix UI.md>)
+[← 07 Обработка ошибок и наблюдаемость](<./07 Обработка ошибок и наблюдаемость.md>) · [↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Design system и общий UI →](<./09 Design system и общий UI.md>)
 <!-- CARD-NAV-BOTTOM:END -->

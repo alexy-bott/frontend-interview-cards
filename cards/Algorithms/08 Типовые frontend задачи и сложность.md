@@ -1,7 +1,7 @@
 # Типовые frontend задачи и сложность
 
 <!-- CARD-NAV-TOP:START -->
-[← 07 Trees DOM routes comments nested data](<./07 Trees DOM routes comments nested data.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Основные алгоритмы сортировки →](<./09 Основные алгоритмы сортировки.md>)
+[← 07 Деревья и вложенные данные во frontend](<./07 Деревья и вложенные данные во frontend.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Основные алгоритмы сортировки →](<./09 Основные алгоритмы сортировки.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -331,14 +331,14 @@ Worker:
 
 ## Связанные темы
 
-- [01 Big O time space complexity](<./01 Big O time space complexity.md>)
+- [01 Big O и сложность алгоритмов](<./01 Big O и сложность алгоритмов.md>)
 - [02 Сложность Array methods в JavaScript](<./02 Сложность Array methods в JavaScript.md>)
-- [03 Map Set Object выбор структуры данных](<./03 Map Set Object выбор структуры данных.md>)
-- [06 Recursion stack DFS BFS tree traversal](<./06 Recursion stack DFS BFS tree traversal.md>)
-- [07 Trees DOM routes comments nested data](<./07 Trees DOM routes comments nested data.md>)
-- [10 Stack Queue Deque во frontend](<./10 Stack Queue Deque во frontend.md>)
-- [11 Two pointers sliding window frequency map](<./11 Two pointers sliding window frequency map.md>)
-- [07 Main thread long tasks Web Workers](<../Performance/07 Main thread long tasks Web Workers.md>)
+- [03 Выбор структуры данных Map Set или Object](<./03 Выбор структуры данных Map Set или Object.md>)
+- [06 Рекурсия и обход деревьев](<./06 Рекурсия и обход деревьев.md>)
+- [07 Деревья и вложенные данные во frontend](<./07 Деревья и вложенные данные во frontend.md>)
+- [10 Стек очередь и дек](<./10 Стек очередь и дек.md>)
+- [11 Алгоритмические шаблоны для массивов](<./11 Алгоритмические шаблоны для массивов.md>)
+- [07 Главный поток и тяжёлые задачи](<../Performance/07 Главный поток и тяжёлые задачи.md>)
 
 ## Источники
 
@@ -349,5 +349,5 @@ Worker:
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 07 Trees DOM routes comments nested data](<./07 Trees DOM routes comments nested data.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Основные алгоритмы сортировки →](<./09 Основные алгоритмы сортировки.md>)
+[← 07 Деревья и вложенные данные во frontend](<./07 Деревья и вложенные данные во frontend.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [09 Основные алгоритмы сортировки →](<./09 Основные алгоритмы сортировки.md>)
 <!-- CARD-NAV-BOTTOM:END -->

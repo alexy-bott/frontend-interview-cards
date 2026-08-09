@@ -1450,11 +1450,11 @@ Flag должен иметь владельца и срок удаления п�
 ## Связанные темы
 
 - [01 Что такое frontend architecture](<../Architecture/01 Что такое frontend architecture.md>)
-- [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
-- [03 Jira backlog issue story task acceptance criteria](<../Workflow/03 Jira backlog issue story task acceptance criteria.md>)
+- [04 API-слой и преобразование DTO](<../Architecture/04 API-слой и преобразование DTO.md>)
+- [03 Задачи и backlog в Jira](<../Workflow/03 Задачи и backlog в Jira.md>)
 - [01 Стратегия тестирования frontend](<../Testing/01 Стратегия тестирования frontend.md>)
-- [09 Performance budgets CI monitoring RUM](<../Performance/09 Performance budgets CI monitoring RUM.md>)
-- [01 Frontend threat model](<../Security/01 Frontend threat model.md>)
+- [09 Бюджет производительности и мониторинг](<../Performance/09 Бюджет производительности и мониторинг.md>)
+- [01 Модель угроз во frontend](<../Security/01 Модель угроз во frontend.md>)
 
 ## Источники
 

@@ -359,12 +359,12 @@ parent bubble
 
 ## Связанные темы
 
-- [36 CustomEvent EventTarget dispatchEvent](<./36 CustomEvent EventTarget dispatchEvent.md>)
-- [45 DOM API innerHTML layout thrashing](<./45 DOM API innerHTML layout thrashing.md>)
-- [03 Event delegation capture bubble](<../Browser Internals/03 Event delegation capture bubble.md>)
-- [03 Keyboard navigation focus management](<../Accessibility/03 Keyboard navigation focus management.md>)
+- [36 EventTarget и пользовательские события](<./36 EventTarget и пользовательские события.md>)
+- [45 Безопасная и производительная работа с DOM](<./45 Безопасная и производительная работа с DOM.md>)
+- [03 Распространение DOM-событий](<../Browser Internals/03 Распространение DOM-событий.md>)
+- [03 Клавиатурная навигация и управление фокусом](<../Accessibility/03 Клавиатурная навигация и управление фокусом.md>)
 - [13 Portal](<../React/13 Portal.md>)
-- [23 JSX SyntheticEvent и декларативность](<../React/23 JSX SyntheticEvent и декларативность.md>)
+- [23 JSX события и декларативность](<../React/23 JSX события и декларативность.md>)
 
 ## Источники
 

@@ -1,7 +1,7 @@
 # Формы во frontend
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Forms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Controlled uncontrolled и FormData →](<./02 Controlled uncontrolled и FormData.md>)
+[↑ Forms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Управляемые и неуправляемые формы →](<./02 Управляемые и неуправляемые формы.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -212,10 +212,10 @@ Server state — подтверждённые данные удалённого 
 
 ## Связанные темы
 
-- [02 Controlled uncontrolled и FormData](<./02 Controlled uncontrolled и FormData.md>)
-- [03 React Hook Form register handleSubmit formState](<./03 React Hook Form register handleSubmit formState.md>)
-- [05 Валидация форм schema resolver async validation](<./05 Валидация форм schema resolver async validation.md>)
-- [06 Submit lifecycle server errors reset defaultValues](<./06 Submit lifecycle server errors reset defaultValues.md>)
+- [02 Управляемые и неуправляемые формы](<./02 Управляемые и неуправляемые формы.md>)
+- [03 Основы React Hook Form](<./03 Основы React Hook Form.md>)
+- [05 Валидация форм](<./05 Валидация форм.md>)
+- [06 Отправка и сброс формы](<./06 Отправка и сброс формы.md>)
 
 ## Источники
 
@@ -226,5 +226,5 @@ Server state — подтверждённые данные удалённого 
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Forms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Controlled uncontrolled и FormData →](<./02 Controlled uncontrolled и FormData.md>)
+[↑ Forms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Управляемые и неуправляемые формы →](<./02 Управляемые и неуправляемые формы.md>)
 <!-- CARD-NAV-BOTTOM:END -->

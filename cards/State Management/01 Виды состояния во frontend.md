@@ -2076,8 +2076,8 @@ navigate(
 ## Связанные темы
 
 - [02 Redux и Flux](<./02 Redux и Flux.md>)
-- [05 Selectors normalization и createEntityAdapter](<./05 Selectors normalization и createEntityAdapter.md>)
-- [06 RTK Query createApi query mutation tags](<./06 RTK Query createApi query mutation tags.md>)
+- [05 Селекторы и нормализация данных в Redux](<./05 Селекторы и нормализация данных в Redux.md>)
+- [06 Основы RTK Query](<./06 Основы RTK Query.md>)
 - [01 Формы во frontend](<../Forms/01 Формы во frontend.md>)
 
 ## Источники

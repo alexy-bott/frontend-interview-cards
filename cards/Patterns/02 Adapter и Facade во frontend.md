@@ -1,7 +1,7 @@
 # Adapter и Facade во frontend
 
 <!-- CARD-NAV-TOP:START -->
-[← 01 Зачем нужны design patterns во frontend](<./01 Зачем нужны design patterns во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Strategy во frontend →](<./03 Strategy во frontend.md>)
+[← 01 Шаблоны проектирования во frontend](<./01 Шаблоны проектирования во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Strategy во frontend →](<./03 Strategy во frontend.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1296,10 +1296,10 @@ if providerName === "vendorA"
 
 ## Связанные темы
 
-- [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
-- [05 Dependency Inversion API adapters hooks](<../Principles/05 Dependency Inversion API adapters hooks.md>)
-- [08 Supply chain npm dependencies secrets third-party scripts](<../Security/08 Supply chain npm dependencies secrets third-party scripts.md>)
-- [03 Jest mocks spies fake timers](<../Testing/03 Jest mocks spies fake timers.md>)
+- [04 API-слой и преобразование DTO](<../Architecture/04 API-слой и преобразование DTO.md>)
+- [05 Инверсия зависимостей во frontend](<../Principles/05 Инверсия зависимостей во frontend.md>)
+- [08 Защита цепочки поставки frontend](<../Security/08 Защита цепочки поставки frontend.md>)
+- [03 Моки и таймеры в Jest](<../Testing/03 Моки и таймеры в Jest.md>)
 
 ## Источники
 
@@ -1310,5 +1310,5 @@ if providerName === "vendorA"
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 01 Зачем нужны design patterns во frontend](<./01 Зачем нужны design patterns во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Strategy во frontend →](<./03 Strategy во frontend.md>)
+[← 01 Шаблоны проектирования во frontend](<./01 Шаблоны проектирования во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Strategy во frontend →](<./03 Strategy во frontend.md>)
 <!-- CARD-NAV-BOTTOM:END -->

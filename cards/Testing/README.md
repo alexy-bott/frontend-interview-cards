@@ -9,11 +9,11 @@
 ### Testing - карта раздела
 
 1. [01 Стратегия тестирования frontend](<./01 Стратегия тестирования frontend.md>)
-2. [02 Jest runner config environment transform](<./02 Jest runner config environment transform.md>)
-3. [03 Jest mocks spies fake timers](<./03 Jest mocks spies fake timers.md>)
-4. [04 Async tests promises timers userEvent](<./04 Async tests promises timers userEvent.md>)
-5. [05 React Testing Library queries user behavior](<./05 React Testing Library queries user behavior.md>)
+2. [02 Конфигурация и запуск Jest](<./02 Конфигурация и запуск Jest.md>)
+3. [03 Моки и таймеры в Jest](<./03 Моки и таймеры в Jest.md>)
+4. [04 Тестирование асинхронного кода](<./04 Тестирование асинхронного кода.md>)
+5. [05 Тестирование React с React Testing Library](<./05 Тестирование React с React Testing Library.md>)
 6. [06 MSW и моки API](<./06 MSW и моки API.md>)
-7. [07 Flaky tests isolation cleanup](<./07 Flaky tests isolation cleanup.md>)
-8. [08 Coverage CI и качество тестов](<./08 Coverage CI и качество тестов.md>)
-9. [09 E2E Playwright Cypress isolation locators](<./09 E2E Playwright Cypress isolation locators.md>)
+7. [07 Нестабильные тесты и изоляция](<./07 Нестабильные тесты и изоляция.md>)
+8. [08 Покрытие кода и качество тестов](<./08 Покрытие кода и качество тестов.md>)
+9. [09 E2E-тесты с Playwright и Cypress](<./09 E2E-тесты с Playwright и Cypress.md>)

@@ -594,7 +594,7 @@ false
 - [02 Сравнение и приведение типов](<./02 Сравнение и приведение типов.md>)
 - [19 JSON serialization](<./19 JSON serialization.md>)
 - [20 Date и Intl](<./20 Date и Intl.md>)
-- [44 ToPrimitive valueOf toString Symbol.toPrimitive](<./44 ToPrimitive valueOf toString Symbol.toPrimitive.md>)
+- [44 Преобразование объектов в примитивы](<./44 Преобразование объектов в примитивы.md>)
 
 ## Источники
 

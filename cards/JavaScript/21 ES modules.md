@@ -425,9 +425,9 @@ console.log(status);
 - [05 Hoisting и TDZ](<./05 Hoisting и TDZ.md>)
 - [22 async defer и загрузка скриптов](<./22 async defer и загрузка скриптов.md>)
 - [43 Strict mode use strict](<./43 Strict mode use strict.md>)
-- [04 Bundle size code splitting tree shaking loading strategy](<../Performance/04 Bundle size code splitting tree shaking loading strategy.md>)
-- [04 Vite dev server build env proxy](<../Tooling/04 Vite dev server build env proxy.md>)
-- [05 Webpack entry loaders plugins optimization](<../Tooling/05 Webpack entry loaders plugins optimization.md>)
+- [04 Размер бандла и стратегия загрузки](<../Performance/04 Размер бандла и стратегия загрузки.md>)
+- [04 Разработка и сборка с Vite](<../Tooling/04 Разработка и сборка с Vite.md>)
+- [05 Конфигурация Webpack](<../Tooling/05 Конфигурация Webpack.md>)
 
 ## Источники
 

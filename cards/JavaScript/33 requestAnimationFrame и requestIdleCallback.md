@@ -1,7 +1,7 @@
 # requestAnimationFrame и requestIdleCallback
 
 <!-- CARD-NAV-TOP:START -->
-[← 32 Observer APIs](<./32 Observer APIs.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [34 Garbage collection →](<./34 Garbage collection.md>)
+[← 32 Observer APIs](<./32 Observer APIs.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [34 Сборка мусора и утечки памяти →](<./34 Сборка мусора и утечки памяти.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -400,9 +400,9 @@ requestAnimationFrame(step);
 - [24 Event Loop](<./24 Event Loop.md>)
 - [30 Debounce и throttle](<./30 Debounce и throttle.md>)
 - [32 Observer APIs](<./32 Observer APIs.md>)
-- [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
-- [45 DOM API innerHTML layout thrashing](<./45 DOM API innerHTML layout thrashing.md>)
-- [02 Rendering pipeline reflow repaint composite](<../Browser Internals/02 Rendering pipeline reflow repaint composite.md>)
+- [38 Web Workers и передача данных](<./38 Web Workers и передача данных.md>)
+- [45 Безопасная и производительная работа с DOM](<./45 Безопасная и производительная работа с DOM.md>)
+- [02 Конвейер рендеринга браузера](<../Browser Internals/02 Конвейер рендеринга браузера.md>)
 - [16 useTransition и useDeferredValue](<../React/16 useTransition и useDeferredValue.md>)
 
 ## Источники
@@ -415,5 +415,5 @@ requestAnimationFrame(step);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 32 Observer APIs](<./32 Observer APIs.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [34 Garbage collection →](<./34 Garbage collection.md>)
+[← 32 Observer APIs](<./32 Observer APIs.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [34 Сборка мусора и утечки памяти →](<./34 Сборка мусора и утечки памяти.md>)
 <!-- CARD-NAV-BOTTOM:END -->

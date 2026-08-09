@@ -1,7 +1,7 @@
 # Context
 
 <!-- CARD-NAV-TOP:START -->
-[← 10 useRef ref prop forwardRef и imperative handle](<./10 useRef ref prop forwardRef и imperative handle.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Error Boundaries →](<./12 Error Boundaries.md>)
+[← 10 Работа с ref в React](<./10 Работа с ref в React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Error Boundaries →](<./12 Error Boundaries.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1016,9 +1016,9 @@ ThemeContext из копии B
 ## Связанные темы
 
 - [04 Props state и однонаправленный поток данных](<./04 Props state и однонаправленный поток данных.md>)
-- [05 Причины рендера и batching](<./05 Причины рендера и batching.md>)
-- [09 useMemo useCallback и React memo](<./09 useMemo useCallback и React memo.md>)
-- [19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>)
+- [05 Повторный рендер и batching](<./05 Повторный рендер и batching.md>)
+- [09 Мемоизация в React](<./09 Мемоизация в React.md>)
+- [19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>)
 - [01 Виды состояния во frontend](<../State Management/01 Виды состояния во frontend.md>)
 
 ## Источники
@@ -1031,5 +1031,5 @@ ThemeContext из копии B
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 10 useRef ref prop forwardRef и imperative handle](<./10 useRef ref prop forwardRef и imperative handle.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Error Boundaries →](<./12 Error Boundaries.md>)
+[← 10 Работа с ref в React](<./10 Работа с ref в React.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Error Boundaries →](<./12 Error Boundaries.md>)
 <!-- CARD-NAV-BOTTOM:END -->

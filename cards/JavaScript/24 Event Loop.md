@@ -1,7 +1,7 @@
 # Event Loop
 
 <!-- CARD-NAV-TOP:START -->
-[← 23 Ошибки try catch](<./23 Ошибки try catch.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [25 Timers setTimeout setInterval →](<./25 Timers setTimeout setInterval.md>)
+[← 23 Обработка ошибок в JavaScript](<./23 Обработка ошибок в JavaScript.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [25 Timers setTimeout setInterval →](<./25 Timers setTimeout setInterval.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -324,9 +324,9 @@ console.log("F");
 - [25 Timers setTimeout setInterval](<./25 Timers setTimeout setInterval.md>)
 - [26 Promise](<./26 Promise.md>)
 - [33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>)
-- [38 Web Workers postMessage structured clone](<./38 Web Workers postMessage structured clone.md>)
-- [49 Microtasks queueMicrotask nextTick и rejection](<./49 Microtasks queueMicrotask nextTick и rejection.md>)
-- [07 Main thread long tasks Web Workers](<../Performance/07 Main thread long tasks Web Workers.md>)
+- [38 Web Workers и передача данных](<./38 Web Workers и передача данных.md>)
+- [49 Микрозадачи и обработка Promise rejection](<./49 Микрозадачи и обработка Promise rejection.md>)
+- [07 Главный поток и тяжёлые задачи](<../Performance/07 Главный поток и тяжёлые задачи.md>)
 
 ## Источники
 
@@ -340,5 +340,5 @@ console.log("F");
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 23 Ошибки try catch](<./23 Ошибки try catch.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [25 Timers setTimeout setInterval →](<./25 Timers setTimeout setInterval.md>)
+[← 23 Обработка ошибок в JavaScript](<./23 Обработка ошибок в JavaScript.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [25 Timers setTimeout setInterval →](<./25 Timers setTimeout setInterval.md>)
 <!-- CARD-NAV-BOTTOM:END -->

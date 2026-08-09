@@ -1,7 +1,7 @@
 # Proxy Reflect
 
 <!-- CARD-NAV-TOP:START -->
-[← 14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [16 Map Set WeakMap WeakSet →](<./16 Map Set WeakMap WeakSet.md>)
+[← 14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [16 Map Set WeakMap WeakSet →](<./16 Map Set WeakMap WeakSet.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -328,8 +328,8 @@ console.log(account.balance);
 
 - [10 Prototype и наследование](<./10 Prototype и наследование.md>)
 - [13 Проверка свойств объекта](<./13 Проверка свойств объекта.md>)
-- [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
-- [03 Redux Toolkit configureStore createSlice Immer](<../State Management/03 Redux Toolkit configureStore createSlice Immer.md>)
+- [14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>)
+- [03 Основы Redux Toolkit](<../State Management/03 Основы Redux Toolkit.md>)
 
 ## Источники
 
@@ -341,5 +341,5 @@ console.log(account.balance);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [16 Map Set WeakMap WeakSet →](<./16 Map Set WeakMap WeakSet.md>)
+[← 14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [16 Map Set WeakMap WeakSet →](<./16 Map Set WeakMap WeakSet.md>)
 <!-- CARD-NAV-BOTTOM:END -->

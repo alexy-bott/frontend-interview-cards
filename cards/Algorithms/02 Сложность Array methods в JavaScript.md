@@ -1,7 +1,7 @@
 # Сложность Array methods в JavaScript
 
 <!-- CARD-NAV-TOP:START -->
-[← 01 Big O time space complexity](<./01 Big O time space complexity.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Map Set Object выбор структуры данных →](<./03 Map Set Object выбор структуры данных.md>)
+[← 01 Big O и сложность алгоритмов](<./01 Big O и сложность алгоритмов.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Выбор структуры данных Map Set или Object →](<./03 Выбор структуры данных Map Set или Object.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -294,10 +294,10 @@ ECMAScript не закрепляет конкретную внутреннюю �
 ## Связанные темы
 
 - [17 Array methods](<../JavaScript/17 Array methods.md>)
-- [01 Big O time space complexity](<./01 Big O time space complexity.md>)
-- [03 Map Set Object выбор структуры данных](<./03 Map Set Object выбор структуры данных.md>)
-- [09 useMemo useCallback и React memo](<../React/09 useMemo useCallback и React memo.md>)
-- [05 Selectors normalization и createEntityAdapter](<../State Management/05 Selectors normalization и createEntityAdapter.md>)
+- [01 Big O и сложность алгоритмов](<./01 Big O и сложность алгоритмов.md>)
+- [03 Выбор структуры данных Map Set или Object](<./03 Выбор структуры данных Map Set или Object.md>)
+- [09 Мемоизация в React](<../React/09 Мемоизация в React.md>)
+- [05 Селекторы и нормализация данных в Redux](<../State Management/05 Селекторы и нормализация данных в Redux.md>)
 
 ## Источники
 
@@ -310,5 +310,5 @@ ECMAScript не закрепляет конкретную внутреннюю �
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 01 Big O time space complexity](<./01 Big O time space complexity.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Map Set Object выбор структуры данных →](<./03 Map Set Object выбор структуры данных.md>)
+[← 01 Big O и сложность алгоритмов](<./01 Big O и сложность алгоритмов.md>) · [↑ Algorithms](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Выбор структуры данных Map Set или Object →](<./03 Выбор структуры данных Map Set или Object.md>)
 <!-- CARD-NAV-BOTTOM:END -->

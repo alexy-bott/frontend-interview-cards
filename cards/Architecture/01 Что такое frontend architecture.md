@@ -1,7 +1,7 @@
 # Что такое frontend architecture
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 FSD layers slices segments import rule →](<./02 FSD layers slices segments import rule.md>)
+[↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Структура Feature-Sliced Design →](<./02 Структура Feature-Sliced Design.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -167,9 +167,9 @@ Frontend-архитектура — это принципы и правила, �
 
 ## Связанные темы
 
-- [02 FSD layers slices segments import rule](<./02 FSD layers slices segments import rule.md>)
-- [04 API слой contracts DTO mapping](<./04 API слой contracts DTO mapping.md>)
-- [05 Где хранить state local server global URL](<./05 Где хранить state local server global URL.md>)
+- [02 Структура Feature-Sliced Design](<./02 Структура Feature-Sliced Design.md>)
+- [04 API-слой и преобразование DTO](<./04 API-слой и преобразование DTO.md>)
+- [05 Выбор места хранения состояния](<./05 Выбор места хранения состояния.md>)
 - [01 SOLID во frontend](<../Principles/01 SOLID во frontend.md>)
 
 ## Источники
@@ -180,5 +180,5 @@ Frontend-архитектура — это принципы и правила, �
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 FSD layers slices segments import rule →](<./02 FSD layers slices segments import rule.md>)
+[↑ Architecture](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Структура Feature-Sliced Design →](<./02 Структура Feature-Sliced Design.md>)
 <!-- CARD-NAV-BOTTOM:END -->

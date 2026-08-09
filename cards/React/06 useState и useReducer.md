@@ -1,7 +1,7 @@
 # useState и useReducer
 
 <!-- CARD-NAV-TOP:START -->
-[← 05 Причины рендера и batching](<./05 Причины рендера и batching.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 useEffect useLayoutEffect и cleanup →](<./07 useEffect useLayoutEffect и cleanup.md>)
+[← 05 Повторный рендер и batching](<./05 Повторный рендер и batching.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Эффекты React и cleanup →](<./07 Эффекты React и cleanup.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -851,9 +851,9 @@ dispatch({
 ## Связанные темы
 
 - [04 Props state и однонаправленный поток данных](<./04 Props state и однонаправленный поток данных.md>)
-- [05 Причины рендера и batching](<./05 Причины рендера и batching.md>)
-- [05 Union intersection discriminated unions](<../TypeScript/05 Union intersection discriminated unions.md>)
-- [03 Redux Toolkit configureStore createSlice Immer](<../State Management/03 Redux Toolkit configureStore createSlice Immer.md>)
+- [05 Повторный рендер и batching](<./05 Повторный рендер и batching.md>)
+- [05 Union-типы и моделирование состояний](<../TypeScript/05 Union-типы и моделирование состояний.md>)
+- [03 Основы Redux Toolkit](<../State Management/03 Основы Redux Toolkit.md>)
 
 ## Источники
 
@@ -864,5 +864,5 @@ dispatch({
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 05 Причины рендера и batching](<./05 Причины рендера и batching.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 useEffect useLayoutEffect и cleanup →](<./07 useEffect useLayoutEffect и cleanup.md>)
+[← 05 Повторный рендер и batching](<./05 Повторный рендер и batching.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Эффекты React и cleanup →](<./07 Эффекты React и cleanup.md>)
 <!-- CARD-NAV-BOTTOM:END -->

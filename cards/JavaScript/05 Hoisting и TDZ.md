@@ -244,7 +244,7 @@ const expression = () => "expression";
 - [04 var let const и область видимости](<./04 var let const и область видимости.md>)
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [21 ES modules](<./21 ES modules.md>)
-- [42 Execution context lexical environment scope chain](<./42 Execution context lexical environment scope chain.md>)
+- [42 Контекст выполнения и области видимости](<./42 Контекст выполнения и области видимости.md>)
 
 ## Источники
 

@@ -1,7 +1,7 @@
 # Стратегия тестирования frontend
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Jest runner config environment transform →](<./02 Jest runner config environment transform.md>)
+[↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Конфигурация и запуск Jest →](<./02 Конфигурация и запуск Jest.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -998,12 +998,12 @@ Characterization test отвечает на вопрос:
 
 ## Связанные темы
 
-- [05 React Testing Library queries user behavior](<./05 React Testing Library queries user behavior.md>)
+- [05 Тестирование React с React Testing Library](<./05 Тестирование React с React Testing Library.md>)
 - [06 MSW и моки API](<./06 MSW и моки API.md>)
-- [07 Flaky tests isolation cleanup](<./07 Flaky tests isolation cleanup.md>)
-- [08 Coverage CI и качество тестов](<./08 Coverage CI и качество тестов.md>)
-- [09 E2E Playwright Cypress isolation locators](<./09 E2E Playwright Cypress isolation locators.md>)
-- [06 Submit lifecycle server errors reset defaultValues](<../Forms/06 Submit lifecycle server errors reset defaultValues.md>)
+- [07 Нестабильные тесты и изоляция](<./07 Нестабильные тесты и изоляция.md>)
+- [08 Покрытие кода и качество тестов](<./08 Покрытие кода и качество тестов.md>)
+- [09 E2E-тесты с Playwright и Cypress](<./09 E2E-тесты с Playwright и Cypress.md>)
+- [06 Отправка и сброс формы](<../Forms/06 Отправка и сброс формы.md>)
 
 ## Источники
 
@@ -1027,5 +1027,5 @@ Characterization test отвечает на вопрос:
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Jest runner config environment transform →](<./02 Jest runner config environment transform.md>)
+[↑ Testing](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Конфигурация и запуск Jest →](<./02 Конфигурация и запуск Jest.md>)
 <!-- CARD-NAV-BOTTOM:END -->

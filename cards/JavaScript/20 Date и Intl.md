@@ -327,7 +327,7 @@ const labels = dates.map((date) => formatter.format(date));
 - [19 JSON serialization](<./19 JSON serialization.md>)
 - [35 localStorage sessionStorage IndexedDB](<./35 localStorage sessionStorage IndexedDB.md>)
 - [01 Формы во frontend](<../Forms/01 Формы во frontend.md>)
-- [04 SSR SSG ISR Streaming и hydration](<../Next.js/04 SSR SSG ISR Streaming и hydration.md>)
+- [04 Рендеринг в Next.js](<../Next.js/04 Рендеринг в Next.js.md>)
 
 ## Источники
 

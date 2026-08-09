@@ -1,7 +1,7 @@
 # Центрирование в CSS
 
 <!-- CARD-NAV-TOP:START -->
-[← 04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Position sticky fixed absolute relative →](<./06 Position sticky fixed absolute relative.md>)
+[← 04 Основы CSS Grid](<./04 Основы CSS Grid.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Позиционирование элементов в CSS →](<./06 Позиционирование элементов в CSS.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -444,10 +444,10 @@ Flexbox и Grid добавили модели выравнивания по ос
 
 ## Связанные темы
 
-- [03 Flexbox оси выравнивание перенос](<./03 Flexbox оси выравнивание перенос.md>)
-- [04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>)
-- [06 Position sticky fixed absolute relative](<./06 Position sticky fixed absolute relative.md>)
-- [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
+- [03 Основы Flexbox](<./03 Основы Flexbox.md>)
+- [04 Основы CSS Grid](<./04 Основы CSS Grid.md>)
+- [06 Позиционирование элементов в CSS](<./06 Позиционирование элементов в CSS.md>)
+- [18 Intrinsic sizing в CSS](<./18 Intrinsic sizing в CSS.md>)
 
 ## Источники
 
@@ -458,5 +458,5 @@ Flexbox и Grid добавили модели выравнивания по ос
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Position sticky fixed absolute relative →](<./06 Position sticky fixed absolute relative.md>)
+[← 04 Основы CSS Grid](<./04 Основы CSS Grid.md>) · [↑ CSS](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [06 Позиционирование элементов в CSS →](<./06 Позиционирование элементов в CSS.md>)
 <!-- CARD-NAV-BOTTOM:END -->

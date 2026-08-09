@@ -1,7 +1,7 @@
 # GitLab CI для frontend
 
 <!-- CARD-NAV-TOP:START -->
-[← 02 CI CD pipeline stages jobs artifacts cache](<./02 CI CD pipeline stages jobs artifacts cache.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Docker для frontend multi-stage build →](<./04 Docker для frontend multi-stage build.md>)
+[← 02 Устройство CI CD pipeline](<./02 Устройство CI CD pipeline.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Docker-сборка frontend-приложения →](<./04 Docker-сборка frontend-приложения.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1229,10 +1229,10 @@ sha256:...
 
 ## Связанные темы
 
-- [02 CI CD pipeline stages jobs artifacts cache](<./02 CI CD pipeline stages jobs artifacts cache.md>)
-- [02 lock files npm ci и воспроизводимая установка](<../Tooling/02 lock files npm ci и воспроизводимая установка.md>)
-- [07 Merge request GitLab protected branches approvals](<../Git/07 Merge request GitLab protected branches approvals.md>)
-- [06 Env variables secrets build-time runtime](<./06 Env variables secrets build-time runtime.md>)
+- [02 Устройство CI CD pipeline](<./02 Устройство CI CD pipeline.md>)
+- [02 Lock-файлы и воспроизводимая установка](<../Tooling/02 Lock-файлы и воспроизводимая установка.md>)
+- [07 Merge request и защита веток в GitLab](<../Git/07 Merge request и защита веток в GitLab.md>)
+- [06 Переменные окружения и secrets в CI CD](<./06 Переменные окружения и secrets в CI CD.md>)
 
 ## Источники
 
@@ -1244,5 +1244,5 @@ sha256:...
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 02 CI CD pipeline stages jobs artifacts cache](<./02 CI CD pipeline stages jobs artifacts cache.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Docker для frontend multi-stage build →](<./04 Docker для frontend multi-stage build.md>)
+[← 02 Устройство CI CD pipeline](<./02 Устройство CI CD pipeline.md>) · [↑ DevOps](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Docker-сборка frontend-приложения →](<./04 Docker-сборка frontend-приложения.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -1,7 +1,7 @@
 # Redux и Flux
 
 <!-- CARD-NAV-TOP:START -->
-[← 01 Виды состояния во frontend](<./01 Виды состояния во frontend.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Redux Toolkit configureStore createSlice Immer →](<./03 Redux Toolkit configureStore createSlice Immer.md>)
+[← 01 Виды состояния во frontend](<./01 Виды состояния во frontend.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Основы Redux Toolkit →](<./03 Основы Redux Toolkit.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -2722,9 +2722,9 @@ immutable updates
 ## Связанные темы
 
 - [01 Виды состояния во frontend](<./01 Виды состояния во frontend.md>)
-- [03 Redux Toolkit configureStore createSlice Immer](<./03 Redux Toolkit configureStore createSlice Immer.md>)
-- [04 Async logic createAsyncThunk listener middleware](<./04 Async logic createAsyncThunk listener middleware.md>)
-- [05 Selectors normalization и createEntityAdapter](<./05 Selectors normalization и createEntityAdapter.md>)
+- [03 Основы Redux Toolkit](<./03 Основы Redux Toolkit.md>)
+- [04 Асинхронная логика Redux Toolkit](<./04 Асинхронная логика Redux Toolkit.md>)
+- [05 Селекторы и нормализация данных в Redux](<./05 Селекторы и нормализация данных в Redux.md>)
 
 ## Источники
 
@@ -2747,5 +2747,5 @@ immutable updates
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 01 Виды состояния во frontend](<./01 Виды состояния во frontend.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Redux Toolkit configureStore createSlice Immer →](<./03 Redux Toolkit configureStore createSlice Immer.md>)
+[← 01 Виды состояния во frontend](<./01 Виды состояния во frontend.md>) · [↑ State Management](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [03 Основы Redux Toolkit →](<./03 Основы Redux Toolkit.md>)
 <!-- CARD-NAV-BOTTOM:END -->

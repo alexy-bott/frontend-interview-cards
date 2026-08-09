@@ -307,7 +307,7 @@ Spread копирует объект только поверхностно. Св
 - [03 Optional chaining и nullish coalescing](<./03 Optional chaining и nullish coalescing.md>)
 - [06 Функции и arrow functions](<./06 Функции и arrow functions.md>)
 - [12 Копирование и immutability](<./12 Копирование и immutability.md>)
-- [14 Object descriptors getters setters freeze seal](<./14 Object descriptors getters setters freeze seal.md>)
+- [14 Дескрипторы свойств и ограничения объектов](<./14 Дескрипторы свойств и ограничения объектов.md>)
 
 ## Источники
 

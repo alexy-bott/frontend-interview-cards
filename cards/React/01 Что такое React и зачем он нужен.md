@@ -1,7 +1,7 @@
 # Что такое React и зачем он нужен
 
 <!-- CARD-NAV-TOP:START -->
-[↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Render commit и Fiber →](<./02 Render commit и Fiber.md>)
+[↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Обновление интерфейса в React →](<./02 Обновление интерфейса в React.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -418,10 +418,10 @@ React использует новое и предыдущее описание, 
 
 ## Связанные темы
 
-- [02 Render commit и Fiber](<./02 Render commit и Fiber.md>)
-- [03 Reconciliation key и списки](<./03 Reconciliation key и списки.md>)
+- [02 Обновление интерфейса в React](<./02 Обновление интерфейса в React.md>)
+- [03 Reconciliation и key в списках](<./03 Reconciliation и key в списках.md>)
 - [04 Props state и однонаправленный поток данных](<./04 Props state и однонаправленный поток данных.md>)
-- [23 JSX SyntheticEvent и декларативность](<./23 JSX SyntheticEvent и декларативность.md>)
+- [23 JSX события и декларативность](<./23 JSX события и декларативность.md>)
 
 ## Источники
 
@@ -432,5 +432,5 @@ React использует новое и предыдущее описание, 
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Render commit и Fiber →](<./02 Render commit и Fiber.md>)
+[↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Обновление интерфейса в React →](<./02 Обновление интерфейса в React.md>)
 <!-- CARD-NAV-BOTTOM:END -->

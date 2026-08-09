@@ -1,7 +1,7 @@
 # React Compiler
 
 <!-- CARD-NAV-TOP:START -->
-[← 19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [21 useEffectEvent и Activity →](<./21 useEffectEvent и Activity.md>)
+[← 19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [21 useEffectEvent и Activity →](<./21 useEffectEvent и Activity.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -700,11 +700,11 @@ Production-настройкой обработки ошибок остаётся
 
 ## Связанные темы
 
-- [08 Правила хуков и custom hooks](<./08 Правила хуков и custom hooks.md>)
-- [09 useMemo useCallback и React memo](<./09 useMemo useCallback и React memo.md>)
-- [19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>)
-- [22 Performance profiling и оптимизация React](<./22 Performance profiling и оптимизация React.md>)
-- [04 Vite dev server build env proxy](<../Tooling/04 Vite dev server build env proxy.md>)
+- [08 Правила хуков и пользовательские хуки](<./08 Правила хуков и пользовательские хуки.md>)
+- [09 Мемоизация в React](<./09 Мемоизация в React.md>)
+- [19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>)
+- [22 Диагностика производительности React](<./22 Диагностика производительности React.md>)
+- [04 Разработка и сборка с Vite](<../Tooling/04 Разработка и сборка с Vite.md>)
 
 ## Источники
 
@@ -725,5 +725,5 @@ Production-настройкой обработки ошибок остаётся
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 19 React 18 19 и 19.2](<./19 React 18 19 и 19.2.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [21 useEffectEvent и Activity →](<./21 useEffectEvent и Activity.md>)
+[← 19 Версии React 18 19 и 19.2](<./19 Версии React 18 19 и 19.2.md>) · [↑ React](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [21 useEffectEvent и Activity →](<./21 useEffectEvent и Activity.md>)
 <!-- CARD-NAV-BOTTOM:END -->

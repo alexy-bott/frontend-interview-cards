@@ -1,7 +1,7 @@
 # Strategy во frontend
 
 <!-- CARD-NAV-TOP:START -->
-[← 02 Adapter и Facade во frontend](<./02 Adapter и Facade во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Observer PubSub EventTarget events →](<./04 Observer PubSub EventTarget events.md>)
+[← 02 Adapter и Facade во frontend](<./02 Adapter и Facade во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Observer PubSub и браузерные события →](<./04 Observer PubSub и браузерные события.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -1404,9 +1404,9 @@ UsersEmptyState
 
 ## Связанные темы
 
-- [03 Open Closed Principle composition strategy](<../Principles/03 Open Closed Principle composition strategy.md>)
-- [05 Валидация форм schema resolver async validation](<../Forms/05 Валидация форм schema resolver async validation.md>)
-- [05 Union intersection discriminated unions](<../TypeScript/05 Union intersection discriminated unions.md>)
+- [03 Принцип открытости и закрытости](<../Principles/03 Принцип открытости и закрытости.md>)
+- [05 Валидация форм](<../Forms/05 Валидация форм.md>)
+- [05 Union-типы и моделирование состояний](<../TypeScript/05 Union-типы и моделирование состояний.md>)
 - [01 Стратегия тестирования frontend](<../Testing/01 Стратегия тестирования frontend.md>)
 
 ## Источники
@@ -1418,5 +1418,5 @@ UsersEmptyState
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 02 Adapter и Facade во frontend](<./02 Adapter и Facade во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Observer PubSub EventTarget events →](<./04 Observer PubSub EventTarget events.md>)
+[← 02 Adapter и Facade во frontend](<./02 Adapter и Facade во frontend.md>) · [↑ Patterns](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [04 Observer PubSub и браузерные события →](<./04 Observer PubSub и браузерные события.md>)
 <!-- CARD-NAV-BOTTOM:END -->

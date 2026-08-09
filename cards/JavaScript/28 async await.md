@@ -1,7 +1,7 @@
 # async await
 
 <!-- CARD-NAV-TOP:START -->
-[← 27 Promise combinators](<./27 Promise combinators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [29 Fetch AbortController и ошибки API →](<./29 Fetch AbortController и ошибки API.md>)
+[← 27 Promise combinators](<./27 Promise combinators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [29 fetch отмена запросов и обработка ошибок →](<./29 fetch отмена запросов и обработка ошибок.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -394,12 +394,12 @@ async function getValue() {
 
 ## Связанные темы
 
-- [23 Ошибки try catch](<./23 Ошибки try catch.md>)
+- [23 Обработка ошибок в JavaScript](<./23 Обработка ошибок в JavaScript.md>)
 - [24 Event Loop](<./24 Event Loop.md>)
 - [26 Promise](<./26 Promise.md>)
 - [27 Promise combinators](<./27 Promise combinators.md>)
-- [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
-- [07 useEffect useLayoutEffect и cleanup](<../React/07 useEffect useLayoutEffect и cleanup.md>)
+- [29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>)
+- [07 Эффекты React и cleanup](<../React/07 Эффекты React и cleanup.md>)
 
 ## Источники
 
@@ -411,5 +411,5 @@ async function getValue() {
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 27 Promise combinators](<./27 Promise combinators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [29 Fetch AbortController и ошибки API →](<./29 Fetch AbortController и ошибки API.md>)
+[← 27 Promise combinators](<./27 Promise combinators.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [29 fetch отмена запросов и обработка ошибок →](<./29 fetch отмена запросов и обработка ошибок.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -1,7 +1,7 @@
 # Строки Unicode и кодировки
 
 <!-- CARD-NAV-TOP:START -->
-[← 53 Number BigInt и точность вычислений](<./53 Number BigInt и точность вычислений.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [55 ArrayBuffer TypedArray DataView →](<./55 ArrayBuffer TypedArray DataView.md>)
+[← 53 Number BigInt и точность вычислений](<./53 Number BigInt и точность вычислений.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [55 Бинарные данные в JavaScript →](<./55 Бинарные данные в JavaScript.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -302,7 +302,7 @@ console.log([...segmenter.segment(value)].length);
 
 - [01 Типы данных](<./01 Типы данных.md>)
 - [20 Date и Intl](<./20 Date и Intl.md>)
-- [46 Streams API ReadableStream](<./46 Streams API ReadableStream.md>)
+- [46 Потоки данных и ReadableStream](<./46 Потоки данных и ReadableStream.md>)
 - [52 RegExp](<./52 RegExp.md>)
 
 ## Источники
@@ -316,5 +316,5 @@ console.log([...segmenter.segment(value)].length);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 53 Number BigInt и точность вычислений](<./53 Number BigInt и точность вычислений.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [55 ArrayBuffer TypedArray DataView →](<./55 ArrayBuffer TypedArray DataView.md>)
+[← 53 Number BigInt и точность вычислений](<./53 Number BigInt и точность вычислений.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [55 Бинарные данные в JavaScript →](<./55 Бинарные данные в JavaScript.md>)
 <!-- CARD-NAV-BOTTOM:END -->

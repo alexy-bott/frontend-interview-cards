@@ -1,7 +1,7 @@
 # REST API и ресурсная модель
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 HTTP методы safe idempotent cacheable →](<./02 HTTP методы safe idempotent cacheable.md>)
+[↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Свойства HTTP-методов →](<./02 Свойства HTTP-методов.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -298,10 +298,10 @@ GET /orders?userId=42
 ## Связанные темы
 
 - [05 REST API resource model](<../Web Basics/05 REST API resource model.md>)
-- [02 HTTP методы safe idempotent cacheable](<./02 HTTP методы safe idempotent cacheable.md>)
-- [03 HTTP status codes и ошибки API](<./03 HTTP status codes и ошибки API.md>)
-- [07 OpenAPI Swagger contracts codegen](<./07 OpenAPI Swagger contracts codegen.md>)
-- [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
+- [02 Свойства HTTP-методов](<./02 Свойства HTTP-методов.md>)
+- [03 HTTP-статусы и ошибки API](<./03 HTTP-статусы и ошибки API.md>)
+- [07 OpenAPI и генерация клиента](<./07 OpenAPI и генерация клиента.md>)
+- [04 API-слой и преобразование DTO](<../Architecture/04 API-слой и преобразование DTO.md>)
 
 ## Источники
 
@@ -312,5 +312,5 @@ GET /orders?userId=42
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 HTTP методы safe idempotent cacheable →](<./02 HTTP методы safe idempotent cacheable.md>)
+[↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Свойства HTTP-методов →](<./02 Свойства HTTP-методов.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -1,7 +1,7 @@
 # CSS
 
 <!-- SECTION-NAV:START -->
-[⌂ Все разделы](<../../README.md>) · [Начать с первой карточки →](<./01 Что такое CSS cascade inheritance specificity.md>)
+[⌂ Все разделы](<../../README.md>) · [Начать с первой карточки →](<./01 Каскад наследование и специфичность CSS.md>)
 
 Карточек в разделе: **18**
 <!-- SECTION-NAV:END -->
@@ -12,21 +12,21 @@
 
 ## Последовательность вопросов
 
-1. [01 Что такое CSS cascade inheritance specificity](<./01 Что такое CSS cascade inheritance specificity.md>)
-2. [02 Box model display formatting contexts](<./02 Box model display formatting contexts.md>)
-3. [03 Flexbox оси выравнивание перенос](<./03 Flexbox оси выравнивание перенос.md>)
-4. [04 CSS Grid tracks areas auto-fit minmax](<./04 CSS Grid tracks areas auto-fit minmax.md>)
+1. [01 Каскад наследование и специфичность CSS](<./01 Каскад наследование и специфичность CSS.md>)
+2. [02 Box model и типы отображения](<./02 Box model и типы отображения.md>)
+3. [03 Основы Flexbox](<./03 Основы Flexbox.md>)
+4. [04 Основы CSS Grid](<./04 Основы CSS Grid.md>)
 5. [05 Центрирование в CSS](<./05 Центрирование в CSS.md>)
-6. [06 Position sticky fixed absolute relative](<./06 Position sticky fixed absolute relative.md>)
-7. [07 Stacking context z-index overflow](<./07 Stacking context z-index overflow.md>)
-8. [08 Responsive design media container queries units](<./08 Responsive design media container queries units.md>)
-9. [09 CSS variables design tokens themes](<./09 CSS variables design tokens themes.md>)
-10. [10 Animations transitions transform performance](<./10 Animations transitions transform performance.md>)
-11. [11 SCSS variables mixins functions nesting](<./11 SCSS variables mixins functions nesting.md>)
-12. [12 SCSS modules use forward architecture](<./12 SCSS modules use forward architecture.md>)
-13. [13 CSS Modules BEM naming collisions](<./13 CSS Modules BEM naming collisions.md>)
-14. [14 Debugging CSS DevTools common issues](<./14 Debugging CSS DevTools common issues.md>)
-15. [15 CSS selectors pseudo-classes pseudo-elements](<./15 CSS selectors pseudo-classes pseudo-elements.md>)
-16. [16 CSS reset normalize browser defaults](<./16 CSS reset normalize browser defaults.md>)
-17. [17 CSS preprocessors PostCSS Autoprefixer](<./17 CSS preprocessors PostCSS Autoprefixer.md>)
-18. [18 Intrinsic sizing min-content max-content fit-content](<./18 Intrinsic sizing min-content max-content fit-content.md>)
+6. [06 Позиционирование элементов в CSS](<./06 Позиционирование элементов в CSS.md>)
+7. [07 Stacking context и z-index](<./07 Stacking context и z-index.md>)
+8. [08 Адаптивный дизайн media и container queries](<./08 Адаптивный дизайн media и container queries.md>)
+9. [09 CSS-переменные и темы](<./09 CSS-переменные и темы.md>)
+10. [10 Анимации и transitions в CSS](<./10 Анимации и transitions в CSS.md>)
+11. [11 Возможности SCSS](<./11 Возможности SCSS.md>)
+12. [12 Модульная архитектура Sass](<./12 Модульная архитектура Sass.md>)
+13. [13 CSS Modules и BEM](<./13 CSS Modules и BEM.md>)
+14. [14 Диагностика проблем CSS](<./14 Диагностика проблем CSS.md>)
+15. [15 CSS-селекторы псевдоклассы и псевдоэлементы](<./15 CSS-селекторы псевдоклассы и псевдоэлементы.md>)
+16. [16 CSS reset и normalize](<./16 CSS reset и normalize.md>)
+17. [17 Препроцессоры и PostCSS](<./17 Препроцессоры и PostCSS.md>)
+18. [18 Intrinsic sizing в CSS](<./18 Intrinsic sizing в CSS.md>)

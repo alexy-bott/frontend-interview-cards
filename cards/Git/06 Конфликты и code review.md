@@ -1,7 +1,7 @@
 # Конфликты и code review
 
 <!-- CARD-NAV-TOP:START -->
-[← 05 Cherry-pick revert reset restore stash reflog](<./05 Cherry-pick revert reset restore stash reflog.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Merge request GitLab protected branches approvals →](<./07 Merge request GitLab protected branches approvals.md>)
+[← 05 Отмена сохранение и восстановление изменений](<./05 Отмена сохранение и восстановление изменений.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Merge request и защита веток в GitLab →](<./07 Merge request и защита веток в GitLab.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -509,10 +509,10 @@ Code review также не заменяет pipeline. Человек ненад
 
 ## Связанные темы
 
-- [04 Merge vs rebase fast-forward squash](<./04 Merge vs rebase fast-forward squash.md>)
-- [07 Merge request GitLab protected branches approvals](<./07 Merge request GitLab protected branches approvals.md>)
+- [04 Merge и rebase](<./04 Merge и rebase.md>)
+- [07 Merge request и защита веток в GitLab](<./07 Merge request и защита веток в GitLab.md>)
 - [01 Стратегия тестирования frontend](<../Testing/01 Стратегия тестирования frontend.md>)
-- [02 lock files npm ci и воспроизводимая установка](<../Tooling/02 lock files npm ci и воспроизводимая установка.md>)
+- [02 Lock-файлы и воспроизводимая установка](<../Tooling/02 Lock-файлы и воспроизводимая установка.md>)
 
 ## Источники
 
@@ -523,5 +523,5 @@ Code review также не заменяет pipeline. Человек ненад
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 05 Cherry-pick revert reset restore stash reflog](<./05 Cherry-pick revert reset restore stash reflog.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Merge request GitLab protected branches approvals →](<./07 Merge request GitLab protected branches approvals.md>)
+[← 05 Отмена сохранение и восстановление изменений](<./05 Отмена сохранение и восстановление изменений.md>) · [↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [07 Merge request и защита веток в GitLab →](<./07 Merge request и защита веток в GitLab.md>)
 <!-- CARD-NAV-BOTTOM:END -->

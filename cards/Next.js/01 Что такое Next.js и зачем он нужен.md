@@ -1,7 +1,7 @@
 # Что такое Next.js и зачем он нужен
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 App Router pages layouts loading error route handlers →](<./02 App Router pages layouts loading error route handlers.md>)
+[↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Структура App Router →](<./02 Структура App Router.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -359,9 +359,9 @@ Vercel предоставляет готовую интеграцию, но не
 
 ## Связанные темы
 
-- [02 App Router pages layouts loading error route handlers](<./02 App Router pages layouts loading error route handlers.md>)
-- [03 Server Components Client Components и use client](<./03 Server Components Client Components и use client.md>)
-- [04 SSR SSG ISR Streaming и hydration](<./04 SSR SSG ISR Streaming и hydration.md>)
+- [02 Структура App Router](<./02 Структура App Router.md>)
+- [03 Server и Client Components](<./03 Server и Client Components.md>)
+- [04 Рендеринг в Next.js](<./04 Рендеринг в Next.js.md>)
 - [01 Что такое React и зачем он нужен](<../React/01 Что такое React и зачем он нужен.md>)
 
 ## Источники
@@ -379,5 +379,5 @@ Vercel предоставляет готовую интеграцию, но не
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 App Router pages layouts loading error route handlers →](<./02 App Router pages layouts loading error route handlers.md>)
+[↑ Next.js](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Структура App Router →](<./02 Структура App Router.md>)
 <!-- CARD-NAV-BOTTOM:END -->

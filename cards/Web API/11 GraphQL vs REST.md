@@ -1,7 +1,7 @@
 # GraphQL vs REST
 
 <!-- CARD-NAV-TOP:START -->
-[← 10 SSE WebSocket polling comparison](<./10 SSE WebSocket polling comparison.md>) · [↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 WebRTC basics →](<./12 WebRTC basics.md>)
+[← 10 Выбор транспорта для realtime-обновлений](<./10 Выбор транспорта для realtime-обновлений.md>) · [↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Основы WebRTC →](<./12 Основы WebRTC.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -873,11 +873,11 @@ GraphQL оправдан, когда несколько клиентов тре�
 ## Связанные темы
 
 - [01 REST API и ресурсная модель](<./01 REST API и ресурсная модель.md>)
-- [07 OpenAPI Swagger contracts codegen](<./07 OpenAPI Swagger contracts codegen.md>)
-- [08 Pagination filtering sorting](<./08 Pagination filtering sorting.md>)
-- [09 WebSocket protocol lifecycle reconnect](<./09 WebSocket protocol lifecycle reconnect.md>)
-- [04 API слой contracts DTO mapping](<../Architecture/04 API слой contracts DTO mapping.md>)
-- [10 TanStack Query React Query vs RTK Query](<../State Management/10 TanStack Query React Query vs RTK Query.md>)
+- [07 OpenAPI и генерация клиента](<./07 OpenAPI и генерация клиента.md>)
+- [08 Пагинация фильтрация и сортировка API](<./08 Пагинация фильтрация и сортировка API.md>)
+- [09 Жизненный цикл WebSocket](<./09 Жизненный цикл WebSocket.md>)
+- [04 API-слой и преобразование DTO](<../Architecture/04 API-слой и преобразование DTO.md>)
+- [10 TanStack Query и сравнение с RTK Query](<../State Management/10 TanStack Query и сравнение с RTK Query.md>)
 
 ## Источники
 
@@ -895,5 +895,5 @@ GraphQL оправдан, когда несколько клиентов тре�
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 10 SSE WebSocket polling comparison](<./10 SSE WebSocket polling comparison.md>) · [↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 WebRTC basics →](<./12 WebRTC basics.md>)
+[← 10 Выбор транспорта для realtime-обновлений](<./10 Выбор транспорта для realtime-обновлений.md>) · [↑ Web API](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [12 Основы WebRTC →](<./12 Основы WebRTC.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -1,7 +1,7 @@
 # Проверка данных с backend
 
 <!-- CARD-NAV-TOP:START -->
-[← 17 import type isolatedModules declaration files](<./17 import type isolatedModules declaration files.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 React TypeScript типизация →](<./19 React TypeScript типизация.md>)
+[← 17 Типы модулей и файлы деклараций](<./17 Типы модулей и файлы деклараций.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 Типизация React-компонентов →](<./19 Типизация React-компонентов.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -464,11 +464,11 @@ UI может:
 
 ## Связанные темы
 
-- [03 any unknown never void](<./03 any unknown never void.md>)
-- [06 Narrowing type guards assertions](<./06 Narrowing type guards assertions.md>)
-- [14 as const satisfies и type assertions](<./14 as const satisfies и type assertions.md>)
-- [21 Redux Toolkit RTK Query и typed hooks](<./21 Redux Toolkit RTK Query и typed hooks.md>)
-- [24 Async Promise Awaited и catch unknown](<./24 Async Promise Awaited и catch unknown.md>)
+- [03 Специальные типы TypeScript](<./03 Специальные типы TypeScript.md>)
+- [06 Сужение типов и type guards](<./06 Сужение типов и type guards.md>)
+- [14 Утверждения и уточнение типов](<./14 Утверждения и уточнение типов.md>)
+- [21 Типизация Redux Toolkit и RTK Query](<./21 Типизация Redux Toolkit и RTK Query.md>)
+- [24 Типизация async-кода и ошибок](<./24 Типизация async-кода и ошибок.md>)
 
 ## Источники
 
@@ -480,5 +480,5 @@ UI может:
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 17 import type isolatedModules declaration files](<./17 import type isolatedModules declaration files.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 React TypeScript типизация →](<./19 React TypeScript типизация.md>)
+[← 17 Типы модулей и файлы деклараций](<./17 Типы модулей и файлы деклараций.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [19 Типизация React-компонентов →](<./19 Типизация React-компонентов.md>)
 <!-- CARD-NAV-BOTTOM:END -->

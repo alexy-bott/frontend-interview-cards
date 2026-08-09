@@ -1,7 +1,7 @@
 # Debounce и throttle
 
 <!-- CARD-NAV-TOP:START -->
-[← 29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [31 DOM events →](<./31 DOM events.md>)
+[← 29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [31 DOM events →](<./31 DOM events.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -352,11 +352,11 @@ setTimeout(() => log("C"), 120);
 - [08 Замыкание](<./08 Замыкание.md>)
 - [24 Event Loop](<./24 Event Loop.md>)
 - [25 Timers setTimeout setInterval](<./25 Timers setTimeout setInterval.md>)
-- [29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>)
+- [29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>)
 - [33 requestAnimationFrame и requestIdleCallback](<./33 requestAnimationFrame и requestIdleCallback.md>)
-- [07 useEffect useLayoutEffect и cleanup](<../React/07 useEffect useLayoutEffect и cleanup.md>)
-- [03 Jest mocks spies fake timers](<../Testing/03 Jest mocks spies fake timers.md>)
-- [07 Autocomplete поиск debounce cache accessibility](<../Frontend System Design/07 Autocomplete поиск debounce cache accessibility.md>)
+- [07 Эффекты React и cleanup](<../React/07 Эффекты React и cleanup.md>)
+- [03 Моки и таймеры в Jest](<../Testing/03 Моки и таймеры в Jest.md>)
+- [07 Проектирование autocomplete-поиска](<../Frontend System Design/07 Проектирование autocomplete-поиска.md>)
 
 ## Источники
 
@@ -369,5 +369,5 @@ setTimeout(() => log("C"), 120);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 29 Fetch AbortController и ошибки API](<./29 Fetch AbortController и ошибки API.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [31 DOM events →](<./31 DOM events.md>)
+[← 29 fetch отмена запросов и обработка ошибок](<./29 fetch отмена запросов и обработка ошибок.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [31 DOM events →](<./31 DOM events.md>)
 <!-- CARD-NAV-BOTTOM:END -->

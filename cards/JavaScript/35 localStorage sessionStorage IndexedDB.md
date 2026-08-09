@@ -1,7 +1,7 @@
 # localStorage sessionStorage IndexedDB
 
 <!-- CARD-NAV-TOP:START -->
-[← 34 Garbage collection](<./34 Garbage collection.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [36 CustomEvent EventTarget dispatchEvent →](<./36 CustomEvent EventTarget dispatchEvent.md>)
+[← 34 Сборка мусора и утечки памяти](<./34 Сборка мусора и утечки памяти.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [36 EventTarget и пользовательские события →](<./36 EventTarget и пользовательские события.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -333,11 +333,11 @@ Cache API хранит пары HTTP `Request` и `Response`. Его часто 
 ## Связанные темы
 
 - [19 JSON serialization](<./19 JSON serialization.md>)
-- [39 Cookies document.cookie SameSite credentials](<./39 Cookies document.cookie SameSite credentials.md>)
-- [41 postMessage BroadcastChannel](<./41 postMessage BroadcastChannel.md>)
-- [47 Service Worker Cache API PWA](<./47 Service Worker Cache API PWA.md>)
-- [06 Browser storage cookies localStorage IndexedDB Cache API](<../Browser Internals/06 Browser storage cookies localStorage IndexedDB Cache API.md>)
-- [04 Token storage cookies localStorage refresh access tokens](<../Security/04 Token storage cookies localStorage refresh access tokens.md>)
+- [39 Cookies в браузере и HTTP-запросах](<./39 Cookies в браузере и HTTP-запросах.md>)
+- [41 Обмен сообщениями в браузере](<./41 Обмен сообщениями в браузере.md>)
+- [47 Service Worker и кеширование в PWA](<./47 Service Worker и кеширование в PWA.md>)
+- [06 Хранилища данных в браузере](<../Browser Internals/06 Хранилища данных в браузере.md>)
+- [04 Хранение access и refresh tokens](<../Security/04 Хранение access и refresh tokens.md>)
 
 ## Источники
 
@@ -350,5 +350,5 @@ Cache API хранит пары HTTP `Request` и `Response`. Его часто 
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 34 Garbage collection](<./34 Garbage collection.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [36 CustomEvent EventTarget dispatchEvent →](<./36 CustomEvent EventTarget dispatchEvent.md>)
+[← 34 Сборка мусора и утечки памяти](<./34 Сборка мусора и утечки памяти.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [36 EventTarget и пользовательские события →](<./36 EventTarget и пользовательские события.md>)
 <!-- CARD-NAV-BOTTOM:END -->

@@ -1,7 +1,7 @@
 # async defer и загрузка скриптов
 
 <!-- CARD-NAV-TOP:START -->
-[← 21 ES modules](<./21 ES modules.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [23 Ошибки try catch →](<./23 Ошибки try catch.md>)
+[← 21 ES modules](<./21 ES modules.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [23 Обработка ошибок в JavaScript →](<./23 Обработка ошибок в JavaScript.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -263,9 +263,9 @@ Module script имеет собственную область видимост�
 
 - [21 ES modules](<./21 ES modules.md>)
 - [24 Event Loop](<./24 Event Loop.md>)
-- [03 Critical rendering path render pipeline](<../Performance/03 Critical rendering path render pipeline.md>)
-- [04 Bundle size code splitting tree shaking loading strategy](<../Performance/04 Bundle size code splitting tree shaking loading strategy.md>)
-- [08 Supply chain npm dependencies secrets third-party scripts](<../Security/08 Supply chain npm dependencies secrets third-party scripts.md>)
+- [03 Критический путь рендеринга](<../Performance/03 Критический путь рендеринга.md>)
+- [04 Размер бандла и стратегия загрузки](<../Performance/04 Размер бандла и стратегия загрузки.md>)
+- [08 Защита цепочки поставки frontend](<../Security/08 Защита цепочки поставки frontend.md>)
 
 ## Источники
 
@@ -277,5 +277,5 @@ Module script имеет собственную область видимост�
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 21 ES modules](<./21 ES modules.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [23 Ошибки try catch →](<./23 Ошибки try catch.md>)
+[← 21 ES modules](<./21 ES modules.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [23 Обработка ошибок в JavaScript →](<./23 Обработка ошибок в JavaScript.md>)
 <!-- CARD-NAV-BOTTOM:END -->

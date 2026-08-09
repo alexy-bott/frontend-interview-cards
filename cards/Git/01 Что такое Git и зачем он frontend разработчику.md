@@ -1,7 +1,7 @@
 # Что такое Git и зачем он frontend разработчику
 
 <!-- CARD-NAV-TOP:START -->
-[↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Working tree index commit history remote HEAD branch →](<./02 Working tree index commit history remote HEAD branch.md>)
+[↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Путь изменений в Git →](<./02 Путь изменений в Git.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -273,9 +273,9 @@ GitLab — платформа вокруг Git-репозиториев. Она:
 
 ## Связанные темы
 
-- [02 Working tree index commit history remote HEAD branch](<./02 Working tree index commit history remote HEAD branch.md>)
-- [07 Merge request GitLab protected branches approvals](<./07 Merge request GitLab protected branches approvals.md>)
-- [09 Поиск регрессии log show blame bisect](<./09 Поиск регрессии log show blame bisect.md>)
+- [02 Путь изменений в Git](<./02 Путь изменений в Git.md>)
+- [07 Merge request и защита веток в GitLab](<./07 Merge request и защита веток в GitLab.md>)
+- [09 Поиск регрессий в Git](<./09 Поиск регрессий в Git.md>)
 - [03 GitLab CI для frontend](<../DevOps/03 GitLab CI для frontend.md>)
 
 ## Источники
@@ -287,5 +287,5 @@ GitLab — платформа вокруг Git-репозиториев. Она:
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Working tree index commit history remote HEAD branch →](<./02 Working tree index commit history remote HEAD branch.md>)
+[↑ Git](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Путь изменений в Git →](<./02 Путь изменений в Git.md>)
 <!-- CARD-NAV-BOTTOM:END -->

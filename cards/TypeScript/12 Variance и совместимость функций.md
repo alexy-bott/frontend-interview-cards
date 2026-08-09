@@ -1,7 +1,7 @@
 # Variance и совместимость функций
 
 <!-- CARD-NAV-TOP:START -->
-[← 11 Structural typing и excess property checks](<./11 Structural typing и excess property checks.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Function overloads →](<./13 Function overloads.md>)
+[← 11 Структурная типизация и лишние свойства](<./11 Структурная типизация и лишние свойства.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Перегрузки функций →](<./13 Перегрузки функций.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -341,10 +341,10 @@ subscribe(handleDog);
 ## Связанные темы
 
 - [07 Generics](<./07 Generics.md>)
-- [11 Structural typing и excess property checks](<./11 Structural typing и excess property checks.md>)
-- [16 tsconfig strict mode](<./16 tsconfig strict mode.md>)
-- [19 React TypeScript типизация](<./19 React TypeScript типизация.md>)
-- [27 readonly optional properties и immutability](<./27 readonly optional properties и immutability.md>)
+- [11 Структурная типизация и лишние свойства](<./11 Структурная типизация и лишние свойства.md>)
+- [16 Строгие настройки tsconfig](<./16 Строгие настройки tsconfig.md>)
+- [19 Типизация React-компонентов](<./19 Типизация React-компонентов.md>)
+- [27 readonly и неизменяемость](<./27 readonly и неизменяемость.md>)
 
 ## Источники
 
@@ -355,5 +355,5 @@ subscribe(handleDog);
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 11 Structural typing и excess property checks](<./11 Structural typing и excess property checks.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Function overloads →](<./13 Function overloads.md>)
+[← 11 Структурная типизация и лишние свойства](<./11 Структурная типизация и лишние свойства.md>) · [↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [13 Перегрузки функций →](<./13 Перегрузки функций.md>)
 <!-- CARD-NAV-BOTTOM:END -->

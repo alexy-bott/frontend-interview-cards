@@ -305,9 +305,9 @@ console.log(user.arrow.call({ name: "Other" }));
 
 ## Связанные темы
 
-- [50 IIFE HOF currying compose first-class functions](<./50 IIFE HOF currying compose first-class functions.md>)
+- [50 Продвинутые приёмы работы с функциями](<./50 Продвинутые приёмы работы с функциями.md>)
 - [05 Hoisting и TDZ](<./05 Hoisting и TDZ.md>)
-- [09 this call apply bind](<./09 this call apply bind.md>)
+- [09 this и привязка контекста](<./09 this и привязка контекста.md>)
 - [31 DOM events](<./31 DOM events.md>)
 
 ## Источники

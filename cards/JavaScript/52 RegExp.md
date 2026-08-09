@@ -1,7 +1,7 @@
 # RegExp
 
 <!-- CARD-NAV-TOP:START -->
-[← 51 OOP classes new static instanceof](<./51 OOP classes new static instanceof.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [53 Number BigInt и точность вычислений →](<./53 Number BigInt и точность вычислений.md>)
+[← 51 ООП в JavaScript](<./51 ООП в JavaScript.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [53 Number BigInt и точность вычислений →](<./53 Number BigInt и точность вычислений.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -284,11 +284,11 @@ console.log(pattern.test("bad-42-extra"));
 
 ## Связанные темы
 
-- [18 Iterables iterators generators](<./18 Iterables iterators generators.md>)
-- [37 URL URLSearchParams History API](<./37 URL URLSearchParams History API.md>)
+- [18 Протокол итерации и генераторы](<./18 Протокол итерации и генераторы.md>)
+- [37 URL и навигация через History API](<./37 URL и навигация через History API.md>)
 - [54 Строки Unicode и кодировки](<./54 Строки Unicode и кодировки.md>)
-- [05 Валидация форм schema resolver async validation](<../Forms/05 Валидация форм schema resolver async validation.md>)
-- [01 Frontend threat model](<../Security/01 Frontend threat model.md>)
+- [05 Валидация форм](<../Forms/05 Валидация форм.md>)
+- [01 Модель угроз во frontend](<../Security/01 Модель угроз во frontend.md>)
 
 ## Источники
 
@@ -301,5 +301,5 @@ console.log(pattern.test("bad-42-extra"));
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[← 51 OOP classes new static instanceof](<./51 OOP classes new static instanceof.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [53 Number BigInt и точность вычислений →](<./53 Number BigInt и точность вычислений.md>)
+[← 51 ООП в JavaScript](<./51 ООП в JavaScript.md>) · [↑ JavaScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [53 Number BigInt и точность вычислений →](<./53 Number BigInt и точность вычислений.md>)
 <!-- CARD-NAV-BOTTOM:END -->

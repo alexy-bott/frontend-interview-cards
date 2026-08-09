@@ -1,19 +1,19 @@
 # Web Basics
 
 <!-- SECTION-NAV:START -->
-[⌂ Все разделы](<../../README.md>) · [Начать с первой карточки →](<./01 HTTP request response headers body.md>)
+[⌂ Все разделы](<../../README.md>) · [Начать с первой карточки →](<./01 Структура HTTP-запроса и ответа.md>)
 
 Карточек в разделе: **9**
 <!-- SECTION-NAV:END -->
 
 ### Web Basics - карта раздела
 
-1. [01 HTTP request response headers body](<./01 HTTP request response headers body.md>)
-2. [02 HTTP methods status codes safe idempotent](<./02 HTTP methods status codes safe idempotent.md>)
-3. [03 HTTP vs HTTPS TLS certificates](<./03 HTTP vs HTTPS TLS certificates.md>)
-4. [04 URL origin domain path query fragment](<./04 URL origin domain path query fragment.md>)
+1. [01 Структура HTTP-запроса и ответа](<./01 Структура HTTP-запроса и ответа.md>)
+2. [02 HTTP-методы и коды состояния](<./02 HTTP-методы и коды состояния.md>)
+3. [03 HTTPS TLS и сертификаты](<./03 HTTPS TLS и сертификаты.md>)
+4. [04 Структура URL и origin](<./04 Структура URL и origin.md>)
 5. [05 REST API resource model](<./05 REST API resource model.md>)
-6. [06 HTTP cache cookies storage basics](<./06 HTTP cache cookies storage basics.md>)
-7. [07 Web protocols HTTP WebSocket SSE polling](<./07 Web protocols HTTP WebSocket SSE polling.md>)
-8. [08 DNS TCP UDP HTTP2 basics](<./08 DNS TCP UDP HTTP2 basics.md>)
-9. [09 SPA MPA CSR routing](<./09 SPA MPA CSR routing.md>)
+6. [06 Хранение и кеширование данных в браузере](<./06 Хранение и кеширование данных в браузере.md>)
+7. [07 Обмен данными в реальном времени](<./07 Обмен данными в реальном времени.md>)
+8. [08 Сетевые протоколы при загрузке страницы](<./08 Сетевые протоколы при загрузке страницы.md>)
+9. [09 SPA MPA и способы рендеринга](<./09 SPA MPA и способы рендеринга.md>)

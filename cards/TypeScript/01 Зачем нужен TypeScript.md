@@ -1,7 +1,7 @@
 # Зачем нужен TypeScript
 
 <!-- CARD-NAV-TOP:START -->
-[↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Типы данных и inference →](<./02 Типы данных и inference.md>)
+[↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Типы данных и вывод типов →](<./02 Типы данных и вывод типов.md>)
 <!-- CARD-NAV-TOP:END -->
 
 ## Вопрос
@@ -232,9 +232,9 @@ TypeScript начинает мешать, когда команда систем
 
 ## Связанные темы
 
-- [02 Типы данных и inference](<./02 Типы данных и inference.md>)
-- [03 any unknown never void](<./03 any unknown never void.md>)
-- [16 tsconfig strict mode](<./16 tsconfig strict mode.md>)
+- [02 Типы данных и вывод типов](<./02 Типы данных и вывод типов.md>)
+- [03 Специальные типы TypeScript](<./03 Специальные типы TypeScript.md>)
+- [16 Строгие настройки tsconfig](<./16 Строгие настройки tsconfig.md>)
 - [18 Проверка данных с backend](<./18 Проверка данных с backend.md>)
 
 ## Источники
@@ -246,5 +246,5 @@ TypeScript начинает мешать, когда команда систем
 ---
 
 <!-- CARD-NAV-BOTTOM:START -->
-[↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Типы данных и inference →](<./02 Типы данных и inference.md>)
+[↑ TypeScript](<./README.md>) · [⌂ Все разделы](<../../README.md>) · [02 Типы данных и вывод типов →](<./02 Типы данных и вывод типов.md>)
 <!-- CARD-NAV-BOTTOM:END -->
