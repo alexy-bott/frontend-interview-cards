@@ -628,17 +628,182 @@ def generate_root_readme(topics: list[Path]) -> None:
     write_text(ROOT / "README.md", content)
 
 
-def generate() -> None:
-    migrate_layout()
-    topics = topic_directories()
+def repository_topics(root: Path) -> list[Path]:
+    cards_dir = root / "cards"
+    if not cards_dir.is_dir():
+        raise ValueError(f"Missing cards directory: {cards_dir}")
+    return sorted(
+        (
+            topic
+            for topic in cards_dir.iterdir()
+            if topic.is_dir() and any(path.name != "README.md" for path in topic.glob("*.md"))
+        ),
+        key=lambda path: path.name.casefold(),
+    )
+
+
+def repository_cards(topic: Path) -> list[Path]:
+    return sorted(
+        (path for path in topic.glob("*.md") if path.name != "README.md"),
+        key=lambda path: path.name.casefold(),
+    )
+
+
+def replace_managed_block(
+    content: str,
+    start: str,
+    end: str,
+    replacement: str,
+    source: Path,
+) -> str:
+    if content.count(start) != 1 or content.count(end) != 1:
+        marker_name = start.removeprefix("<!-- ").removesuffix(":START -->")
+        raise ValueError(f"{source}: expected exactly one {marker_name} block")
+
+    pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.DOTALL)
+    if pattern.search(content) is None:
+        marker_name = start.removeprefix("<!-- ").removesuffix(":START -->")
+        raise ValueError(f"{source}: malformed {marker_name} block")
+    block = f"{start}\n{replacement.rstrip()}\n{end}"
+    return pattern.sub(lambda _: block, content, count=1)
+
+
+def render_card_navigation(
+    root: Path,
+    path: Path,
+    topic: Path,
+    previous: Path | None,
+    following: Path | None,
+) -> str:
+    parts: list[str] = []
+    if previous is not None:
+        parts.append(
+            f"[← {markdown_label(previous.stem)}]"
+            f"({markdown_destination(path, previous)})"
+        )
+    parts.append(f"[↑ {markdown_label(topic.name)}]({markdown_destination(path, topic / 'README.md')})")
+    parts.append(f"[⌂ Все разделы]({markdown_destination(path, root / 'README.md')})")
+    if following is not None:
+        parts.append(
+            f"[{markdown_label(following.stem)} →]"
+            f"({markdown_destination(path, following)})"
+        )
+    return " · ".join(parts)
+
+
+def render_section_navigation(root: Path, topic: Path, cards: list[Path]) -> str:
+    parts = [f"[⌂ Все разделы]({markdown_destination(topic / 'README.md', root / 'README.md')})"]
+    if cards:
+        parts.append(
+            f"[Начать с первой карточки →]"
+            f"({markdown_destination(topic / 'README.md', cards[0])})"
+        )
+    return " · ".join(parts) + f"\n\nКарточек в разделе: **{len(cards)}**"
+
+
+def render_root_readme(root: Path, topics: list[Path]) -> str:
+    topics_by_name = {topic.name: topic for topic in topics}
+    total = sum(len(repository_cards(topic)) for topic in topics)
+    grouped_names = {name for _, names in SECTION_GROUPS for name in names}
+    groups = list(SECTION_GROUPS)
+    uncategorized = tuple(topic.name for topic in topics if topic.name not in grouped_names)
+    if uncategorized:
+        groups.append(("Другие разделы", uncategorized))
+
+    group_icons = ("🌐", "🧩", "🛠️", "📚")
+    columns: list[tuple[str, list[str]]] = []
+    for group_index, (group_title, topic_names) in enumerate(groups):
+        links: list[str] = []
+        for topic_name in topic_names:
+            topic = topics_by_name.get(topic_name)
+            if topic is None:
+                continue
+            destination = markdown_destination(root / "README.md", topic / "README.md")
+            links.append(f"[{markdown_label(topic.name)}]({destination})")
+        if links:
+            columns.append((f"{group_icons[group_index]} {group_title}", links))
+
+    if not columns:
+        raise ValueError("Cannot generate root README without card sections")
+
+    rows = [
+        "| " + " | ".join(title for title, _ in columns) + " |",
+        "| " + " | ".join("---" for _ in columns) + " |",
+    ]
+    for row_index in range(max(len(links) for _, links in columns)):
+        rows.append(
+            "| "
+            + " | ".join(
+                links[row_index] if row_index < len(links) else ""
+                for _, links in columns
+            )
+            + " |"
+        )
+
+    return (
+        "# Карточки для frontend-собеседований\n\n"
+        f"База из **{total} карточек** для мок-собеседований по frontend-разработке "
+        "и самостоятельной подготовки.\n\n"
+        "## Разделы\n\n"
+        + "\n".join(rows)
+        + "\n"
+    )
+
+
+def build_generation_plan(root: Path) -> dict[Path, str]:
+    topics = repository_topics(root)
+    plan: dict[Path, str] = {}
+
     for topic in topics:
-        cards = card_files(topic)
-        generate_section_readme(topic, cards)
+        cards = repository_cards(topic)
+        section_readme = topic / "README.md"
+        if not section_readme.is_file():
+            raise ValueError(f"Missing section README: {section_readme}")
+        section_content = section_readme.read_text(encoding="utf-8-sig")
+        plan[section_readme] = replace_managed_block(
+            section_content,
+            "<!-- SECTION-NAV:START -->",
+            "<!-- SECTION-NAV:END -->",
+            render_section_navigation(root, topic, cards),
+            section_readme,
+        )
+
         for index, card in enumerate(cards):
             previous = cards[index - 1] if index > 0 else None
             following = cards[index + 1] if index + 1 < len(cards) else None
-            generate_card(card, topic, previous, following)
-    generate_root_readme(topics)
+            navigation = render_card_navigation(root, card, topic, previous, following)
+            card_content = card.read_text(encoding="utf-8-sig")
+            card_content = replace_managed_block(
+                card_content,
+                "<!-- CARD-NAV-TOP:START -->",
+                "<!-- CARD-NAV-TOP:END -->",
+                navigation,
+                card,
+            )
+            card_content = replace_managed_block(
+                card_content,
+                "<!-- CARD-NAV-BOTTOM:START -->",
+                "<!-- CARD-NAV-BOTTOM:END -->",
+                navigation,
+                card,
+            )
+            plan[card] = card_content
+
+    plan[root / "README.md"] = render_root_readme(root, topics)
+    return plan
+
+
+def apply_generation_plan(plan: dict[Path, str]) -> None:
+    for path, content in plan.items():
+        if path.is_file() and path.read_text(encoding="utf-8-sig") == content:
+            continue
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8", newline="")
+
+
+def generate(root: Path = ROOT) -> None:
+    plan = build_generation_plan(root)
+    apply_generation_plan(plan)
 
 
 def validate_link(source: Path, destination: str) -> str | None:
