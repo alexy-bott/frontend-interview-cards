@@ -192,5 +192,103 @@ class ServiceGenerationTests(RepositoryFixture):
         self.assertEqual(snapshot(self.root), before)
 
 
+class RepositoryValidationTests(RepositoryFixture):
+    def setUp(self) -> None:
+        super().setUp()
+        navigation.generate(self.root)
+
+    def test_check_reports_stale_navigation_without_writing(self) -> None:
+        content = self.first_card.read_text(encoding="utf-8")
+        content = content.replace("[02 Second →]", "[stale]", 1)
+        self.first_card.write_text(content, encoding="utf-8")
+        before_check = snapshot(self.root)
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(any("managed navigation differs" in issue for issue in issues), issues)
+        self.assertEqual(snapshot(self.root), before_check)
+
+    def test_check_reports_missing_related_target(self) -> None:
+        content = self.first_card.read_text(encoding="utf-8")
+        content = content.replace(
+            "- [Second](<./02 Second.md>)",
+            "- [Missing](<./99 Missing.md>)",
+        )
+        self.first_card.write_text(content, encoding="utf-8")
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(any("missing related target" in issue for issue in issues), issues)
+
+    def test_self_link_does_not_satisfy_incoming_link_requirement(self) -> None:
+        content = self.second_card.read_text(encoding="utf-8")
+        content = content.replace(
+            "- [First](<./01 First.md>)",
+            "- [Second](<./02 Second.md>)",
+        )
+        self.second_card.write_text(content, encoding="utf-8")
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(
+            any("01 First.md: no incoming related link" in issue for issue in issues),
+            issues,
+        )
+
+    def test_check_reports_card_missing_from_section_readme(self) -> None:
+        content = self.section_readme.read_text(encoding="utf-8")
+        content = content.replace("2. [02 Second](<./02 Second.md>)\n", "")
+        self.section_readme.write_text(content, encoding="utf-8")
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(any("section README is missing card" in issue for issue in issues), issues)
+
+    def test_check_reports_missing_card_linked_from_section_readme(self) -> None:
+        content = self.section_readme.read_text(encoding="utf-8")
+        content = content.replace("./02 Second.md", "./99 Missing.md")
+        self.section_readme.write_text(content, encoding="utf-8")
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(
+            any("section README links to missing card" in issue for issue in issues),
+            issues,
+        )
+
+    def test_check_reports_stale_root_readme(self) -> None:
+        self.root_readme.write_text(
+            self.root_readme.read_text(encoding="utf-8") + "unexpected\n",
+            encoding="utf-8",
+        )
+
+        issues = navigation.validate_repository(self.root)
+
+        self.assertTrue(any("root README differs" in issue for issue in issues), issues)
+
+    def test_non_angle_related_link_is_supported(self) -> None:
+        content = self.first_card.read_text(encoding="utf-8")
+        content = content.replace(
+            "- [Second](<./02 Second.md>)",
+            "- [Second](./02%20Second.md)",
+        )
+        self.first_card.write_text(content, encoding="utf-8")
+
+        self.assertEqual(navigation.validate_repository(self.root), [])
+
+    def test_local_card_markup_is_not_a_repository_error(self) -> None:
+        content = self.first_card.read_text(encoding="utf-8")
+        content = content.replace(
+            "Ответ с пользовательской разметкой.",
+            "Ответ с пользовательской разметкой.\n\n"
+            "###### Локальный заголовок\n\n"
+            "> [!NOTE]\n"
+            "> Локальная разметка.",
+        )
+        self.first_card.write_text(content, encoding="utf-8")
+
+        self.assertEqual(navigation.validate_repository(self.root), [])
+
+
 if __name__ == "__main__":
     unittest.main()
