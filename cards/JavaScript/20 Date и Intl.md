@@ -328,6 +328,7 @@ const labels = dates.map((date) => formatter.format(date));
 - [35 localStorage sessionStorage IndexedDB](<./35 localStorage sessionStorage IndexedDB.md>)
 - [01 Формы во frontend](<../Forms/01 Формы во frontend.md>)
 - [04 Рендеринг в Next.js](<../Next.js/04 Рендеринг в Next.js.md>)
+- [12 Мультиязычный frontend — интернационализация и локализация](<../Architecture/12 Мультиязычный frontend — интернационализация и локализация.md>)
 
 ## Источники
 
