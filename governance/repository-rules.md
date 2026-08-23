@@ -10,6 +10,8 @@
 
 Перед исполнением ChatGPT Web фиксирует точный SHA default branch, на котором выполнен анализ. До записи Codex сравнивает live remote SHA read-only. Изменившийся base требует `STOP` и Web compatibility review.
 
+Feature branch является кандидатом, а не опубликованным source of truth. Наличие проверенного файла только в feature branch не даёт финальный статус `READY`.
+
 ## Карточки
 
 - Карточки находятся в Markdown-файлах внутри `cards/<section>/`.
@@ -44,9 +46,9 @@
 
 Наличие входящей тематической ссылки является отдельным репозиторным инвариантом, а не критерием качества одной карточки.
 
-## Репозиторное доказательство
+## Репозиторное доказательство кандидата
 
-Результат оформляется отдельно:
+Результат проверки feature branch оформляется отдельно:
 
 ```text
 REPO PASS
@@ -69,6 +71,24 @@ REPO NOT CHECKED
 ```
 
 Нельзя заявлять `REPO PASS` только по отчёту Codex. ChatGPT Web самостоятельно читает actual GitHub branch, изменённые пути и необходимый репозиторный контекст.
+
+`REPO PASS` feature branch подтверждает кандидата, но не доказывает публикацию в default branch.
+
+## Publication gate
+
+После `CANDIDATE READY` ChatGPT Web отдельно фиксирует:
+
+- candidate branch и candidate HEAD;
+- ожидаемый live default-branch SHA;
+- разрешённый способ интеграции.
+
+Для текущего минимального workflow предпочтителен безопасный fast-forward. Перед публикацией Codex повторно проверяет live refs read-only.
+
+Если default branch изменилась, candidate больше не публикуется автоматически. Codex возвращает `STOP`; ChatGPT Web проверяет совместимость и выдаёт новую инструкцию.
+
+Codex не должен самостоятельно rebase, merge, cherry-pick или выбирать способ разрешения divergence.
+
+После публикации ChatGPT Web самостоятельно проверяет actual default-branch HEAD, changed paths и целевые файлы. Только это доказательство позволяет считать candidate опубликованным source of truth.
 
 ## Без неявной инфраструктуры
 

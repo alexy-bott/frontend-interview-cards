@@ -1,9 +1,9 @@
 # Уровень 5 — проектирование изменения в ChatGPT Web
 
-**Владелец:** ChatGPT Web.
-**Исполнитель одобренного результата:** Codex.
+**Владелец смыслового результата:** ChatGPT Web.
+**Исполнитель bounded результата:** Codex.
 
-Уровень 5 больше не означает автономное редактирование Codex.
+Уровень 5 больше не означает автономное редактирование и саморевью Codex.
 
 Он получает:
 
@@ -11,15 +11,15 @@
 actual current card
 +
 подтверждённые FAIL уровней 1–4,
-явно запрошенное пользователем смысловое изменение
+явно запрошенное пользователем изменение
 или применимый repository failure
 ```
 
-и создаёт точный proposed candidate или детерминированный bounded change-set.
+и создаёт exact candidate либо bounded технический контракт.
 
 ## Основной принцип
 
-Исправить подтверждённую проблему минимально достаточным смысловым изменением и сохранить уже корректный материал.
+Исправить подтверждённую проблему минимально достаточным изменением и сохранить уже корректный материал.
 
 Сохраняется полезный смысл, а не историческая формулировка.
 
@@ -27,7 +27,7 @@ actual current card
 
 ## Граница ownership
 
-ChatGPT Web определяет:
+ChatGPT Web всегда определяет:
 
 - границу темы и необходимую глубину;
 - финальную последовательность мысли;
@@ -35,13 +35,61 @@ ChatGPT Web определяет:
 - необходимые определения, причины, следствия и ограничения;
 - приемлемую смысловую нагрузку;
 - финальную формулировку текстовых изменений;
-- необходимость кода или примера для учебной функции.
+- учебную функцию структуры, кода или примера.
 
 Codex не принимает эти решения.
 
 Для прозы Web предоставляет exact final text, complete target file или exact patch. Если остаются существенно разные варианты формулировки, уровень 5 ещё не завершён.
 
-## Разрешённые изменения
+## Execution modes
+
+### `EXACT_CANDIDATE`
+
+Используется для любой прозы и может использоваться для структуры или кода.
+
+Web задаёт exact final file, patch либо replacements и candidate identity. Codex только применяет результат.
+
+### `BOUNDED_STRUCTURE`
+
+Используется только для `STRUCTURE_ONLY`.
+
+Web задаёт:
+
+- конкретные применимые правила уровней 1–2;
+- exact affected paths;
+- structural postcondition;
+- protected semantic payload;
+- проверку, доказывающую, что смысл не изменён.
+
+Codex может выбрать детерминированные Markdown/HTML-операции внутри этого контракта. Он не меняет текст, смысл кода или распределение материала.
+
+### `BOUNDED_CODE`
+
+Используется для `CODE_CHANGE` либо явно выделенного code-only подэтапа новой карточки.
+
+Web задаёт:
+
+- учебную функцию кода;
+- expected behavior;
+- интерфейс, inputs/outputs и существенные ограничения;
+- runtime/version context;
+- разрешённые code blocks или paths;
+- protected prose и topic boundary;
+- required syntax/build/test evidence.
+
+Codex может выбрать детали реализации кода внутри этого контракта.
+
+Он не должен:
+
+- менять защищённую прозу;
+- добавлять новый пример или учебный аспект;
+- расширять главный вопрос;
+- менять смысловой акцент карточки;
+- объявлять, что код или карточка получили semantic `PASS`.
+
+Полный candidate identity для Codex-authored code фиксируется после исполнения. Затем actual complete candidate проходит Web review по [`00-workflow.md`](<./00-workflow.md>).
+
+## Разрешённые смысловые изменения
 
 Подтверждённая проблема может потребовать материал:
 
@@ -94,15 +142,15 @@ Codex не принимает эти решения.
 
 ## Структура и код
 
-- Соблюдать активный Markdown/HTML contract уровней 1–2.
+- Соблюдать active Markdown/HTML contract уровней 1–2.
 - Не изобретать новый тип структурного блока внутри обычной задачи по карточке.
 - Не менять корректный код ради style preference.
-- Менять код только когда этого требует подтверждённый смысловой результат.
+- Менять код только когда этого требует подтверждённая учебная цель или технический дефект.
 - Сохранять navigation, если она явно не входит в scope.
 
 ## Meaning map крупной правки
 
-Перед крупной переработкой Web создаёт временную карту:
+Перед крупной смысловой переработкой Web создаёт временную карту:
 
 | Самостоятельный аспект исходной версии | Действие | Итоговое место или подтверждённое основание удаления |
 |---|---|---|
@@ -117,21 +165,26 @@ Codex не принимает эти решения.
 ```text
 CHANGE DESIGN READY
 
-Task class: <CONTENT_CHANGE | NEW_CARD | STRUCTURE_ONLY | REPOSITORY_ONLY>
+Task class: <CONTENT_CHANGE | CODE_CHANGE | NEW_CARD | STRUCTURE_ONLY | REPOSITORY_ONLY>
+Execution mode: <EXACT_CANDIDATE | BOUNDED_CODE | BOUNDED_STRUCTURE>
 Analysis base: <sha>
 Allowed paths: <paths>
 Confirmed problems: <FAIL или явная цель пользователя>
-Exact operation: <full file, exact patch или exact replacements>
+Exact prose: <full file, exact patch, exact replacements или NONE>
+Technical contract: <bounded code/structure contract или NONE>
 Protected material: <что нельзя менять>
-Candidate identity: <sha-256 или exact snapshot id>
+Candidate identity: <sha-256 | exact snapshot id | PENDING_UNTIL_EXECUTION>
 Mechanical checks: <применимые проверки>
-Publication: <branch/push requirements>
+Feature publication: <branch/push requirements>
+Default publication gate: <expected base и разрешённый method>
 ```
 
-Для содержательного изменения proposed candidate проходит primary и fresh Web review по [`00-workflow.md`](<./00-workflow.md>) до исполнения Codex.
+Для `EXACT_CANDIDATE` primary и fresh Web review exact content выполняются до Codex execution.
+
+Для Codex-authored `BOUNDED_CODE` complete candidate review выполняется после feature-branch push. Для `BOUNDED_STRUCTURE` Web подтверждает structural result и неизменность semantic payload после исполнения.
 
 ## Новая проблема во время исполнения
 
-Если Codex замечает возможную новую проблему содержания, он не исправляет её и возвращает `STOP` с фрагментом и минимальным evidence.
+Если Codex замечает возможную новую проблему содержания или необходимость выйти за bounded contract, он не исправляет её и возвращает `STOP` с фрагментом и минимальным evidence.
 
-Уровень 5 не подтверждает корректность применения кандидата. Это делает ChatGPT Web по actual GitHub content.
+Уровень 5 не подтверждает корректность исполнения или публикации. Это делает ChatGPT Web по actual GitHub content.

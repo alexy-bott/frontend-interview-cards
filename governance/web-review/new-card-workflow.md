@@ -1,7 +1,7 @@
 # Web-led маршрут создания новой карточки
 
 **Смысловой владелец:** ChatGPT Web.
-**Исполнитель:** Codex.
+**Исполнитель exact/technical contract:** Codex.
 
 Маршрут применяется только если пользователь явно запросил новую карточку или одобрил конкретную новую тему.
 
@@ -55,66 +55,109 @@ Web определяет:
 - материал основного ответа;
 - самостоятельные дополнительные вопросы;
 - необязательные динамические блоки и их учебную функцию;
-- связанные темы и публикуемые источники.
+- связанные темы и публикуемые источники;
+- учебную функцию каждого code example, если он нужен.
 
 План является временным review material и не добавляется в карточку.
 
-## 4. Создание точного кандидата
+## 4. Создание прозы и структуры
 
-Web формирует complete target Markdown по уровням 1–3:
+Web формирует complete exact prose и нормативную структуру по уровням 1–3:
 
 ```text
 Уровень 1 BUILD
 → Уровень 2 BUILD
 → Уровень 3 BUILD
-→ complete exact candidate Vn
 ```
-
-Candidate содержит всю точную прозу и весь код, которые должен записать Codex.
 
 Web также явно перечисляет каждый дополнительный repository path, который требуется изменить. Создание карточки не даёт неявного разрешения редактировать соседние карточки.
 
 Так как в текущей default branch нет активного генератора, Web не предполагает автоматическое обновление navigation или section pages.
 
-## 5. Review до исполнения
+## 5. Два режима кода
 
-Complete candidate проходит:
+### Exact code
+
+Web включает весь точный код в complete candidate.
+
+Candidate проходит primary и fresh Web review до Codex execution и передаётся как `EXACT_CANDIDATE`.
+
+### Delegated code
+
+Web оставляет прозу, структуру и учебную функцию неизменными и создаёт `BOUNDED_CODE` contract:
+
+- exact code location;
+- expected behavior;
+- interface, inputs/outputs и ограничения;
+- runtime/version context;
+- protected prose;
+- required checks.
+
+Codex реализует только код. Complete candidate identity появляется после feature-branch push.
+
+## 6. Review маршруты
+
+Для полностью exact candidate:
 
 ```text
-primary Web 1→2→3→4
-→ applicable source verification
-→ fresh Web 1→2→3→4 той же exact candidate
+PRIMARY WEB PASS
+→ FRESH WEB PASS
+→ Codex execution
 ```
 
-Все смысловые исправления происходят в Web до Codex execution и создают новую candidate identity.
+Для delegated code:
 
-## 6. Исполнение Codex
+```text
+Codex BOUNDED_CODE execution
+→ actual complete candidate
+→ PRIMARY WEB PASS
+→ FRESH WEB PASS
+```
+
+Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) в новой top-level сессии и по одной карточке.
+
+Любое содержательное изменение создаёт новую candidate identity.
+
+## 7. Исполнение Codex
 
 Codex получает:
 
 - exact analysis-base SHA;
-- exact path и complete file content или patch;
-- точные связанные repository changes;
-- protected paths;
-- candidate SHA-256;
+- task class и execution mode;
+- exact paths;
+- complete exact content либо bounded code contract;
+- protected paths и prose;
+- candidate SHA-256 либо правило определить identity после исполнения;
 - mechanical checks;
-- branch и publication instruction.
+- feature branch publication instruction.
 
-Codex создаёт только указанные файлы. Он не расширяет тему, не добавляет полезные вопросы и не выбирает альтернативные формулировки.
+Codex не расширяет тему, не добавляет полезные вопросы и не выбирает альтернативные формулировки.
 
-## 7. Post-execution evidence
+## 8. Candidate readiness
 
-После push Web читает actual GitHub content.
+После feature-branch push Web читает actual GitHub content.
 
-Если file content равен approved candidate identity, pre-execution semantic passes сохраняются. Затем Web выполняет применимые repository checks.
+Candidate получает `CANDIDATE READY` только когда:
 
-Если actual content отличается, карточка не готова, пока отличие не устранено, а любой новый кандидат не прошёл необходимый review.
+- primary и fresh Web passes относятся к одной complete candidate identity;
+- actual feature-branch content равен этой candidate;
+- нет blocking `NOT CHECKED`;
+- применимые repository invariants фактически проверены.
+
+Feature branch ещё не является опубликованным source of truth.
+
+## 9. Publication
+
+После `CANDIDATE READY` Web выдаёт отдельную publication instruction с candidate HEAD, expected default-branch SHA и разрешённым method.
+
+Если default branch изменилась, Codex возвращает `STOP`; совместимость решает Web.
+
+После публикации Web проверяет actual default branch.
 
 ## Результат
 
-Новая карточка получает финальную готовность только когда:
+Новая карточка получает финальный `READY` только когда:
 
-- primary и fresh Web passes относятся к одной exact candidate;
-- actual GitHub content равен этой candidate;
-- нет blocking `NOT CHECKED`;
-- применимые repository invariants фактически проверены.
+- actual default branch содержит approved candidate identity;
+- publication scope и HEAD проверены Web;
+- все условия `CANDIDATE READY` сохраняются.

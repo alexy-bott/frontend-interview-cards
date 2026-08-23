@@ -1,6 +1,6 @@
 # Web-led workflow создания и ревью карточек
 
-**Владелец смысловой работы:** ChatGPT Web.
+**Владелец смысловой работы и финальных статусов:** ChatGPT Web.
 **Исполнитель:** Codex.
 **Фактическое доказательство:** actual GitHub branch state.
 
@@ -12,15 +12,15 @@
 
 | Уровень | Ответственность | Активный владелец |
 |---|---|---|
-| 1 | Внешняя структура файла | review ChatGPT Web; Codex может точно применить заданную механическую правку |
-| 2 | Внутренние блоки и разметка | review ChatGPT Web; Codex может точно применить заданную механическую правку |
-| 3 | Тема, состав и распределение материала | только ChatGPT Web |
-| 4 | Техническая корректность, полнота, понятность, перегруженность и избыточность | только ChatGPT Web |
-| 5 | Проектирование точного исправления и кандидата | только ChatGPT Web |
+| 1 | Внешняя структура файла | нормативный review и `PASS/FAIL` — ChatGPT Web; в `STRUCTURE_ONLY` Codex может выполнить bounded deterministic repair |
+| 2 | Внутренние блоки и разметка | нормативный review и `PASS/FAIL` — ChatGPT Web; в `STRUCTURE_ONLY` Codex может выполнить bounded deterministic repair |
+| 3 | Тема, состав, глубина и распределение материала | только ChatGPT Web |
+| 4 | Техническая корректность карточки, полнота, понятность, перегруженность и избыточность | только ChatGPT Web; Codex может предоставить mechanical code evidence, но не итоговый verdict |
+| 5 | Проектирование прозы, semantic change-set и bounded технического контракта | только ChatGPT Web |
 
 Исполнение Codex не является уровнем 5 и не создаёт уровень 6.
 
-Уровень 5 заканчивается, когда Web подготовил точный кандидат или точный детерминированный change-set. Codex применяет его без смыслового выбора.
+Для прозы уровень 5 заканчивается точным кандидатом. Для отдельно делегированного кода или структуры он заканчивается точным техническим контрактом, который не оставляет Codex смыслового выбора по тексту или границе темы.
 
 ## 2. Роли
 
@@ -37,15 +37,17 @@ ChatGPT Web:
 - читает live default branch и релевантные файлы;
 - фиксирует точный analysis-base SHA;
 - выполняет исследование и открывает актуальные первичные источники, когда это требуется;
-- применяет уровни 1–4;
-- владеет каждым смысловым `PASS`, `FAIL` и блокирующим `NOT CHECKED`;
+- применяет уровни 1–4 и владеет каждым смысловым `PASS`, `FAIL` и блокирующим `NOT CHECKED`;
 - определяет границу темы, глубину, организацию, формулировки и приемлемую смысловую нагрузку;
 - проектирует исправления уровня 5;
-- до исполнения готовит точный кандидат для содержательной прозы;
+- для прозы готовит exact candidate до исполнения;
+- для `CODE_CHANGE` задаёт точный технический и учебный контракт;
+- для `STRUCTURE_ONLY` задаёт конкретные structural rules, postcondition и защиту semantic payload;
 - передаёт Codex bounded instruction;
 - после push читает actual GitHub branch и diff;
-- проверяет identity кандидата и repository evidence;
-- при необходимости выдаёт новую отдельную bounded correction.
+- проверяет candidate identity/equivalence и repository evidence;
+- выдаёт отдельную publication instruction только после `CANDIDATE READY`;
+- после публикации проверяет actual default branch.
 
 ### Codex
 
@@ -53,16 +55,19 @@ Codex:
 
 - исполняет Web-defined change-set;
 - не диагностирует самостоятельно уровни 3–4;
-- не выбирает финальную формулировку или глубину;
+- не выбирает финальную формулировку, глубину или новый учебный аспект;
 - не расширяет scope;
-- выполняет только применимые механические проверки;
-- возвращает `STOP`, если изменился base или требуется новый смысловой выбор.
+- может выбирать только детали реализации внутри явно заданного `BOUNDED_STRUCTURE` или `BOUNDED_CODE`;
+- выполняет применимые mechanical checks;
+- возвращает `STOP`, если изменился base, требуется новый смысловой выбор или публикация перестала быть fast-forward.
 
-Execution report Codex не является доказательством опубликованного содержания.
+Execution report Codex не является доказательством содержания или публикации.
 
 ### GitHub
 
 GitHub является фактическим источником branch HEAD, changed paths, file contents и diff.
+
+Default branch является опубликованным source of truth. Feature branch является только кандидатом.
 
 ## 3. Классы задач
 
@@ -70,36 +75,60 @@ GitHub является фактическим источником branch HEAD,
 
 ### `CONTENT_CHANGE`
 
-Любое изменение названия, вопроса, объяснительной прозы, кода как части объяснения, примеров, состава, распределения, дополнительных вопросов или технических утверждений.
+Любое изменение названия, вопроса, объяснительной прозы, примеров, состава, распределения, дополнительных вопросов или технических утверждений.
+
+Если код меняется как неотделимая часть exact candidate, он также входит в `CONTENT_CHANGE`.
 
 Требуется:
 
-- полный применимый проход уровней 1–4 по предложенному финальному кандидату;
+- exact candidate до Codex execution;
+- полный применимый проход уровней 1–4 по candidate;
 - проверка актуальных источников там, где этого требует уровень 4;
-- точная identity кандидата;
-- fresh Web review до финальной готовности.
+- точная candidate identity;
+- fresh Web review до `CANDIDATE READY`.
+
+### `CODE_CHANGE`
+
+Меняется только изолированный code block или code file, а объяснительная проза, граница темы и распределение материала защищены.
+
+Web задаёт:
+
+- учебную функцию;
+- ожидаемое поведение;
+- интерфейс, входы, выходы и ограничения;
+- runtime/version context;
+- разрешённые code locations;
+- protected prose;
+- mechanical checks.
+
+Codex может реализовать код внутри этого контракта.
+
+Если Web заранее задаёт exact code, задача может исполняться как `EXACT_CANDIDATE`. Если Codex авторит код, candidate identity появляется после feature-branch push, а primary и fresh Web review выполняются по actual complete candidate.
+
+`CODE_CHANGE` не разрешает Codex менять объяснительный текст или добавлять новый учебный аспект.
 
 ### `NEW_CARD`
 
 Создание новой карточки или существенно новой темы.
 
-Требуется:
+Требуется [`new-card-workflow.md`](<./new-card-workflow.md>).
 
-- [`new-card-workflow.md`](<./new-card-workflow.md>);
-- полный проход уровней 1–4 по полной предложенной карточке;
-- точная identity кандидата;
-- fresh Web review до финальной готовности.
+Вся проза принадлежит Web. Код либо входит в exact candidate, либо отдельно делегируется как `BOUNDED_CODE` по правилам новой карточки.
 
 ### `STRUCTURE_ONLY`
 
-Меняются только Markdown/HTML-обёртки, фиксированные заголовки или другой структурный элемент, а смысловой payload остаётся неизменным.
+Меняются только Markdown/HTML-обёртки, фиксированные заголовки или другой структурный элемент, а semantic payload остаётся неизменным.
 
 Требуется:
 
-- проверка затронутых уровней 1–2;
-- явная проверка diff, подтверждающая, что проза, смысл кода и распределение содержания не изменились.
+- конкретный bounded scope и применимые правила уровней 1–2;
+- structural postcondition;
+- механическое доказательство неизменности prose, смыслового кода и распределения содержания;
+- Web-verdict затронутых уровней после исполнения.
 
-Предыдущая смысловая оценка сохраняется только если Web фактически подтвердил неизменность semantic payload. Fresh semantic review не требуется только ради детерминированного structural repair.
+Codex может самостоятельно выполнить детерминированные structural operations внутри этого контракта.
+
+Fresh semantic review не требуется только ради доказанно content-neutral structural repair.
 
 ### `REPOSITORY_ONLY`
 
@@ -108,8 +137,8 @@ GitHub является фактическим источником branch HEAD,
 Требуется:
 
 - применимые repository rules;
-- затронутые структурные проверки;
-- явное подтверждение, что содержание не менялось.
+- затронутые structural checks;
+- явное подтверждение, что semantic payload не менялся.
 
 ### `GOVERNANCE_CHANGE`
 
@@ -142,72 +171,102 @@ FAIL
 Влияние: <blocking или non-blocking>
 ```
 
-Блокирующий `NOT CHECKED` не является `FAIL`, но запрещает финальную готовность.
+Блокирующий `NOT CHECKED` не является `FAIL`, но запрещает `CANDIDATE READY` и финальный `READY`.
 
-## 5. Содержательный workflow существующей карточки
+## 5. Маршрут exact content candidate
 
-Для `CONTENT_CHANGE`:
+Для `CONTENT_CHANGE` и для новой карточки с полностью точным содержимым:
 
 ```text
-actual live card
-→ Web 1 VALIDATE
-→ Web 2 VALIDATE
-→ Web 3 VALIDATE
-→ Web 4 ANALYZE
-→ подтверждённые FAIL или явно запрошенное изменение
+actual live card / approved topic
+→ Web 1→2→3→4
+→ confirmed FAIL или явная пользовательская цель
 → Web 5 CHANGE DESIGN
-→ точный proposed candidate Vn
-→ полный Web review 1→2→3→4 для Vn
-→ fresh Web review той же Vn
-→ bounded execution Codex
-→ GitHub identity/equivalence verification
-→ repository checks
+→ exact candidate Vn
+→ PRIMARY WEB PASS(Vn)
+→ FRESH WEB PASS(Vn)
+→ Codex EXACT_CANDIDATE execution
+→ Web identity/scope/repository verification feature branch
+→ CANDIDATE READY(Vn)
+→ отдельная bounded publication
+→ Web verification actual default branch
 → READY(Vn)
 ```
 
-Смысловой цикл review/edit происходит внутри Web до исполнения Codex, когда это возможно.
+Смысловой цикл review/edit происходит внутри Web до исполнения Codex, когда candidate полностью известен.
 
 Codex не получает повторяющиеся задания самостоятельно придумать, проверить и заново переписать прозу.
 
-## 6. Требование точного кандидата
+## 6. Маршрут delegated code candidate
 
-Для содержательной прозы Web предоставляет один из вариантов:
+Для `CODE_CHANGE` или новой карточки с `BOUNDED_CODE`:
+
+```text
+actual live state
+→ Web определяет prose/content boundary и bounded code contract
+→ Codex BOUNDED_CODE execution в feature branch
+→ actual complete candidate Vn
+→ PRIMARY WEB PASS(Vn)
+→ FRESH WEB PASS(Vn)
+→ при подтверждённом FAIL: новый Web change design и отдельная correction instruction
+→ Web identity/scope/repository verification
+→ CANDIDATE READY(Vn)
+→ отдельная bounded publication
+→ Web verification actual default branch
+→ READY(Vn)
+```
+
+Этот маршрут допускает Codex authoring только кода. Он не возвращает Codex смысловой review прозы.
+
+## 7. Candidate identity
+
+Для `EXACT_CANDIDATE` Web предоставляет один из вариантов:
 
 - полный exact target file;
 - точный patch, детерминированно создающий target file;
-- точные replacement fragments вместе с ожидаемым SHA-256 полного файла.
+- exact replacement fragments вместе с ожидаемым SHA-256 полного файла.
 
-Identity кандидата определяется точным итоговым содержимым файла, предпочтительно SHA-256.
+Identity определяется точным итоговым содержимым, предпочтительно SHA-256.
 
 Формулировка `сделай понятнее`, `улучши объяснение` или `добавь недостающие детали` не является bounded instruction для Codex.
 
-Если Web ещё не выбрал финальную формулировку, смысловая работа не готова к исполнению.
+Для `BOUNDED_CODE` или `BOUNDED_STRUCTURE` identity полного кандидата фиксируется после исполнения по actual feature-branch content.
 
-## 7. Primary Web pass
+## 8. Primary Web pass
 
-До исполнения Web проверяет точный proposed candidate, а не только описание желаемой правки.
+Primary Web проверяет exact complete candidate, а не только описание желаемой правки.
+
+Для `EXACT_CANDIDATE` это выполняется до Codex. Для Codex-authored code/structure — после появления actual feature-branch candidate.
 
 Положительный результат:
 
 ```text
 PRIMARY WEB PASS
-Candidate: <path>
+Candidate: <path или immutable commit>
 Candidate identity: <sha-256 или exact snapshot id>
 ```
 
 Любое последующее изменение candidate content аннулирует этот pass.
 
-## 8. Fresh Web review
+## 9. Fresh Web review
 
-Для `CONTENT_CHANGE` и `NEW_CARD` финальная готовность требует один fresh Web review точного кандидата после primary pass и предпочтительно до исполнения Codex.
+Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует один fresh Web review exact complete candidate после primary pass.
 
-Fresh review:
+Fresh review обязательно выполняется:
 
-- получает одну полную карточку-кандидат и активные канонические правила;
-- не получает primary verdict, rationale, список `FAIL` или diff как подсказку;
+- в новой top-level сессии ChatGPT Web, не содержащей primary review;
+- по одной карточке на сессию;
+- по immutable candidate: файл + identity либо exact GitHub commit/path;
+- без primary verdict, rationale, списка `FAIL`, change design и diff как подсказки.
+
+Fresh reviewer:
+
+- получает exact candidate и активные канонические правила;
 - работает read-only;
 - независимо применяет уровни 1–4 и необходимые source checks;
 - не проектирует и не исполняет исправления.
+
+Review в той же top-level беседе, где выполнялся primary review, не может получить статус `FRESH WEB PASS`.
 
 Положительный результат:
 
@@ -216,34 +275,34 @@ FRESH WEB PASS
 Candidate identity: <та же identity, что у primary pass>
 ```
 
-Если fresh review находит конкретный `FAIL`, primary Web изменяет candidate. Новый кандидат получает новую identity и требует новых primary и fresh passes.
+Если fresh review находит конкретный `FAIL`, primary Web изменяет candidate или проектирует отдельную correction. Новый candidate получает новую identity и требует новых primary и fresh passes.
 
-Этот Web-only цикл выполняется до Codex execution и не создаёт автономного цикла Codex.
+Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` fresh semantic review не требуется, если Web доказал неизменность учебного содержания.
 
-Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` fresh semantic review не требуется, если Web доказал неизменность объяснительного содержания.
-
-## 9. Level 5 change design
+## 10. Level 5 change design
 
 Уровень 5 определён в [`05-change-design.md`](<./05-change-design.md>).
 
 Он формирует:
 
+- task class и execution mode;
 - точную цель;
-- точные affected paths;
-- подтверждённые проблемы;
-- exact target wording или deterministic transformation;
+- affected paths;
+- подтверждённые проблемы или явную цель пользователя;
+- exact prose либо bounded code/structure contract;
 - allowed scope;
 - protected material;
-- candidate identity;
-- применимые mechanical checks.
+- candidate identity либо правило её фиксации после исполнения;
+- применимые mechanical checks;
+- publication requirements.
 
-Codex не принимает решения уровня 5.
+Codex не принимает смысловые решения уровня 5.
 
-## 10. Исполнение Codex
+## 11. Исполнение Codex
 
 Одна bounded Web-инструкция разрешает один смысловой execution pass.
 
-Codex может исправить детерминированную ошибку применения до push, но не запускает:
+Codex может исправить детерминированную ошибку применения, structural defect или code check failure внутри разрешённого execution mode, но не запускает:
 
 ```text
 semantic review → prose edit → semantic review → prose edit
@@ -251,25 +310,59 @@ semantic review → prose edit → semantic review → prose edit
 
 Если исполнение обнаружило новую смысловую неоднозначность или возможный content defect, Codex возвращает `STOP`.
 
-## 11. Проверка после исполнения
+## 12. Проверка feature branch
 
-После push Web читает actual GitHub branch, HEAD, changed paths, target files и diff.
+После push Web читает actual feature-branch HEAD, changed paths, target files и diff.
 
-Если опубликованный target точно совпадает с pre-approved candidate identity:
+Для `EXACT_CANDIDATE`:
 
-- primary и fresh semantic passes сохраняются для этого неизменённого содержания;
-- Web проверяет allowed scope и repository invariants;
-- новый полный semantic review не требуется только потому, что Codex скопировал уже одобренный кандидат.
+- actual target должен совпадать с pre-approved candidate identity;
+- primary и fresh passes сохраняются только для этого неизменённого содержания;
+- новый полный semantic review не требуется только потому, что Codex скопировал candidate.
 
-Если actual file не совпадает с approved candidate:
+Для `BOUNDED_CODE` и `BOUNDED_STRUCTURE` Web сначала фиксирует actual candidate identity, затем выполняет применимый review этого complete result.
 
-- candidate не принимается;
-- Codex execution не считается смысловым evidence;
-- Web определяет, является ли отличие детерминированной execution error или новым кандидатом, требующим review.
+Любое содержательное отличие от уже одобренной identity создаёт новый candidate и аннулирует прежние semantic passes.
 
-Любое содержательное изменение создаёт новую candidate identity и аннулирует прежние semantic passes.
+Execution report Codex не является смысловым evidence.
 
-## 12. Репозиторный статус
+## 13. Candidate readiness
+
+Feature branch получает:
+
+```text
+CANDIDATE READY(Vn)
+```
+
+только если одновременно:
+
+- применимые primary/fresh passes относятся к одной unchanged identity;
+- actual feature-branch content равен Vn;
+- allowed scope подтверждён;
+- нет blocking `NOT CHECKED`;
+- применимые repository invariants проверены.
+
+`CANDIDATE READY` означает «одобрено для публикации», а не «опубликовано».
+
+Codex не заявляет этот статус.
+
+## 14. Publication gate
+
+После `CANDIDATE READY` Web выдаёт отдельную bounded publication instruction.
+
+Она фиксирует:
+
+- candidate branch и HEAD;
+- expected live default-branch SHA;
+- разрешённый repository-specific method.
+
+Перед публикацией Codex повторно проверяет live refs read-only.
+
+Если default branch изменилась, публикация остановлена до Web compatibility review. Codex не выполняет самостоятельные rebase, merge, cherry-pick или conflict resolution.
+
+После публикации Web читает actual default-branch HEAD, changed paths и target content.
+
+## 15. Репозиторный статус
 
 Repository checks отделены от уровней 1–4.
 
@@ -293,33 +386,32 @@ REPO NOT CHECKED
 
 Нельзя предполагать существование validator или generator. Сначала обнаруживается фактический live mechanism.
 
-## 13. Финальная готовность
+## 16. Финальная готовность
 
-Для `CONTENT_CHANGE` или `NEW_CARD`:
+Для `CONTENT_CHANGE`, `NEW_CARD` или содержательного `CODE_CHANGE`:
 
 ```text
 READY(Vn)
 =
-PRIMARY WEB PASS(Vn)
-+ FRESH WEB PASS(Vn)
-+ actual GitHub content равен Vn
-+ нет blocking NOT CHECKED
-+ REPO PASS, если применимы repository-wide invariants
+CANDIDATE READY(Vn)
++ actual default branch содержит Vn
++ publication scope и HEAD проверены Web
 ```
 
-Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` используются применимые structural/repository checks и доказательство неизменности semantic payload.
+Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` используются применимые structural/repository checks, доказательство неизменности semantic payload и тот же publication gate.
 
 Codex никогда не заявляет `READY`.
 
-## 14. Конфликт и остановка
+## 17. Конфликт и остановка
 
 Процесс останавливается, если:
 
 - правила требуют несовместимых результатов;
 - отсутствует надёжное evidence для blocking claim;
-- candidate wording ещё не определён;
+- prose candidate или bounded technical contract ещё не определены;
 - live base изменился;
 - исполнение требует scope, не разрешённый Web;
+- publication перестала быть разрешённым fast-forward или repository-specific method;
 - повторные Web-версии воспроизводят то же доказанное нарушение без прогресса.
 
 Настоящий semantic/product conflict не разрешается молчаливым выбором одной стороны.
