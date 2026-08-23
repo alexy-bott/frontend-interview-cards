@@ -1,0 +1,12 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "card-editor",
+  "instructions": [
+    "_templates/repository-rules.md",
+    "_templates/card-rules/00-workflow.md",
+    "_templates/card-rules/01-file-structure.md",
+    "_templates/card-rules/02-block-structure.md",
+    "_templates/card-rules/03-content-distribution.md",
+    "_templates/card-rules/04-content-quality.md"
+  ]
+}
