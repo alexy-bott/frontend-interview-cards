@@ -80,7 +80,7 @@ Web также явно перечисляет каждый дополнител
 
 Web включает весь точный код в complete candidate.
 
-Candidate проходит primary и fresh Web review до Codex execution и передаётся как `EXACT_CANDIDATE`.
+Candidate проходит primary Web review до Codex execution и передаётся как `EXACT_CANDIDATE`. Fresh Web review выполняется после feature-branch push по actual immutable GitHub candidate.
 
 ### Delegated code
 
@@ -101,8 +101,10 @@ Codex реализует только код. Complete candidate identity поя
 
 ```text
 PRIMARY WEB PASS
-→ FRESH WEB PASS
 → Codex execution
+→ Web verification actual GitHub identity/scope
+→ immutable GitHub candidate
+→ FRESH WEB PASS per card
 ```
 
 Для delegated code:
@@ -111,10 +113,12 @@ PRIMARY WEB PASS
 Codex BOUNDED_CODE execution
 → actual complete candidate
 → PRIMARY WEB PASS
-→ FRESH WEB PASS
+→ FRESH WEB PASS per card
 ```
 
-Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) в новой top-level сессии и по одной карточке.
+Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) непосредственно из immutable GitHub commit. Один independent Fresh Web workstream может проверять bounded batch first-time candidates из одного commit, но каждая карточка получает отдельный полный Levels 1–4 review и собственный verdict.
+
+Если конкретная Fresh Web session уже проверяла более раннюю content version этой карточки, corrected version должна перейти в другую clean top-level session/workstream, не видевшую прежнюю версию или её `FAIL`.
 
 Любое содержательное изменение создаёт новую candidate identity.
 
@@ -139,8 +143,8 @@ Codex не расширяет тему, не добавляет полезные
 
 Candidate получает `CANDIDATE READY` только когда:
 
-- primary и fresh Web passes относятся к одной complete candidate identity;
-- actual feature-branch content равен этой candidate;
+- primary и fresh Web passes относятся к одной per-card path/blob identity и применимому governance ref;
+- actual feature-branch content равно primary-approved candidate;
 - нет blocking `NOT CHECKED`;
 - применимые repository invariants фактически проверены.
 

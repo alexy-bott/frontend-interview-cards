@@ -47,7 +47,7 @@ Codex не принимает эти решения.
 
 Используется для любой прозы и может использоваться для структуры или кода.
 
-Web задаёт exact final file, patch либо replacements и candidate identity. Codex только применяет результат.
+Web задаёт exact final file, patch либо replacements и candidate identity. Primary Web проверяет exact candidate до исполнения. Codex только применяет результат; Fresh Web проверяет уже опубликованный в feature branch immutable GitHub candidate.
 
 ### `BOUNDED_STRUCTURE`
 
@@ -174,14 +174,17 @@ Exact prose: <full file, exact patch, exact replacements или NONE>
 Technical contract: <bounded code/structure contract или NONE>
 Protected material: <что нельзя менять>
 Candidate identity: <sha-256 | exact snapshot id | PENDING_UNTIL_EXECUTION>
+GitHub fresh identity: <governance ref + candidate path/blob + candidate commit | PENDING_UNTIL_FEATURE_PUSH>
 Mechanical checks: <применимые проверки>
 Feature publication: <branch/push requirements>
 Default publication gate: <expected base и разрешённый method>
 ```
 
-Для `EXACT_CANDIDATE` primary и fresh Web review exact content выполняются до Codex execution.
+Для `EXACT_CANDIDATE` primary Web review exact content выполняется до Codex execution. После push Web подтверждает, что actual GitHub content точно совпадает с primary-approved candidate, и только затем передаёт immutable commit/path independent Fresh Web review.
 
 Для Codex-authored `BOUNDED_CODE` complete candidate review выполняется после feature-branch push. Для `BOUNDED_STRUCTURE` Web подтверждает structural result и неизменность semantic payload после исполнения.
+
+Fresh reviewer получает только repository, exact candidate commit, exact paths, governance ref/SHA и инструкцию независимо применить Levels 1–4. Primary verdict/rationale, предыдущие `FAIL`, Level 5 change design, diff и объяснение изменения не входят в fresh handoff.
 
 ## Новая проблема во время исполнения
 

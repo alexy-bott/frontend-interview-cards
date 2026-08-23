@@ -71,6 +71,38 @@ Codex может выбрать детали реализации кода вн�
 4. Никогда не основывай новую работу на постороннем dirty или historical worktree.
 5. Не изменяй существующий dirty worktree, если инструкция явно не направлена на него.
 
+## Local support tasks
+
+ChatGPT Web может делегировать Codex bounded local filesystem / Git support, когда Web не имеет прямого доступа к локальным файлам.
+
+Допустимые примеры:
+
+- прочитать или исследовать локальные файлы;
+- точно скопировать файлы без изменения их содержимого;
+- сравнить файлы или blobs;
+- вычислить SHA-256 или Git hashes;
+- создать manifests;
+- создать или распаковать ZIP/review bundles;
+- исследовать Git branches, worktrees и status;
+- подготовить exact candidate files из переданных Web текста или replacements;
+- создать или применить детерминированный patch по точной Web-спецификации;
+- выполнить mechanical checks;
+- собрать local-only evidence.
+
+Правила local support:
+
+- local support является исполнением, а не semantic review;
+- Codex не переписывает прозу и не решает качество содержания;
+- неоднозначность, требующая semantic/product choice, приводит к `STOP`;
+- read-only или outside-repository local support не требует feature branch только ради формальности;
+- любая tracked repository write по-прежнему следует обычным требованиям к exact base, worktree, allowed paths и publication;
+- существующие dirty worktrees сохраняются, если задача явно не направлена на них;
+- временные artifacts предпочтительно размещаются вне repository;
+- пользователь не должен переносить в ChatGPT Web большие содержимые файлов, если достаточно compact path/hash/result;
+- когда content должен стать доступен Web/Fresh Web для review, предпочтительно опубликовать bounded candidate в GitHub, а не просить пользователя скачивать и повторно загружать файлы.
+
+Эта делегация не расширяет semantic ownership Codex.
+
 ## Граница исполнения
 
 Codex обязан:

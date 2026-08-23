@@ -25,6 +25,8 @@ Codex может самостоятельно выбрать детали реа
 
 Такая делегация не даёт Codex права проводить смысловой review текста или объявлять итоговый `PASS`.
 
+ChatGPT Web может отдельно делегировать Codex ограниченные local filesystem / Git support tasks: прочитать, точно скопировать или сравнить локальные файлы, вычислить hashes, подготовить manifest/ZIP/review bundle, исследовать Git state, применить детерминированный patch и выполнить mechanical checks. Это execution support, а не semantic review: Codex не переписывает прозу и не решает качество содержания. Read-only или выполняемая вне репозитория поддержка не требует feature branch только ради формальности; любая tracked repository write по-прежнему требует точных base, worktree, allowed paths и publication rules, а существующий dirty worktree сохраняется, если задача явно не направлена на него.
+
 [`governance/web-review/`](<./governance/web-review/>) — каноническая методология ChatGPT Web. Она не является командой Codex запустить автономный цикл `review → edit → review`.
 
 [`governance/archive/`](<./governance/archive/>) — неактивный исторический материал. Не применяй архивные правила как текущие инструкции, если отдельная задача явно не требует восстановления старого workflow.

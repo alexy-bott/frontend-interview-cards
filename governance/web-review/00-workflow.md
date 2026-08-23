@@ -28,7 +28,7 @@
 
 Пользователь задаёт цель и принимает только действительно новые semantic/product/historical решения.
 
-Пользователь не обязан переносить длинные логи, которые Web может прочитать через GitHub.
+Пользователь не обязан переносить длинные логи или скачивать и повторно загружать candidate files, которые Web может прочитать через GitHub.
 
 ### ChatGPT Web
 
@@ -46,6 +46,8 @@ ChatGPT Web:
 - передаёт Codex bounded instruction;
 - после push читает actual GitHub branch и diff;
 - проверяет candidate identity/equivalence и repository evidence;
+- формирует GitHub-native fresh handoff только из repository, exact candidate commit, exact paths и governance ref/SHA;
+- получает independent fresh verdict Levels 1–4 отдельно для каждой применимой карточки;
 - выдаёт отдельную publication instruction только после `CANDIDATE READY`;
 - после публикации проверяет actual default branch.
 
@@ -58,6 +60,7 @@ Codex:
 - не выбирает финальную формулировку, глубину или новый учебный аспект;
 - не расширяет scope;
 - может выбирать только детали реализации внутри явно заданного `BOUNDED_STRUCTURE` или `BOUNDED_CODE`;
+- может выполнять bounded local filesystem / Git support по [`../codex-execution.md`](<../codex-execution.md>), не получая semantic ownership;
 - выполняет применимые mechanical checks;
 - возвращает `STOP`, если изменился base, требуется новый смысловой выбор или публикация перестала быть fast-forward.
 
@@ -184,16 +187,19 @@ actual live card / approved topic
 → Web 5 CHANGE DESIGN
 → exact candidate Vn
 → PRIMARY WEB PASS(Vn)
-→ FRESH WEB PASS(Vn)
 → Codex EXACT_CANDIDATE execution
 → Web identity/scope/repository verification feature branch
+→ immutable GitHub candidate commit/path/blob identity
+→ independent Fresh Web batch review
+→ FRESH WEB PASS(Vn) per card
+→ repository checks final candidate commit
 → CANDIDATE READY(Vn)
 → отдельная bounded publication
 → Web verification actual default branch
 → READY(Vn)
 ```
 
-Смысловой цикл review/edit происходит внутри Web до исполнения Codex, когда candidate полностью известен.
+Primary semantic review/edit происходит внутри Web до исполнения Codex, когда candidate полностью известен. Primary pass сохраняется только если actual GitHub content после исполнения точно совпадает с approved candidate. Fresh review выполняется после feature-branch push по immutable GitHub candidate.
 
 Codex не получает повторяющиеся задания самостоятельно придумать, проверить и заново переписать прозу.
 
@@ -206,10 +212,12 @@ actual live state
 → Web определяет prose/content boundary и bounded code contract
 → Codex BOUNDED_CODE execution в feature branch
 → actual complete candidate Vn
+→ Web verification actual GitHub identity/scope
 → PRIMARY WEB PASS(Vn)
-→ FRESH WEB PASS(Vn)
+→ independent Fresh Web batch review from GitHub
+→ FRESH WEB PASS(Vn) per card
 → при подтверждённом FAIL: новый Web change design и отдельная correction instruction
-→ Web identity/scope/repository verification
+→ repository checks final candidate commit
 → CANDIDATE READY(Vn)
 → отдельная bounded publication
 → Web verification actual default branch
@@ -226,11 +234,30 @@ actual live state
 - точный patch, детерминированно создающий target file;
 - exact replacement fragments вместе с ожидаемым SHA-256 полного файла.
 
-Identity определяется точным итоговым содержимым, предпочтительно SHA-256.
+До исполнения identity определяется точным итоговым содержимым, предпочтительно SHA-256. После feature-branch push Web подтверждает actual GitHub identity.
 
 Формулировка `сделай понятнее`, `улучши объяснение` или `добавь недостающие детали` не является bounded instruction для Codex.
 
 Для `BOUNDED_CODE` или `BOUNDED_STRUCTURE` identity полного кандидата фиксируется после исполнения по actual feature-branch content.
+
+Канонический input Fresh Web — immutable GitHub state:
+
+- repository;
+- exact candidate commit SHA;
+- exact candidate paths;
+- exact governance ref/SHA;
+- инструкция независимо применить Levels 1–4.
+
+Fresh identity фиксируется per card и включает governance ref, candidate path, candidate blob/content identity и candidate commit для repository context.
+
+Если более поздний candidate commit изменил другую карточку, прежние PRIMARY/FRESH semantic verdicts данной карточки можно перенести, когда одновременно:
+
+- её path не изменился;
+- blob/content identity не изменился;
+- governance ref не изменился;
+- не изменилась material dependency, использованная при semantic review этой карточки.
+
+Repository-wide invariants всегда повторно проверяются отдельно против final candidate commit.
 
 ## 8. Primary Web pass
 
@@ -242,40 +269,64 @@ Primary Web проверяет exact complete candidate, а не только о
 
 ```text
 PRIMARY WEB PASS
-Candidate: <path или immutable commit>
-Candidate identity: <sha-256 или exact snapshot id>
+Candidate path: <path>
+Candidate content identity: <sha-256 или exact snapshot id>
 ```
 
-Любое последующее изменение candidate content аннулирует этот pass.
+Для `EXACT_CANDIDATE` pass остаётся действительным после исполнения только если actual GitHub blob/content точно совпадает с approved candidate. Последующее изменение content этой карточки аннулирует pass; новый commit, изменивший только другую карточку и не затронувший её material dependencies, сам по себе pass не аннулирует.
 
 ## 9. Fresh Web review
 
-Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует один fresh Web review exact complete candidate после primary pass.
+Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует независимый fresh Web review exact complete candidate каждой карточки после primary pass и после появления actual GitHub candidate.
 
-Fresh review обязательно выполняется:
+Fresh Web читает candidate files непосредственно из GitHub at exact candidate commit. Загруженные пользователем Markdown-файлы не требуются, когда candidate доступен через GitHub.
 
-- в новой top-level сессии ChatGPT Web, не содержащей primary review;
-- по одной карточке на сессию;
-- по immutable candidate: файл + identity либо exact GitHub commit/path;
-- без primary verdict, rationale, списка `FAIL`, change design и diff как подсказки.
+Dedicated independent Fresh Web workstream может быть long-lived, обрабатывать несколько batches и проверять несколько карточек из одного immutable candidate commit. Рекомендуемый размер batch — 5–10 карточек. Это quality default, а не жёсткий нормативный максимум; batch должен оставаться достаточно малым для полного review каждой карточки, включая Level 4 local transparency.
+
+Fresh reviewer получает только:
+
+- repository;
+- exact candidate commit SHA;
+- exact candidate paths;
+- exact governance ref/SHA;
+- инструкцию независимо применить Levels 1–4.
+
+Fresh reviewer не получает primary verdict, primary rationale, предыдущий список `FAIL`, Level 5 change design, git diff или объяснение того, что изменилось.
 
 Fresh reviewer:
 
-- получает exact candidate и активные канонические правила;
+- читает candidate и active governance непосредственно из GitHub по переданным immutable refs;
 - работает read-only;
-- независимо применяет уровни 1–4 и необходимые source checks;
+- независимо и полностью применяет Levels 1–4 и необходимые source checks к каждой карточке;
+- возвращает отдельный verdict и identity для каждой карточки;
 - не проектирует и не исполняет исправления.
 
-Review в той же top-level беседе, где выполнялся primary review, не может получить статус `FRESH WEB PASS`.
+Fresh workstream остаётся независимым от Primary Web и не получает его analysis, rationale, diff или change design.
 
-Положительный результат:
+Если конкретная Fresh Web session уже проверяла более раннюю content version конкретной карточки, эта session не может выдать новый fresh verdict исправленной content version той же карточки. Corrected version передаётся другой clean Fresh Web top-level session/workstream, которая не видела прежнюю версию или её `FAIL`.
+
+Ограничение действует per card, а не per repository. Один Fresh Web workstream может впервые проверять много разных карточек и несколько bounded batches.
+
+Результат batch всегда остаётся per card:
 
 ```text
+FRESH BATCH RESULT
+
+Candidate commit: <sha>
+Governance ref: <sha>
+
+<path 1>
 FRESH WEB PASS
-Candidate identity: <та же identity, что у primary pass>
+Identity: <path + blob/content identity>
+
+<path 2>
+FAIL
+<доказательный Levels 1–4 result>
 ```
 
-Если fresh review находит конкретный `FAIL`, primary Web изменяет candidate или проектирует отдельную correction. Новый candidate получает новую identity и требует новых primary и fresh passes.
+Batch-level `PASS`, скрывающий результаты отдельных карточек, недопустим.
+
+Если fresh review находит конкретный `FAIL`, Primary Web изменяет candidate или проектирует отдельную correction. Исправленная карточка получает новую content identity и требует нового primary pass и fresh review в другой clean session/workstream. Verdicts неизменённых карточек сохраняются по правилам раздела 7.
 
 Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` fresh semantic review не требуется, если Web доказал неизменность учебного содержания.
 
@@ -317,12 +368,15 @@ semantic review → prose edit → semantic review → prose edit
 Для `EXACT_CANDIDATE`:
 
 - actual target должен совпадать с pre-approved candidate identity;
-- primary и fresh passes сохраняются только для этого неизменённого содержания;
-- новый полный semantic review не требуется только потому, что Codex скопировал candidate.
+- Web фиксирует per-card path/blob identity, governance ref и candidate commit;
+- primary pass переносится на actual GitHub candidate только при точном content match;
+- independent Fresh Web review выполняется после этой проверки непосредственно из GitHub.
 
-Для `BOUNDED_CODE` и `BOUNDED_STRUCTURE` Web сначала фиксирует actual candidate identity, затем выполняет применимый review этого complete result.
+Для `BOUNDED_CODE` и `BOUNDED_STRUCTURE` Web сначала фиксирует actual GitHub candidate identity, затем выполняет применимый primary/fresh review complete result.
 
-Любое содержательное отличие от уже одобренной identity создаёт новый candidate и аннулирует прежние semantic passes.
+Любое содержательное отличие конкретной карточки от уже одобренной identity создаёт для неё новый candidate и аннулирует её прежние semantic passes. Новый commit, который изменяет другую карточку, не аннулирует verdict неизменённой карточки при сохранении path, blob/content identity, governance ref и material dependencies.
+
+Repository-wide invariants повторно проверяются против final candidate commit независимо от переноса per-card verdicts.
 
 Execution report Codex не является смысловым evidence.
 
@@ -336,11 +390,11 @@ CANDIDATE READY(Vn)
 
 только если одновременно:
 
-- применимые primary/fresh passes относятся к одной unchanged identity;
-- actual feature-branch content равен Vn;
+- для каждой применимой карточки primary/fresh passes относятся к одной unchanged path/blob identity и governance ref;
+- actual feature-branch content соответствует этим identities;
 - allowed scope подтверждён;
 - нет blocking `NOT CHECKED`;
-- применимые repository invariants проверены.
+- применимые repository invariants проверены против final candidate commit.
 
 `CANDIDATE READY` означает «одобрено для публикации», а не «опубликовано».
 
