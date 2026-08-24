@@ -104,12 +104,13 @@ PRIMARY WEB PASS
 → Codex execution
 → Web verification actual GitHub identity/scope
 → immutable GitHub candidate
-→ Initial Fresh Review
+→ FULL Initial Fresh Review
 → FRESH WEB PASS per card
 или FRESH WEB FINDINGS
-→ Primary correction addressing finding IDs
+→ DELTA Primary correction addressing finding IDs by default
 → Codex execution
-→ same Fresh workstream Follow-up Web Review
+→ same Fresh workstream DELTA Follow-up by default
+→ FULL Follow-up only if escalated by concrete trigger
 → repeat until FOLLOW-UP WEB PASS
 ```
 
@@ -119,16 +120,19 @@ PRIMARY WEB PASS
 Codex BOUNDED_CODE execution
 → actual complete candidate
 → PRIMARY WEB PASS
-→ Initial Fresh Review
+→ FULL Initial Fresh Review
 → FRESH WEB PASS per card
 или FRESH WEB FINDINGS
-→ Primary correction addressing finding IDs
+→ DELTA Primary correction addressing finding IDs by default
 → Codex execution
-→ same Fresh workstream Follow-up Web Review
+→ same Fresh workstream DELTA Follow-up by default
+→ FULL Follow-up only if escalated by concrete trigger
 → repeat until FOLLOW-UP WEB PASS
 ```
 
-Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) непосредственно из immutable GitHub commit. Один permanent independent Fresh Web workstream выполняет Initial Fresh Review первой версии и полные Follow-up Web Reviews всех corrected versions в lineage. Собственная previous version/finding history ожидаема в Follow-up mode; новая chat для correction не требуется.
+Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) непосредственно из immutable GitHub commit. Initial Fresh Review всегда `FULL`. Corrected identity по умолчанию проходит impact-aware `DELTA` Follow-up: unchanged evidence наследуется по semantic units, dependency cone и whole-card consistency обязательны, а `FULL` Follow-up используется только при concrete escalation trigger.
+
+Тот же logical Fresh lane сохраняет finding/source history и может optional rotate session через compact Fresh-owned lineage ledger. Новая chat для каждой correction не требуется.
 
 Любое содержательное изменение создаёт новую candidate identity.
 
@@ -153,8 +157,9 @@ Codex не расширяет тему, не добавляет полезные
 
 Candidate получает `CANDIDATE READY` только когда:
 
-- current `PRIMARY WEB PASS` относится к actual per-card path/blob identity;
-- current identity имеет `FRESH WEB PASS` Initial Fresh Review либо `FOLLOW-UP WEB PASS` после ранее состоявшегося Initial Fresh Review в той же lineage;
+- current `FULL` или valid `DELTA PRIMARY WEB PASS` относится к actual per-card path/blob identity;
+- current identity имеет `FRESH WEB PASS` Initial `FULL` Review либо valid `DELTA`/`FULL FOLLOW-UP WEB PASS` после earlier full Fresh review той же lineage;
+- inherited unchanged units, reviewed changed/impacted units и whole-card consistency образуют complete current evidence;
 - все Fresh findings имеют статус `RESOLVED` или доказанно `SUPERSEDED` и open findings отсутствуют;
 - semantic verdict относится к применимой review criteria identity;
 - actual feature-branch content равно primary-approved candidate;

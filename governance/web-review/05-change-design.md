@@ -160,6 +160,32 @@ Codex может выбрать детали реализации кода вн�
 
 Она является review evidence, а не содержимым карточки.
 
+## Impact-aware correction design
+
+До approval каждой correction Primary Web фиксирует:
+
+- previous Primary-reviewed identity;
+- current candidate identity;
+- review mode `FULL` или `DELTA`;
+- changed semantic units;
+- dependency cone;
+- inherited Primary evidence;
+- changed source claims и required checks;
+- full-review triggers или `NONE`.
+
+Mandatory correction regression checklist:
+
+1. Does the exact correction resolve every addressed finding?
+2. Does the old claim or unconditional wording remain elsewhere?
+3. Do adjacent paragraphs, examples, tables or questions still agree?
+4. Did the correction introduce a new unexplained term?
+5. Did deletion or movement create a completeness or distribution gap?
+6. Did the correction create new duplication?
+7. Were changed mutable claims checked against current primary sources?
+8. Does any full-review trigger apply?
+
+`DELTA` является default bounded correction после previous full Primary review. Он должен определить changed units, dependency cone, inherited evidence и whole-card consistency. Если применим concrete trigger из [`00-workflow.md`](<./00-workflow.md>), design переключается в `FULL` и называет trigger.
+
 ## Точный результат уровня 5
 
 ```text
@@ -174,6 +200,13 @@ Exact prose: <full file, exact patch, exact replacements или NONE>
 Technical contract: <bounded code/structure contract или NONE>
 Protected material: <что нельзя менять>
 Candidate identity: <sha-256 | exact snapshot id | PENDING_UNTIL_EXECUTION>
+Review mode: <FULL | DELTA>
+Previous reviewed identity: <identity or NONE>
+Changed semantic units: <units>
+Dependency cone: <units/dependencies>
+Inherited Primary evidence: <units or NONE>
+Source evidence plan: <CHECK | INHERIT | MIXED>
+Full-review triggers: <NONE or triggers>
 Workflow ref: <active orchestration commit>
 Review criteria identity: <exact blobs Levels 1–4>
 GitHub fresh identity: <candidate path/blob + candidate commit | PENDING_UNTIL_FEATURE_PUSH>
@@ -186,15 +219,31 @@ Feature publication: <branch/push requirements>
 Default publication gate: <expected base и разрешённый method>
 ```
 
-Для `EXACT_CANDIDATE` primary Web review exact content выполняется до Codex execution. После push Web подтверждает, что actual GitHub content точно совпадает с primary-approved candidate, и только затем передаёт immutable commit/path independent Fresh Web lane.
+Для `EXACT_CANDIDATE` `FULL`/`DELTA` Primary Web review exact content выполняется до Codex execution. После push Web подтверждает exact actual GitHub identity и только затем передаёт candidate independent Fresh Web lane.
 
 Для Codex-authored `BOUNDED_CODE` complete candidate review выполняется после feature-branch push. Для `BOUNDED_STRUCTURE` Web подтверждает structural result и неизменность semantic payload после исполнения.
 
 Если change design исправляет Fresh findings, поле `Addressed Fresh findings` перечисляет их stable IDs, а `Review lineage` сохраняет lineage текущей карточки.
 
-Initial Fresh handoff содержит только repository, current immutable candidate identity, workflow ref, review criteria identity и инструкцию независимо применить Levels 1–4.
+Initial Fresh handoff содержит только repository, current immutable candidate identity, workflow ref, review criteria identity и инструкцию выполнить independent `FULL` Levels 1–4 review.
 
-Follow-up handoff содержит только repository, current immutable candidate commit/path/blob, workflow ref, review criteria identity, lineage и собственные prior finding IDs Fresh lane. Primary rationale, Primary change design, diff, requested verdict или requested outcome не входят ни в один fresh handoff.
+Compact Follow-up handoff содержит только repository, current immutable candidate commit/path/blob, previous Fresh-reviewed blob, workflow ref, review criteria identity, lineage, prior Fresh finding IDs и requested mode `DELTA` by default. Primary rationale, Primary change design, Primary verdict, requested outcome и Primary explanation correction не передаются.
+
+Fresh lane самостоятельно derives changed semantic units и dependency cone. Он может построить собственный diff между previous/current Fresh-known blobs; Primary-provided diff не передаётся.
+
+```text
+FOLLOW-UP WEB REVIEW
+
+Candidate: <commit>
+Path: <path>
+Previous Fresh blob: <blob>
+Current blob: <blob>
+Lineage: <id>
+Resolve: <finding IDs>
+Mode: DELTA
+Workflow ref: <sha>
+Criteria: <L1/L2/L3/L4 blobs>
+```
 
 ## Новая проблема во время исполнения
 

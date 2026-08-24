@@ -46,7 +46,7 @@ ChatGPT Web:
 - передаёт Codex bounded instruction;
 - после push читает actual GitHub branch и diff;
 - проверяет candidate identity/equivalence и repository evidence;
-- формирует GitHub-native fresh handoff только из repository, immutable candidate identity, workflow ref, review criteria identity и применимой собственной finding history Fresh lane;
+- формирует GitHub-native fresh handoff только из repository, current/previous Fresh identities, workflow ref, review criteria identity, lineage, requested mode и применимой собственной finding history Fresh lane;
 - получает independent Initial Fresh или Follow-up verdict Levels 1–4 отдельно для каждой применимой карточки;
 - выдаёт отдельную publication instruction только после `CANDIDATE READY`;
 - после публикации проверяет actual default branch.
@@ -85,7 +85,7 @@ Default branch является опубликованным source of truth. Fe
 Требуется:
 
 - exact candidate до Codex execution;
-- полный применимый проход уровней 1–4 по candidate;
+- `FULL` Primary review для первой identity в lineage либо impact-aware `DELTA` Primary review corrected identity;
 - проверка актуальных источников там, где этого требует уровень 4;
 - точная candidate identity;
 - fresh Web review до `CANDIDATE READY`.
@@ -186,13 +186,15 @@ actual live card / approved topic
 → confirmed FAIL или явная пользовательская цель
 → Web 5 CHANGE DESIGN
 → exact candidate Vn
+→ FULL PRIMARY REVIEW первой identity либо DELTA PRIMARY REVIEW correction по умолчанию
 → PRIMARY WEB PASS(Vn)
 → Codex EXACT_CANDIDATE execution
 → Web identity/scope/repository verification feature branch
 → immutable GitHub candidate commit/path/blob identity
-→ Initial Fresh Review для новой lineage либо Follow-up Web Review corrected identity в том же Fresh lane
+→ FULL Initial Fresh Review для новой lineage либо DELTA Follow-up corrected identity по умолчанию
+→ FULL Follow-up только при конкретном escalation trigger
 → FRESH WEB PASS(Vn) или FOLLOW-UP WEB PASS(Vn) per card
-→ при findings: Web 5 correction → новый PRIMARY WEB PASS → Codex execution → Follow-up Web Review в том же lane
+→ при findings: Web 5 correction → DELTA/FULL PRIMARY WEB PASS → Codex execution → DELTA/FULL Follow-up в том же lane
 → repository checks final candidate commit
 → CANDIDATE READY(Vn)
 → отдельная bounded publication
@@ -214,10 +216,11 @@ actual live state
 → Codex BOUNDED_CODE execution в feature branch
 → actual complete candidate Vn
 → Web verification actual GitHub identity/scope
-→ PRIMARY WEB PASS(Vn)
-→ Initial Fresh Review для новой lineage либо Follow-up Web Review corrected identity в том же Fresh lane
+→ FULL/DELTA PRIMARY WEB PASS(Vn)
+→ FULL Initial Fresh Review для новой lineage либо DELTA Follow-up corrected identity по умолчанию
+→ FULL Follow-up только при конкретном escalation trigger
 → FRESH WEB PASS(Vn) или FOLLOW-UP WEB PASS(Vn) per card
-→ при findings: новый Web change design и отдельная correction instruction, затем Follow-up Web Review в том же lane
+→ при findings: новый Web change design и отдельная correction instruction, затем DELTA/FULL Follow-up в том же lane
 → repository checks final candidate commit
 → CANDIDATE READY(Vn)
 → отдельная bounded publication
@@ -227,104 +230,259 @@ actual live state
 
 Этот маршрут допускает Codex authoring только кода. Он не возвращает Codex смысловой review прозы.
 
-## 7. Candidate identity
+## 7. Candidate identity и semantic evidence
 
-Для `EXACT_CANDIDATE` Web предоставляет один из вариантов:
+Для `EXACT_CANDIDATE` Web предоставляет полный exact target file, детерминированный patch либо exact replacements вместе с ожидаемой identity итогового содержания. До исполнения identity предпочтительно фиксируется SHA-256; после feature-branch push Web подтверждает actual GitHub path/blob/content identity.
 
-- полный exact target file;
-- точный patch, детерминированно создающий target file;
-- exact replacement fragments вместе с ожидаемым SHA-256 полного файла.
+Формулировка `сделай понятнее`, `улучши объяснение` или `добавь недостающие детали` не является bounded instruction для Codex. Для `BOUNDED_CODE` или `BOUNDED_STRUCTURE` identity полного кандидата фиксируется после исполнения по actual feature-branch content.
 
-До исполнения identity определяется точным итоговым содержимым, предпочтительно SHA-256. После feature-branch push Web подтверждает actual GitHub identity.
+Workflow ref обозначает commit с active orchestration process. Review criteria identity отдельно состоит из exact Git blobs [`01-file-structure.md`](<./01-file-structure.md>), [`02-block-structure.md`](<./02-block-structure.md>), [`03-content-distribution.md`](<./03-content-distribution.md>) и [`04-content-quality.md`](<./04-content-quality.md>). Semantic verdict привязан к card path/blob/content identity и review criteria identity, а не только к workflow ref.
 
-Формулировка `сделай понятнее`, `улучши объяснение` или `добавь недостающие детали` не является bounded instruction для Codex.
+Каждая карточка имеет одну review lineage. Новая card blob identity создаёт новую version внутри lineage, а не обязательную новую lane или session.
 
-Для `BOUNDED_CODE` или `BOUNDED_STRUCTURE` identity полного кандидата фиксируется после исполнения по actual feature-branch content.
+### Semantic units
 
-Канонический input Fresh Web разделяет orchestration process и semantic criteria:
+Review evidence учитывается по semantic units карточки. Модель включает как минимум:
 
-- repository;
-- exact candidate commit SHA;
-- exact candidate paths;
-- workflow ref — commit, содержащий active orchestration files;
-- review criteria identity — exact Git blobs [`01-file-structure.md`](<./01-file-structure.md>), [`02-block-structure.md`](<./02-block-structure.md>), [`03-content-distribution.md`](<./03-content-distribution.md>) и [`04-content-quality.md`](<./04-content-quality.md>);
-- инструкция независимо применить Levels 1–4.
+- filename и H1;
+- main question;
+- каждый meaningful paragraph, list, table или code block основного ответа;
+- каждый complete additional-question `<details>` block;
+- каждый dynamic block;
+- `Связанные темы`;
+- `Источники`;
+- structural wrappers и navigation, когда они применимы к Levels 1–2.
 
-Fresh semantic identity фиксируется per card и включает candidate path, candidate blob/content identity и review criteria identity. Candidate commit сохраняется как repository context, а workflow ref — как identity применённого процесса; изменение только orchestration files не аннулирует semantic verdict.
+Reviewer может объединить соседние фрагменты в одну unit, если они образуют одну неразделимую explanation. Unit identity определяется её exact current text/block identity и stable location внутри карточки. Первый `FULL` review lane создаёт baseline coverage map applicable units.
 
-Каждая карточка имеет одну review lineage. В ней сохраняются path, последовательность candidate path/blob identities, review criteria identity каждого review, Initial Fresh result, stable finding IDs, Follow-up results и current open findings. Изменение blob создаёт новую version внутри этой lineage, а не новую lineage или обязательную новую Fresh session.
+### Evidence inheritance
 
-Если более поздний candidate commit изменил другую карточку, прежние PRIMARY/FRESH semantic verdicts данной карточки можно перенести, когда одновременно:
+Новая card blob identity не требует терять evidence byte-identical unit. Primary или Fresh lane может наследовать собственное прежнее evidence только когда одновременно:
 
-- её path не изменился;
-- blob/content identity не изменился;
+- unit byte-identical;
+- её structural и semantic location не изменились;
 - review criteria identity не изменилась или доказанно совместима;
-- не изменилась material dependency, использованная при semantic review этой карточки.
+- material dependencies unit не изменились;
+- предыдущее evidence было `PASS`, а не blocking `NOT CHECKED`;
+- новый source update или current evidence не аннулирует прежний результат.
 
-Repository-wide invariants всегда повторно проверяются отдельно против final candidate commit.
+Inherited evidence остаётся evidence той же lane. Primary evidence никогда не заменяет independent Fresh evidence и наоборот.
 
-При переходе на этот workflow existing semantic verdicts, полученные по governance ref `e7c519a028db7110f845e36cbf389702123ee32c`, сохраняют силу для unchanged card blobs: canonical Levels 1–4 в этой governance change не изменены, поэтому их review criteria identity остаётся совместимой.
+Inheritance не объявляется whole-card `PASS` прежней blob identity. Current candidate verdict является composite из inherited evidence unchanged units, нового review evidence changed/impacted units и current whole-card consistency scan.
+
+### Dependency cone
+
+Для corrected identity Primary Web и Fresh Web независимо определяют dependency cone. Он включает:
+
+- каждую changed semantic unit и neighboring context, необходимый для её интерпретации;
+- каждое повторное употребление изменённого term, rule или technical claim;
+- зависимые examples, tables и additional questions;
+- затронутую границу main question/main answer;
+- последствия deletion или movement для completeness и distribution;
+- sources, нужные для changed mutable technical claims.
+
+Reviewer ищет по current full card contradictions, оставшиеся unconditional formulations, duplicate explanations, dangling terms и потерянный necessary material, связанный с correction. `DELTA` не является line-only или diff-only review.
+
+Каждый `DELTA` review также выполняет bounded whole-card consistency scan: contradiction changed/unchanged material, new unexplained terminology, broken global sequence, новая duplication, loss of required completeness, invalid topic/main-question boundary, structural damage и stale table/example/source, непосредственно затронутые correction. Этот scan не является complete re-review каждой byte-identical unit.
+
+### FULL escalation triggers
+
+`DELTA` является default corrected identity после прежнего full review той же lane. Review escalates to `FULL`, только если назван хотя бы один concrete trigger:
+
+- изменились path, filename, H1 или main question;
+- изменилась central learning task или topic boundary;
+- переписаны central technical model или большая часть main answer;
+- material существенно перемещён между main answer, additional questions или dynamic blocks;
+- добавлен новый independent mechanism, API или major technical aspect;
+- изменено больше трёх independent semantic units и их impact не local;
+- review criteria identity изменилась несовместимо;
+- previous review имел relevant blocking `NOT CHECKED`;
+- dependency cone нельзя надёжно ограничить;
+- новое finding вне expected dependency cone указывает на systemic problem карточки.
+
+Escalation всегда называет trigger. Само изменение card blob или preference reviewer перечитать всё не являются trigger.
+
+Repository-wide invariants повторно проверяются отдельно против final candidate commit.
+
+Эта process-only migration не меняет Levels 1–4. Existing valid Primary/Fresh evidence сохраняется для unchanged semantic units при compatible review criteria identity; изменение orchestration files само по себе его не аннулирует.
 
 ## 8. Primary Web pass
 
-Primary Web проверяет exact complete candidate, а не только описание желаемой правки.
+Primary Web проверяет exact complete candidate, а не только описание желаемой правки, в одном из двух режимов.
 
-Для `EXACT_CANDIDATE` это выполняется до Codex. Для Codex-authored code/structure — после появления actual feature-branch candidate.
+### FULL PRIMARY REVIEW
 
-Положительный результат:
+Используется для первой Primary-reviewed identity в lineage и при concrete `FULL` trigger из раздела 7. Он выполняет complete applicable Levels 1–4 и required current primary-source checks по всей карточке и создаёт Primary coverage map.
+
+### DELTA PRIMARY REVIEW
+
+Используется по умолчанию для bounded corrected identity после прежнего `FULL` Primary review. Primary Web:
+
+1. сравнивает previous Primary-reviewed identity с exact current candidate;
+2. идентифицирует changed semantic units;
+3. независимо определяет и проверяет dependency cone;
+4. повторно проверяет changed mutable technical claims по current primary sources;
+5. выполняет whole-card consistency scan;
+6. явно перечисляет inherited Primary evidence unchanged units;
+7. escalates to `FULL`, если обнаружен concrete trigger.
+
+Оба режима возвращают current result:
 
 ```text
 PRIMARY WEB PASS
-Candidate path: <path>
-Candidate content identity: <sha-256 или exact snapshot id>
+
+Mode: <FULL | DELTA>
+Candidate path/blob/content identity: <identity>
+Baseline reviewed identity: <identity or NONE>
+Reviewed units: <units>
+Inherited units: <units or NONE>
+Impact cone: <units/dependencies>
+Source evidence: <CHECKED | INHERITED | MIXED>
+Escalation: <NO | FULL with trigger>
 ```
 
-Для `EXACT_CANDIDATE` pass остаётся действительным после исполнения только если actual GitHub blob/content точно совпадает с approved candidate. Последующее изменение content этой карточки аннулирует pass; новый commit, изменивший только другую карточку и не затронувший её material dependencies, сам по себе pass не аннулирует.
+`DELTA PRIMARY WEB PASS` достаточен для current Primary gate, когда inheritance и impact evidence полны, whole-card consistency passed и ни один `FULL` trigger не остаётся.
+
+Для `EXACT_CANDIDATE` Primary review выполняется до Codex. Для Codex-authored code/structure — после появления actual feature-branch candidate. Pass переносится на actual GitHub candidate только при exact content match.
 
 ## 9. Fresh Web review
 
-Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует independent Fresh Web review exact complete candidate каждой карточки после current primary pass и появления actual GitHub candidate.
+Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует independent Fresh Web evidence exact immutable candidate каждой карточки после current Primary pass.
 
-Один permanent Fresh Web lane работает read-only, читает immutable candidate и canonical Levels 1–4 непосредственно из GitHub и может обрабатывать несколько bounded batches. Рекомендуемый batch — 5–10 карточек; каждая карточка всегда получает отдельный полный review и собственный verdict.
-
-Fresh independence означает независимость от Primary Web, а не отсутствие памяти о собственной работе. Lane не получает Primary verdict/rationale, Primary findings, Level 5 change design, git diff, explanation of changes или requested outcome. Он может и должен сохранять собственные prior versions, finding IDs и Follow-up evidence внутри per-card lineage.
+Permanent Fresh lane работает read-only и независимо от Primary Web. Lane не получает Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation of correction или requested outcome. Он сохраняет собственные reviewed identities, coverage maps, source evidence и stable finding history.
 
 ### Initial Fresh Review
 
-Initial Fresh Review выполняется при первом появлении карточки в lane. Input:
+Initial Fresh Review всегда имеет mode `FULL`. Он независимо выполняет complete Levels 1–4 по всей immutable candidate и required current primary-source verification. Initial review создаёт:
 
-- repository;
-- current immutable candidate commit/path/blob;
-- workflow ref;
-- review criteria identity;
-- инструкция независимо выполнить complete Levels 1→4 и обязательную current primary-source verification.
+- first Fresh-reviewed card identity;
+- semantic-unit coverage map;
+- Fresh evidence каждой applicable unit;
+- stable finding IDs;
+- source evidence Fresh lane.
 
 Initial Fresh Review не получает Primary analysis или change history. Он возвращает для каждой карточки `FRESH WEB PASS` либо `FRESH WEB FINDINGS`. Каждое finding получает стабильный ID внутри lineage (`F1`, `F2`, ...), точный уровень/правило/место/evidence и остаётся в history при следующих версиях.
 
 ### Follow-up Web Review
 
-После исправления карточка остаётся в том же permanent lane. Follow-up input:
+Corrected identity остаётся в той же logical Fresh lane. Follow-up имеет два режима:
+
+- `DELTA FOLLOW-UP` — default после earlier full Fresh review;
+- `FULL FOLLOW-UP` — только при concrete escalation trigger из раздела 7.
+
+Fresh lane может сравнивать own previous reviewed blob, current immutable blob и diff, самостоятельно derived из этих двух Fresh-known identities. Это Fresh-owned history, а не Primary change design или Primary-provided diff.
+
+### Compact Follow-up handoff
+
+Canonical handoff содержит только:
 
 - repository;
 - current immutable candidate commit/path/blob;
+- previous Fresh-reviewed blob;
 - workflow ref;
 - review criteria identity;
-- per-card lineage и собственные finding IDs Fresh lane.
+- lineage;
+- prior Fresh finding IDs;
+- requested mode `DELTA` by default.
 
-Follow-up не получает Primary rationale, Primary change design, diff, Primary verdict или requested outcome. Для каждого прежнего finding он устанавливает `RESOLVED`, `UNRESOLVED` или `SUPERSEDED` и приводит evidence. Затем он заново выполняет complete Levels 1→4, включая обязательную current primary-source verification, полноту, global clarity, local transparency каждого meaningful fragment, editorial defects, overload и redundancy.
+Он не содержит Primary rationale, change design, verdict, requested outcome или explanation of correction. Fresh самостоятельно определяет changed units и dependency cone.
 
-Follow-up возвращает per card `FOLLOW-UP WEB PASS`, `FOLLOW-UP WEB FAIL` либо blocking `NOT CHECKED`. Найденные новые defects получают новые stable finding IDs; прежние IDs не переиспользуются. Новая top-level chat/session для каждой correction не требуется.
+```text
+FOLLOW-UP WEB REVIEW
 
-Результат batch всегда остаётся per card и содержит candidate path/blob, workflow ref и review criteria identity. Batch-level `PASS`, скрывающий результаты отдельных карточек, недопустим.
+Candidate: <commit>
+Path: <path>
+Previous Fresh blob: <blob>
+Current blob: <blob>
+Lineage: <id>
+Resolve: <finding IDs>
+Mode: DELTA
+Workflow ref: <sha>
+Criteria: <L1/L2/L3/L4 blobs>
+```
 
-Current Fresh gate выполнен, если для current card identity справедливо одно из двух:
+### DELTA FOLLOW-UP
 
-- эта identity получила `FRESH WEB PASS` в Initial Fresh Review;
-- Initial Fresh Review ранее состоялся в этой lineage, все его и последующие findings имеют статус `RESOLVED` или доказанно `SUPERSEDED`, open findings отсутствуют, а current identity получила `FOLLOW-UP WEB PASS`.
+Fresh Web:
 
-Любое новое содержательное изменение аннулирует current Primary pass и current Follow-up pass для изменённой identity, но не удаляет Initial occurrence, finding history и доказанные результаты для unchanged material. Исправленная identity требует нового Primary pass и Follow-up Web Review в той же lane; новую Initial Fresh Review или новый workstream создавать не требуется.
+1. verifies previous/current blob identities;
+2. classifies every changed semantic unit;
+3. marks each prior finding `RESOLVED`, `UNRESOLVED` или `SUPERSEDED` с evidence;
+4. independently defines dependency cone;
+5. applies every relevant Level 1–4 rule to changed/impacted units;
+6. rechecks changed mutable technical claims against current primary sources;
+7. inherits only valid own Fresh evidence unchanged units;
+8. performs whole-card consistency scan;
+9. records new findings with new stable IDs;
+10. escalates to `FULL`, когда concrete trigger applies.
 
-Verdicts неизменённых карточек сохраняются по правилам раздела 7. Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` fresh semantic review не требуется, если Web доказал неизменность учебного содержания.
+Source evidence в `DELTA` переиспользуется impact-aware: changed claims и directly affected sources проверяются снова; unchanged claims могут наследовать own Fresh source evidence с указанием previous reviewed identity. Evidence не наследуется, если relevant standard, documentation version или factual context изменились. Primary research не заменяет Fresh source evidence. Broad research byte-identical claims без specific reason не повторяется.
+
+### FULL FOLLOW-UP
+
+`FULL FOLLOW-UP` выполняет complete Levels 1–4 по всей current card и required current primary-source verification. Escalation result называет concrete trigger; card blob change сам по себе trigger не создаёт.
+
+Оба режима возвращают per-card `FOLLOW-UP WEB PASS`, `FOLLOW-UP WEB FAIL` либо blocking `NOT CHECKED`. Detailed rule/location/evidence/impact обязательно для каждого FAIL, new finding или NOT CHECKED.
+
+Compact `DELTA` pass имеет contract:
+
+```text
+FOLLOW-UP WEB REVIEW RESULT
+
+Mode: DELTA
+Path: <path>
+Previous blob: <blob>
+Current blob: <blob>
+
+Prior findings:
+<ID + status + evidence>
+
+Changed units:
+<units>
+
+Impact cone:
+<units/dependencies>
+
+Affected checks:
+<Level/sub-check + result>
+
+Inherited Fresh evidence:
+<units or NONE>
+
+Source evidence:
+<CHECKED | INHERITED | MIXED>
+
+Whole-card consistency:
+PASS
+
+New findings:
+NONE
+
+Open findings:
+NONE
+
+Final verdict:
+FOLLOW-UP WEB PASS
+```
+
+`DELTA FOLLOW-UP PASS` достаточен для current Fresh gate, когда all prior findings `RESOLVED` или validly `SUPERSEDED`, open findings `NONE`, changed/impacted units passed, inherited evidence valid, whole-card consistency passed и full-review trigger не остаётся.
+
+Current Fresh gate выполнен, если current identity получила Initial `FRESH WEB PASS` либо, после earlier full Initial/Follow-up в той же lineage, current `DELTA` или `FULL FOLLOW-UP WEB PASS` с полным composite evidence.
+
+### Logical lane и session rotation
+
+Permanent Fresh lane — logical independent workstream, а не обязательная infinitely growing chat. Lane может optional rotate в новую top-level session после section или bounded set карточек, передав compact Fresh-owned lineage ledger:
+
+- card path и current Fresh-reviewed blob;
+- review criteria identity;
+- Initial/Follow-up result;
+- stable finding history и open findings;
+- semantic-unit coverage map;
+- inherited/current source evidence.
+
+Ledger не содержит Primary rationale или change design. Rotation не требуется per correction, и новая chat только из-за correction не нужна.
+
+Результат batch всегда остаётся per card и содержит current identity, mode и evidence. Batch-level `PASS`, скрывающий карточки, недопустим. Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` fresh semantic review не требуется, если Web доказал неизменность учебного содержания.
 
 ## 10. Level 5 change design
 
@@ -340,6 +498,9 @@ Verdicts неизменённых карточек сохраняются по �
 - allowed scope;
 - protected material;
 - candidate identity либо правило её фиксации после исполнения;
+- review mode `FULL`/`DELTA`, previous reviewed identity и changed semantic units;
+- dependency cone, inherited Primary evidence и source evidence plan;
+- concrete full-review triggers или `NONE`;
 - workflow ref и review criteria identity;
 - review lineage, Fresh gate и open/addressed finding IDs;
 - применимые mechanical checks;
@@ -367,12 +528,12 @@ semantic review → prose edit → semantic review → prose edit
 
 - actual target должен совпадать с pre-approved candidate identity;
 - Web фиксирует per-card path/blob identity, workflow ref, review criteria identity и candidate commit;
-- primary pass переносится на actual GitHub candidate только при точном content match;
-- Initial Fresh либо Follow-up Web Review выполняется после этой проверки непосредственно из GitHub.
+- `FULL`/`DELTA` Primary pass переносится на actual GitHub candidate только при точном content match;
+- Initial `FULL` Fresh либо `DELTA`/`FULL` Follow-up выполняется после этой проверки непосредственно из GitHub.
 
 Для `BOUNDED_CODE` и `BOUNDED_STRUCTURE` Web сначала фиксирует actual GitHub candidate identity, затем выполняет применимый primary/fresh review complete result.
 
-Любое содержательное отличие конкретной карточки от уже одобренной identity создаёт для неё новый candidate и аннулирует current Primary/Follow-up passes этой identity, но сохраняет review lineage и finding history. Новый commit, который изменяет другую карточку, не аннулирует verdict неизменённой карточки при сохранении path, blob/content identity, review criteria identity и material dependencies.
+Любое содержательное отличие конкретной карточки создаёт новую candidate identity и требует current composite Primary/Fresh verdict, но сохраняет lineage, finding history, coverage map и valid unit evidence по разделу 7. Новый commit, который изменяет другую карточку, не аннулирует verdict неизменённой карточки при сохранении path, blob/content identity, review criteria identity и material dependencies.
 
 Repository-wide invariants повторно проверяются против final candidate commit независимо от переноса per-card verdicts.
 
@@ -388,8 +549,9 @@ CANDIDATE READY(Vn)
 
 только если одновременно:
 
-- для каждой применимой карточки current `PRIMARY WEB PASS` относится к actual unchanged path/blob identity;
-- эта identity получила Initial `FRESH WEB PASS` либо, после состоявшегося Initial Fresh Review в той же lineage, current `FOLLOW-UP WEB PASS`;
+- для каждой применимой карточки current `FULL` или valid `DELTA PRIMARY WEB PASS` относится к actual path/blob identity;
+- эта identity получила Initial `FRESH WEB PASS` либо current `DELTA`/`FULL FOLLOW-UP WEB PASS` после earlier full Fresh review той же lineage;
+- composite evidence покрывает inherited unchanged units, reviewed changed/impacted units и current whole-card consistency;
 - все Fresh findings имеют статус `RESOLVED` или доказанно `SUPERSEDED`, open findings отсутствуют;
 - semantic verdict относится к применимой review criteria identity;
 - actual feature-branch content соответствует этим identities;

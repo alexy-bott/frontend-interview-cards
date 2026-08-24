@@ -16,7 +16,9 @@ ChatGPT Web владеет смысловым анализом, исследов
 
 Для изменений прозы Web до исполнения подготавливает точный кандидат и выполняет primary review. Codex применяет его без перефразирования. После feature-branch push Web проверяет actual GitHub identity, а постоянный независимый Fresh Web lane читает candidate непосредственно из immutable GitHub commit.
 
-Первая версия карточки в этом lane проходит Initial Fresh Review. Исправленные версии проходят Follow-up Web Review в том же workstream: Fresh Web сохраняет собственную finding history, но не получает Primary verdict/rationale, change design или diff. Каждый Follow-up заново применяет полные Levels 1–4 к current candidate.
+Первая Fresh-reviewed версия карточки проходит complete `FULL` Initial Fresh Review. Для corrected identity impact-aware `DELTA` Primary и `DELTA` Follow-up являются default: unchanged evidence той же lane наследуется по byte-identical semantic units, а reviewer заново проверяет changed units, dependency cone, affected sources и whole-card consistency. `FULL` Follow-up выполняется только при named escalation trigger; valid `DELTA FOLLOW-UP WEB PASS` удовлетворяет Fresh gate.
+
+Fresh Web сохраняет собственную finding/source history и не получает Primary rationale, change design, verdict или Primary-provided diff. Permanent Fresh lane является logical workstream: он может optional rotate sessions через compact Fresh-owned lineage ledger, но новая chat для каждой correction не требуется.
 
 Workflow ref определяет orchestration process. Semantic review criteria identity отдельно определяется точными blobs файлов Levels 1–4; process-only изменения workflow не аннулируют verdict неизменённой карточки, если review criteria identity совместима.
 
