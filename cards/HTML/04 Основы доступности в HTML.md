@@ -45,7 +45,6 @@ Accessible name, или доступное имя, — краткое прогр
 
 ## Дополнительные вопросы
 
-
 <details>
 <summary><strong>Когда использовать <code>aria-label</code>?</strong></summary>
 
