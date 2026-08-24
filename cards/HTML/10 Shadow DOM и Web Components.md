@@ -20,13 +20,9 @@ Web Components — набор механизмов веб-платформы д�
 
 Эти механизмы можно сочетать независимо. Custom Element не обязан использовать Shadow DOM, а Shadow DOM можно создавать и на поддерживаемых стандартных HTML-хостах.
 
-Custom Element задаёт собственный HTML-тег и JavaScript-класс. Автономный custom element регистрируют через `customElements.define()` с валидным custom-element name, содержащим дефис, например `<user-card>`.
+Автономный Custom Element задаёт собственное имя HTML-элемента и связывается с JavaScript-классом через `customElements.define()`, например `<user-card>`. Это утверждение относится именно к autonomous custom elements: customized built-in elements расширяют существующий HTML-элемент и сохраняют его обычное имя тега.
 
-Lifecycle callbacks, например `connectedCallback()`, `disconnectedCallback()` и `attributeChangedCallback()`, позволяют реагировать на подключение, отключение и изменения наблюдаемых атрибутов. Код компонента не должен предполагать, что подключение или отключение произойдёт только один раз.
-
-Конструктор используют для начального состояния, обработчиков и, при необходимости, создания Shadow Root. В нём не следует полагаться на уже разобранные дочерние узлы или на работу, которая требует подключения элемента к документу.
-
-`<template>` хранит фрагмент разметки, который не отображается как обычное содержимое шаблона до его использования кодом. Slots позволяют компоненту определить точки, куда будет спроецировано переданное ему Light DOM-содержимое.
+Обычный `<template>` хранит неотображаемый фрагмент разметки, который код может клонировать и использовать через `template.content`. Отдельно HTML поддерживает declarative Shadow DOM: `<template shadowrootmode="open">` или `<template shadowrootmode="closed">` позволяет parser создать Shadow Root без обязательного вызова `attachShadow()` из JavaScript. Slots позволяют компоненту определить точки, куда будет спроецировано переданное ему Light DOM-содержимое.
 
 Shadow DOM создаёт отдельное DOM-поддерево, связанное с host-элементом через `attachShadow()`. Обычные селекторы документа не выбирают внутренние элементы shadow tree напрямую, а стили внутри shadow tree применяются в его собственной области.
 
@@ -69,7 +65,7 @@ Virtual DOM — структура в памяти, которую React исп�
 
 Это обычные дочерние узлы элемента-хоста, записанные во внешнем документе.
 
-Slot определяет, где эти узлы отображаются в composed tree, но сами узлы не перемещаются в Shadow DOM и остаются дочерними элементами хоста.
+`<slot>` задаёт место внутри shadow tree, где в интерфейсе отображаются подходящие Light DOM-узлы. Сами узлы при этом остаются дочерними элементами хоста и физически не перемещаются в Shadow DOM.
 
 <h2></h2>
 </dd>
@@ -122,7 +118,7 @@ Shadow DOM уменьшает влияние внешней страницы н�
 
 Сложнее внешняя стилизация, тестирование, SSR, интеграция с формами, реализация доступности и подключение к жизненному циклу React или Vue.
 
-Также нужно понимать границу между Light DOM, Shadow DOM и composed tree, а публичные точки стилизации и взаимодействия проектировать заранее.
+Также нужно понимать, какие узлы принадлежат Light DOM, какие — Shadow DOM, и как slots связывают эти части при отображении. Публичные точки стилизации и взаимодействия приходится проектировать заранее.
 
 <h2></h2>
 </dd>
@@ -211,6 +207,25 @@ new CustomEvent("change-value", {
 </details>
 
 <details>
+<summary><strong>Почему lifecycle Custom Element нельзя считать одноразовым?</strong></summary>
+
+<dl>
+<dd>
+<h2></h2>
+
+`connectedCallback()` вызывается при подключении элемента к документу, `disconnectedCallback()` — при отключении, а `attributeChangedCallback()` реагирует на изменения атрибутов из `observedAttributes`.
+
+Подключение и отключение могут происходить многократно, поэтому инициализация и очистка должны учитывать повторные вызовы.
+
+Конструктор используют для начального состояния, обработчиков и, при необходимости, создания Shadow Root. В нём не следует полагаться на уже разобранные дочерние узлы или на работу, которая требует подключения элемента к документу.
+
+<h2></h2>
+</dd>
+</dl>
+
+</details>
+
+<details>
 <summary><strong>Что важно при использовании Web Component в React?</strong></summary>
 
 <dl>
@@ -267,6 +282,7 @@ React 19 также позволяет подписываться на поль�
 - [MDN: Event composed](https://developer.mozilla.org/en-US/docs/Web/API/Event/composed)
 - [WHATWG: Custom elements](https://html.spec.whatwg.org/multipage/custom-elements.html)
 - [WHATWG DOM: Shadow trees](https://dom.spec.whatwg.org/#shadow-trees)
+- [WHATWG HTML: The template element](https://html.spec.whatwg.org/multipage/scripting.html#the-template-element)
 - [React 19: Support for Custom Elements](https://react.dev/blog/2024/12/05/react-19#support-for-custom-elements)
 - [React: React DOM Components](https://react.dev/reference/react-dom/components)
 
