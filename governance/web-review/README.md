@@ -15,8 +15,8 @@
 7. Спроектировать изменение по [`05-change-design.md`](<./05-change-design.md>).
 8. Для точной прозы завершить primary Web review exact candidate до исполнения Codex.
 9. После Codex push проверить actual feature-branch identity и scope.
-10. Передать independent Fresh Web только repository, exact candidate commit, exact paths и governance ref/SHA.
-11. Получить отдельный fresh verdict Levels 1–4 для каждой карточки и только затем `CANDIDATE READY`.
+10. Передать permanent independent Fresh Web lane только immutable candidate identity, workflow ref, review criteria identity и применимую собственную finding history lane.
+11. Получить для каждой карточки Initial Fresh либо current Follow-up verdict Levels 1–4 и только затем `CANDIDATE READY`.
 12. Отдельно опубликовать кандидата и проверить actual default branch до финального `READY`.
 
 ## Структура и код
@@ -38,13 +38,17 @@ Codex может самостоятельно реализовать тольк�
 
 Fresh Web читает candidate непосредственно из immutable GitHub commit. Пользователь не должен скачивать и повторно загружать Markdown-файлы, когда candidate доступен в GitHub.
 
-Dedicated independent Fresh Web workstream может обрабатывать несколько карточек из одного candidate commit и несколько последовательных batches. Рекомендуемый размер batch — 5–10 карточек; это quality default, а не жёсткий максимум.
+Один permanent independent Fresh Web workstream обрабатывает first candidates и corrected versions, а также несколько последовательных batches. Рекомендуемый размер batch — 5–10 карточек; это quality default, а не жёсткий максимум.
 
 Для каждой карточки Fresh Web независимо и полностью применяет Levels 1–4, включая Level 4 local transparency, и возвращает собственный verdict с path и blob/content identity. Batch-level `PASS`, скрывающий результаты отдельных карточек, недопустим.
 
-Fresh Web получает только repository, exact candidate commit SHA, exact candidate paths, exact governance ref/SHA и инструкцию независимо применить Levels 1–4. Ему не передаются primary verdict/rationale, предыдущий список `FAIL`, Level 5 change design, diff или объяснение изменений.
+Первый review карточки в lane называется Initial Fresh Review. Он не получает Primary Web analysis и возвращает per-card `FRESH WEB PASS` либо `FRESH WEB FINDINGS`; каждое finding получает стабильный ID внутри lineage карточки, например `F1`.
 
-Workstream остаётся независимым от Primary Web. Если конкретная Fresh Web session уже видела более раннюю content version данной карточки, исправленную версию этой карточки должна проверить другая clean top-level session/workstream, не видевшая прежнюю версию или её `FAIL`. Ограничение действует per card: тот же workstream может впервые проверять другие карточки.
+Каждая corrected content identity проходит Follow-up Web Review в том же workstream. Собственные прежние versions/findings являются ожидаемым input: Follow-up помечает каждое finding как `RESOLVED`, `UNRESOLVED` или `SUPERSEDED` с evidence, заново выполняет полные Levels 1–4 и возвращает `FOLLOW-UP WEB PASS`, `FOLLOW-UP WEB FAIL` либо blocking `NOT CHECKED`. Новая top-level chat не требуется только из-за correction.
+
+Fresh independence означает независимость от Primary Web. Lane не получает Primary verdict/rationale, Primary `FAIL`, Level 5 change design, diff, explanation или requested outcome, но может сохранять и использовать собственную review history.
+
+Semantic verdict привязан к card path, card blob/content identity и review criteria identity — точным blobs [`01-file-structure.md`](<./01-file-structure.md>), [`02-block-structure.md`](<./02-block-structure.md>), [`03-content-distribution.md`](<./03-content-distribution.md>) и [`04-content-quality.md`](<./04-content-quality.md>). Изменение orchestration files само по себе verdict не аннулирует.
 
 ## Канонический workflow
 

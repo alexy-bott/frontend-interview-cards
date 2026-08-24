@@ -14,7 +14,11 @@ User → ChatGPT Web → Codex → GitHub → ChatGPT Web
 
 ChatGPT Web владеет смысловым анализом, исследованием, последовательностью объяснения, формулировками, полнотой, понятностью и приемлемой смысловой нагрузкой.
 
-Для изменений прозы Web до исполнения подготавливает точный кандидат и выполняет primary review. Codex применяет его без перефразирования. После feature-branch push Web проверяет actual GitHub identity, а независимый Fresh Web читает candidate непосредственно из immutable GitHub commit.
+Для изменений прозы Web до исполнения подготавливает точный кандидат и выполняет primary review. Codex применяет его без перефразирования. После feature-branch push Web проверяет actual GitHub identity, а постоянный независимый Fresh Web lane читает candidate непосредственно из immutable GitHub commit.
+
+Первая версия карточки в этом lane проходит Initial Fresh Review. Исправленные версии проходят Follow-up Web Review в том же workstream: Fresh Web сохраняет собственную finding history, но не получает Primary verdict/rationale, change design или diff. Каждый Follow-up заново применяет полные Levels 1–4 к current candidate.
+
+Workflow ref определяет orchestration process. Semantic review criteria identity отдельно определяется точными blobs файлов Levels 1–4; process-only изменения workflow не аннулируют verdict неизменённой карточки, если review criteria identity совместима.
 
 Codex может самостоятельно реализовать только явно делегированные технические части:
 

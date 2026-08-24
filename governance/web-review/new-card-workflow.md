@@ -104,7 +104,13 @@ PRIMARY WEB PASS
 → Codex execution
 → Web verification actual GitHub identity/scope
 → immutable GitHub candidate
+→ Initial Fresh Review
 → FRESH WEB PASS per card
+или FRESH WEB FINDINGS
+→ Primary correction addressing finding IDs
+→ Codex execution
+→ same Fresh workstream Follow-up Web Review
+→ repeat until FOLLOW-UP WEB PASS
 ```
 
 Для delegated code:
@@ -113,12 +119,16 @@ PRIMARY WEB PASS
 Codex BOUNDED_CODE execution
 → actual complete candidate
 → PRIMARY WEB PASS
+→ Initial Fresh Review
 → FRESH WEB PASS per card
+или FRESH WEB FINDINGS
+→ Primary correction addressing finding IDs
+→ Codex execution
+→ same Fresh workstream Follow-up Web Review
+→ repeat until FOLLOW-UP WEB PASS
 ```
 
-Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) непосредственно из immutable GitHub commit. Один independent Fresh Web workstream может проверять bounded batch first-time candidates из одного commit, но каждая карточка получает отдельный полный Levels 1–4 review и собственный verdict.
-
-Если конкретная Fresh Web session уже проверяла более раннюю content version этой карточки, corrected version должна перейти в другую clean top-level session/workstream, не видевшую прежнюю версию или её `FAIL`.
+Fresh review выполняется по правилам [`00-workflow.md`](<./00-workflow.md>) непосредственно из immutable GitHub commit. Один permanent independent Fresh Web workstream выполняет Initial Fresh Review первой версии и полные Follow-up Web Reviews всех corrected versions в lineage. Собственная previous version/finding history ожидаема в Follow-up mode; новая chat для correction не требуется.
 
 Любое содержательное изменение создаёт новую candidate identity.
 
@@ -143,7 +153,10 @@ Codex не расширяет тему, не добавляет полезные
 
 Candidate получает `CANDIDATE READY` только когда:
 
-- primary и fresh Web passes относятся к одной per-card path/blob identity и применимому governance ref;
+- current `PRIMARY WEB PASS` относится к actual per-card path/blob identity;
+- current identity имеет `FRESH WEB PASS` Initial Fresh Review либо `FOLLOW-UP WEB PASS` после ранее состоявшегося Initial Fresh Review в той же lineage;
+- все Fresh findings имеют статус `RESOLVED` или доказанно `SUPERSEDED` и open findings отсутствуют;
+- semantic verdict относится к применимой review criteria identity;
 - actual feature-branch content равно primary-approved candidate;
 - нет blocking `NOT CHECKED`;
 - применимые repository invariants фактически проверены.

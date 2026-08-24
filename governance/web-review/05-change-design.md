@@ -174,17 +174,27 @@ Exact prose: <full file, exact patch, exact replacements или NONE>
 Technical contract: <bounded code/structure contract или NONE>
 Protected material: <что нельзя менять>
 Candidate identity: <sha-256 | exact snapshot id | PENDING_UNTIL_EXECUTION>
-GitHub fresh identity: <governance ref + candidate path/blob + candidate commit | PENDING_UNTIL_FEATURE_PUSH>
+Workflow ref: <active orchestration commit>
+Review criteria identity: <exact blobs Levels 1–4>
+GitHub fresh identity: <candidate path/blob + candidate commit | PENDING_UNTIL_FEATURE_PUSH>
+Review lineage: <lineage id or NEW>
+Fresh gate: <INITIAL_PENDING | INITIAL_PASS | FINDINGS_OPEN | FOLLOW_UP_PENDING | FOLLOW_UP_PASS>
+Open Fresh findings: <IDs or NONE>
+Addressed Fresh findings: <IDs or NONE>
 Mechanical checks: <применимые проверки>
 Feature publication: <branch/push requirements>
 Default publication gate: <expected base и разрешённый method>
 ```
 
-Для `EXACT_CANDIDATE` primary Web review exact content выполняется до Codex execution. После push Web подтверждает, что actual GitHub content точно совпадает с primary-approved candidate, и только затем передаёт immutable commit/path independent Fresh Web review.
+Для `EXACT_CANDIDATE` primary Web review exact content выполняется до Codex execution. После push Web подтверждает, что actual GitHub content точно совпадает с primary-approved candidate, и только затем передаёт immutable commit/path independent Fresh Web lane.
 
 Для Codex-authored `BOUNDED_CODE` complete candidate review выполняется после feature-branch push. Для `BOUNDED_STRUCTURE` Web подтверждает structural result и неизменность semantic payload после исполнения.
 
-Fresh reviewer получает только repository, exact candidate commit, exact paths, governance ref/SHA и инструкцию независимо применить Levels 1–4. Primary verdict/rationale, предыдущие `FAIL`, Level 5 change design, diff и объяснение изменения не входят в fresh handoff.
+Если change design исправляет Fresh findings, поле `Addressed Fresh findings` перечисляет их stable IDs, а `Review lineage` сохраняет lineage текущей карточки.
+
+Initial Fresh handoff содержит только repository, current immutable candidate identity, workflow ref, review criteria identity и инструкцию независимо применить Levels 1–4.
+
+Follow-up handoff содержит только repository, current immutable candidate commit/path/blob, workflow ref, review criteria identity, lineage и собственные prior finding IDs Fresh lane. Primary rationale, Primary change design, diff, requested verdict или requested outcome не входят ни в один fresh handoff.
 
 ## Новая проблема во время исполнения
 
