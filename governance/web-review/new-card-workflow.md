@@ -82,7 +82,7 @@ Web также явно перечисляет каждый дополнител
 
 Web включает весь точный код в complete candidate.
 
-Candidate проходит primary Web review. После `PRIMARY WEB PASS` русскоязычная reader-facing prose проходит применимый Russian Style / Speakability Review до Codex execution. Codex получает уже принятый final exact text. Fresh Web review выполняется после feature-branch push по actual immutable GitHub candidate.
+Candidate проходит Primary Web review до Codex execution и передаётся как `EXACT_CANDIDATE`. После feature-branch push Web проверяет actual GitHub identity/scope. Затем actual immutable candidate проходит Russian Style / Speakability Review, а после закрытия language gate — Fresh Web review.
 
 ### Delegated code
 
@@ -97,7 +97,7 @@ Web оставляет прозу, структуру и учебную функ
 
 Codex реализует только код. Complete candidate identity появляется после feature-branch push.
 
-Если delegated code task не меняет reader-facing prose, отдельный повторный Russian Style Review только ради кода не требуется. Но новая карточка всё равно должна иметь обязательный Russian Style baseline для своей русскоязычной prose до `CANDIDATE READY`.
+Для новой карточки русскоязычная prose всё равно должна получить обязательный Russian Style baseline по actual immutable GitHub candidate до Fresh review и `CANDIDATE READY`.
 
 ## 6. Review маршруты
 
@@ -105,18 +105,22 @@ Codex реализует только код. Complete candidate identity поя
 
 ```text
 PRIMARY WEB PASS
-→ Russian Style / Speakability Review
-→ при language findings: Web bounded language fixes + применимая повторная Primary-проверка
-→ RUSSIAN_STYLE_PASS или RUSSIAN_STYLE_FINAL_PASS
 → Codex execution
 → Web verification actual GitHub identity/scope
 → immutable GitHub candidate
+→ Russian Style / Speakability Review
+→ если language findings: Web bounded correction + применимая Primary-проверка
+→ Codex execution
+→ Web verification
+→ Russian Style follow-up
+→ RUSSIAN_STYLE_PASS или RUSSIAN_STYLE_FINAL_PASS
 → FULL Initial Fresh Review
 → FRESH WEB PASS per card
 или FRESH WEB FINDINGS
 → DELTA Primary correction addressing finding IDs by default
-→ если correction меняет prose: Russian Style follow-up
 → Codex execution
+→ Web verification
+→ если correction меняет prose: Russian Style follow-up
 → same Fresh workstream DELTA Follow-up by default
 → FULL Follow-up only if escalated by concrete trigger
 → repeat until FOLLOW-UP WEB PASS
@@ -127,14 +131,17 @@ PRIMARY WEB PASS
 ```text
 Codex BOUNDED_CODE execution
 → actual complete candidate
+→ Web verification actual GitHub identity/scope
 → PRIMARY WEB PASS
-→ обязательный Russian Style baseline текущей русскоязычной prose, если его ещё нет
+→ Russian Style baseline current immutable candidate
+→ RUSSIAN_STYLE_PASS или RUSSIAN_STYLE_FINAL_PASS
 → FULL Initial Fresh Review
 → FRESH WEB PASS per card
 или FRESH WEB FINDINGS
 → DELTA Primary correction addressing finding IDs by default
-→ если correction меняет prose: Russian Style follow-up
 → Codex execution
+→ Web verification
+→ если correction меняет prose: Russian Style follow-up
 → same Fresh workstream DELTA Follow-up by default
 → FULL Follow-up only if escalated by concrete trigger
 → repeat until FOLLOW-UP WEB PASS
@@ -146,7 +153,7 @@ Fresh review выполняется по правилам [`00-workflow.md`](<./
 
 Любое содержательное изменение создаёт новую candidate identity.
 
-Russian Style Review остаётся отдельным language gate и не изменяет Fresh lineage или review criteria identity Levels 1–4.
+Russian Style Review остаётся отдельным language gate и не изменяет Fresh lineage или review criteria identity Levels 1–4. Каждый style verdict относится к конкретным `Path`, candidate commit и blob identity.
 
 ## 7. Исполнение Codex
 
@@ -170,7 +177,7 @@ Codex не расширяет тему, не добавляет полезные
 Candidate получает `CANDIDATE READY` только когда:
 
 - current `FULL` или valid `DELTA PRIMARY WEB PASS` относится к actual per-card path/blob identity;
-- текущая русскоязычная reader-facing prose покрыта применимым `RUSSIAN_STYLE_PASS` или `RUSSIAN_STYLE_FINAL_PASS` по [`russian-style-review.md`](<./russian-style-review.md>);
+- текущая русскоязычная reader-facing prose покрыта применимым `RUSSIAN_STYLE_PASS` или `RUSSIAN_STYLE_FINAL_PASS`, относящимся к current path/blob identity;
 - current identity имеет `FRESH WEB PASS` Initial `FULL` Review либо valid `DELTA`/`FULL FOLLOW-UP WEB PASS` после earlier full Fresh review той же lineage;
 - inherited unchanged units, reviewed changed/impacted units и whole-card consistency образуют complete current evidence;
 - все Fresh findings имеют статус `RESOLVED` или доказанно `SUPERSEDED` и open findings отсутствуют;
@@ -196,5 +203,3 @@ Feature branch ещё не является опубликованным source 
 - actual default branch содержит approved candidate identity;
 - publication scope и HEAD проверены Web;
 - все условия `CANDIDATE READY` сохраняются.
-
-В части обязательности Russian Style / Speakability Review этот файл следует более новому [`russian-style-review.md`](<./russian-style-review.md>), если более ранний общий workflow описывает маршрут без language gate.
