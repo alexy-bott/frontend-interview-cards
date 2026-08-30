@@ -6,6 +6,8 @@
 
 Этот файл является активной точкой входа для работы с карточками.
 
+Для русскоязычной reader-facing prose дополнительно действует обязательный отдельный Russian Style / Speakability gate по [`russian-style-review.md`](<./russian-style-review.md>). Он не является новым уровнем 1–5 и не меняет review criteria identity Levels 1–4.
+
 ## 1. Области ответственности
 
 Пять уровней сохраняются как логические области ответственности:
@@ -21,6 +23,8 @@
 Исполнение Codex не является уровнем 5 и не создаёт уровень 6.
 
 Для прозы уровень 5 заканчивается точным кандидатом. Для отдельно делегированного кода или структуры он заканчивается точным техническим контрактом, который не оставляет Codex смыслового выбора по тексту или границе темы.
+
+Russian Style Review является отдельным language-quality gate: он проверяет форму уже принятого смысла по actual immutable GitHub candidate и не заменяет Levels 1–4, Primary или Fresh review.
 
 ## 2. Роли
 
@@ -46,6 +50,7 @@ ChatGPT Web:
 - передаёт Codex bounded instruction;
 - после push читает actual GitHub branch и diff;
 - проверяет candidate identity/equivalence и repository evidence;
+- обеспечивает применимый Russian Style / Speakability verdict actual immutable candidate до Fresh review;
 - формирует GitHub-native fresh handoff только из repository, current/previous Fresh identities, workflow ref, review criteria identity, lineage, requested mode и применимой собственной finding history Fresh lane;
 - получает independent Initial Fresh или Follow-up verdict Levels 1–4 отдельно для каждой применимой карточки;
 - выдаёт отдельную publication instruction только после `CANDIDATE READY`;
@@ -57,14 +62,15 @@ Codex:
 
 - исполняет Web-defined change-set;
 - не диагностирует самостоятельно уровни 3–4;
+- не выполняет Russian Style / Speakability или другой editorial/language review;
 - не выбирает финальную формулировку, глубину или новый учебный аспект;
 - не расширяет scope;
 - может выбирать только детали реализации внутри явно заданного `BOUNDED_STRUCTURE` или `BOUNDED_CODE`;
 - может выполнять bounded local filesystem / Git support по [`../codex-execution.md`](<../codex-execution.md>), не получая semantic ownership;
 - выполняет применимые mechanical checks;
-- возвращает `STOP`, если изменился base, требуется новый смысловой выбор или публикация перестала быть fast-forward.
+- возвращает `STOP`, если изменился base, требуется новый смысловой или редакторский выбор или публикация перестала быть fast-forward.
 
-Execution report Codex не является доказательством содержания или публикации.
+Execution report Codex не является доказательством содержания, Russian Style quality или публикации.
 
 ### GitHub
 
@@ -88,6 +94,7 @@ Default branch является опубликованным source of truth. Fe
 - `FULL` Primary review для первой identity в lineage либо impact-aware `DELTA` Primary review corrected identity;
 - проверка актуальных источников там, где этого требует уровень 4;
 - точная candidate identity;
+- применимый Russian Style / Speakability review actual immutable GitHub candidate для новой или изменённой русскоязычной reader-facing prose;
 - fresh Web review до `CANDIDATE READY`.
 
 ### `CODE_CHANGE`
@@ -110,13 +117,15 @@ Codex может реализовать код внутри этого конт�
 
 `CODE_CHANGE` не разрешает Codex менять объяснительный текст или добавлять новый учебный аспект.
 
+Если reader-facing prose не менялась, отдельный повторный Russian Style Review только ради code change не требуется. Для новой карточки baseline русскоязычной prose всё равно обязателен до Fresh review и `CANDIDATE READY`.
+
 ### `NEW_CARD`
 
 Создание новой карточки или существенно новой темы.
 
 Требуется [`new-card-workflow.md`](<./new-card-workflow.md>).
 
-Вся проза принадлежит Web. Код либо входит в exact candidate, либо отдельно делегируется как `BOUNDED_CODE` по правилам новой карточки.
+Вся проза принадлежит Web. Код либо входит в exact candidate, либо отдельно делегируется как `BOUNDED_CODE` по правилам новой карточки. Русскоязычная reader-facing prose новой карточки обязательно проходит Russian Style baseline по actual immutable GitHub candidate.
 
 ### `STRUCTURE_ONLY`
 
@@ -131,7 +140,7 @@ Codex может реализовать код внутри этого конт�
 
 Codex может самостоятельно выполнить детерминированные structural operations внутри этого контракта.
 
-Fresh semantic review не требуется только ради доказанно content-neutral structural repair.
+Fresh semantic review и новый Russian Style Review не требуются только ради доказанно content-neutral structural repair, если reader-facing prose не менялась.
 
 ### `REPOSITORY_ONLY`
 
@@ -142,6 +151,8 @@ Fresh semantic review не требуется только ради доказа
 - применимые repository rules;
 - затронутые structural checks;
 - явное подтверждение, что semantic payload не менялся.
+
+Russian Style Review не повторяется только ради repository-only change, если reader-facing prose не менялась.
 
 ### `GOVERNANCE_CHANGE`
 
@@ -176,6 +187,8 @@ FAIL
 
 Блокирующий `NOT CHECKED` не является `FAIL`, но запрещает `CANDIDATE READY` и финальный `READY`.
 
+Russian Style verdicts и их identity определены отдельно в [`russian-style-review.md`](<./russian-style-review.md>); они не переопределяют verdict Levels 1–4.
+
 ## 5. Маршрут exact content candidate
 
 Для `CONTENT_CHANGE` и для новой карточки с полностью точным содержимым:
@@ -191,10 +204,15 @@ actual live card / approved topic
 → Codex EXACT_CANDIDATE execution
 → Web identity/scope/repository verification feature branch
 → immutable GitHub candidate commit/path/blob identity
+→ Russian Style / Speakability Review, если применим
+→ если language findings: Web 5 correction → DELTA/FULL PRIMARY WEB PASS → Codex execution → Web verification → Russian Style follow-up
+→ RUSSIAN_STYLE_PASS / RUSSIAN_STYLE_FINAL_PASS или valid unchanged-prose evidence
 → FULL Initial Fresh Review для новой lineage либо DELTA Follow-up corrected identity по умолчанию
 → FULL Follow-up только при конкретном escalation trigger
 → FRESH WEB PASS(Vn) или FOLLOW-UP WEB PASS(Vn) per card
-→ при findings: Web 5 correction → DELTA/FULL PRIMARY WEB PASS → Codex execution → DELTA/FULL Follow-up в том же lane
+→ при Fresh findings: Web 5 correction → DELTA/FULL PRIMARY WEB PASS → Codex execution → Web verification
+→ если Fresh correction меняет prose: Russian Style follow-up
+→ DELTA/FULL Follow-up в том же Fresh lane
 → repository checks final candidate commit
 → CANDIDATE READY(Vn)
 → отдельная bounded publication
@@ -202,9 +220,11 @@ actual live card / approved topic
 → READY(Vn)
 ```
 
-Primary semantic review/edit происходит внутри Web до исполнения Codex, когда candidate полностью известен. Primary pass сохраняется только если actual GitHub content после исполнения точно совпадает с approved candidate. Fresh review выполняется после feature-branch push по immutable GitHub candidate.
+Primary semantic review/edit происходит внутри Web до исполнения Codex, когда candidate полностью известен. Primary pass сохраняется только если actual GitHub content после исполнения точно совпадает с approved candidate.
 
-Codex не получает повторяющиеся задания самостоятельно придумать, проверить и заново переписать прозу.
+Russian Style Review выполняется по actual immutable GitHub candidate после Web identity/scope verification и до Fresh review. Fresh не запускается для current candidate identity, пока применимый language gate не закрыт.
+
+Codex не получает задания самостоятельно придумать, проверить или переписать прозу. Если Style или Fresh находят дефект, correction проектирует Web, после чего Codex создаёт новую candidate identity.
 
 ## 6. Маршрут delegated code candidate
 
@@ -217,10 +237,15 @@ actual live state
 → actual complete candidate Vn
 → Web verification actual GitHub identity/scope
 → FULL/DELTA PRIMARY WEB PASS(Vn)
+→ применимый Russian Style baseline/follow-up actual immutable candidate
+→ RUSSIAN_STYLE_PASS / RUSSIAN_STYLE_FINAL_PASS или valid unchanged-prose evidence
 → FULL Initial Fresh Review для новой lineage либо DELTA Follow-up corrected identity по умолчанию
 → FULL Follow-up только при конкретном escalation trigger
 → FRESH WEB PASS(Vn) или FOLLOW-UP WEB PASS(Vn) per card
-→ при findings: новый Web change design и отдельная correction instruction, затем DELTA/FULL Follow-up в том же lane
+→ при findings: новый Web change design и отдельная correction instruction
+→ Codex execution → Web verification
+→ если correction меняет prose: Russian Style follow-up
+→ DELTA/FULL Fresh Follow-up в том же lane
 → repository checks final candidate commit
 → CANDIDATE READY(Vn)
 → отдельная bounded publication
@@ -228,15 +253,19 @@ actual live state
 → READY(Vn)
 ```
 
-Этот маршрут допускает Codex authoring только кода. Он не возвращает Codex смысловой review прозы.
+Этот маршрут допускает Codex authoring только кода. Он не возвращает Codex смысловой или языковой review прозы.
+
+Для существующего code-only change, где reader-facing prose доказанно не изменилась, новый Russian Style review не требуется только из-за кода; исторический baseline существующих карточек может закрываться отдельным language-review проходом по правилам [`russian-style-review.md`](<./russian-style-review.md>).
 
 ## 7. Candidate identity и semantic evidence
 
 Для `EXACT_CANDIDATE` Web предоставляет полный exact target file, детерминированный patch либо exact replacements вместе с ожидаемой identity итогового содержания. До исполнения identity предпочтительно фиксируется SHA-256; после feature-branch push Web подтверждает actual GitHub path/blob/content identity.
 
-Формулировка `сделай понятнее`, `улучши объяснение` или `добавь недостающие детали` не является bounded instruction для Codex. Для `BOUNDED_CODE` или `BOUNDED_STRUCTURE` identity полного кандидата фиксируется после исполнения по actual feature-branch content.
+Формулировка `сделай понятнее`, `улучши объяснение`, `сделай русский естественнее` или `добавь недостающие детали` не является bounded instruction для Codex. Для `BOUNDED_CODE` или `BOUNDED_STRUCTURE` identity полного кандидата фиксируется после исполнения по actual feature-branch content.
 
 Workflow ref обозначает commit с active orchestration process. Review criteria identity отдельно состоит из exact Git blobs [`01-file-structure.md`](<./01-file-structure.md>), [`02-block-structure.md`](<./02-block-structure.md>), [`03-content-distribution.md`](<./03-content-distribution.md>) и [`04-content-quality.md`](<./04-content-quality.md>). Semantic verdict привязан к card path/blob/content identity и review criteria identity, а не только к workflow ref.
+
+Russian Style evidence является отдельным language evidence. Каждый style verdict указывает `Path`, immutable candidate commit и current card blob. Если blob изменился, reuse style evidence допустим только когда Web отдельно доказал, что reader-facing prose byte-identical; при изменении prose нужен новый review/follow-up.
 
 Каждая карточка имеет одну review lineage. Новая card blob identity создаёт новую version внутри lineage, а не обязательную новую lane или session.
 
@@ -347,9 +376,9 @@ Escalation: <NO | FULL with trigger>
 
 ## 9. Fresh Web review
 
-Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует independent Fresh Web evidence exact immutable candidate каждой карточки после current Primary pass.
+Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует independent Fresh Web evidence exact immutable candidate каждой карточки после current Primary pass и после закрытия применимого Russian Style gate.
 
-Permanent Fresh lane работает read-only и независимо от Primary Web. Lane не получает Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation of correction или requested outcome. Он сохраняет собственные reviewed identities, coverage maps, source evidence и stable finding history.
+Permanent Fresh lane работает read-only и независимо от Primary Web и Coordinator-side authoring/editorial context. Lane не получает Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation of correction, requested outcome или Russian Style verdict/findings/rationale. Он сохраняет собственные reviewed identities, coverage maps, source evidence и stable finding history.
 
 ### Initial Fresh Review
 
@@ -385,7 +414,7 @@ Canonical handoff содержит только:
 - prior Fresh finding IDs;
 - requested mode `DELTA` by default.
 
-Он не содержит Primary rationale, change design, verdict, requested outcome или explanation of correction. Fresh самостоятельно определяет changed units и dependency cone.
+Он не содержит Primary rationale, change design, verdict, requested outcome, explanation of correction или Russian Style context. Fresh самостоятельно определяет changed units и dependency cone.
 
 ```text
 FOLLOW-UP WEB REVIEW
@@ -480,7 +509,7 @@ Permanent Fresh lane — logical independent workstream, а не обязате�
 - semantic-unit coverage map;
 - inherited/current source evidence.
 
-Ledger не содержит Primary rationale или change design. Rotation не требуется per correction, и новая chat только из-за correction не нужна.
+Ledger не содержит Primary rationale, change design или Russian Style context. Rotation не требуется per correction, и новая chat только из-за correction не нужна.
 
 Результат batch всегда остаётся per card и содержит current identity, mode и evidence. Batch-level `PASS`, скрывающий карточки, недопустим. Для `STRUCTURE_ONLY` или `REPOSITORY_ONLY` fresh semantic review не требуется, если Web доказал неизменность учебного содержания.
 
@@ -506,7 +535,7 @@ Ledger не содержит Primary rationale или change design. Rotation н
 - применимые mechanical checks;
 - publication requirements.
 
-Codex не принимает смысловые решения уровня 5.
+Codex не принимает смысловые или языковые решения уровня 5.
 
 ## 11. Исполнение Codex
 
@@ -515,10 +544,10 @@ Codex не принимает смысловые решения уровня 5.
 Codex может исправить детерминированную ошибку применения, structural defect или code check failure внутри разрешённого execution mode, но не запускает:
 
 ```text
-semantic review → prose edit → semantic review → prose edit
+semantic/language review → prose edit → review
 ```
 
-Если исполнение обнаружило новую смысловую неоднозначность или возможный content defect, Codex возвращает `STOP`.
+Если исполнение обнаружило новую смысловую неоднозначность, возможный content defect или языковую проблему за пределами exact contract, Codex возвращает `STOP`.
 
 ## 12. Проверка feature branch
 
@@ -529,15 +558,18 @@ semantic review → prose edit → semantic review → prose edit
 - actual target должен совпадать с pre-approved candidate identity;
 - Web фиксирует per-card path/blob identity, workflow ref, review criteria identity и candidate commit;
 - `FULL`/`DELTA` Primary pass переносится на actual GitHub candidate только при точном content match;
-- Initial `FULL` Fresh либо `DELTA`/`FULL` Follow-up выполняется после этой проверки непосредственно из GitHub.
+- после этой проверки выполняется применимый Russian Style Review actual immutable candidate;
+- Initial `FULL` Fresh либо `DELTA`/`FULL` Fresh Follow-up выполняется только после закрытия language gate.
 
-Для `BOUNDED_CODE` и `BOUNDED_STRUCTURE` Web сначала фиксирует actual GitHub candidate identity, затем выполняет применимый primary/fresh review complete result.
+Для `BOUNDED_CODE` и `BOUNDED_STRUCTURE` Web сначала фиксирует actual GitHub candidate identity, затем выполняет применимый Primary review, Russian Style gate и Fresh review в порядке, заданном task class и фактическим изменением prose.
 
-Любое содержательное отличие конкретной карточки создаёт новую candidate identity и требует current composite Primary/Fresh verdict, но сохраняет lineage, finding history, coverage map и valid unit evidence по разделу 7. Новый commit, который изменяет другую карточку, не аннулирует verdict неизменённой карточки при сохранении path, blob/content identity, review criteria identity и material dependencies.
+Любое содержательное отличие конкретной карточки создаёт новую candidate identity и требует current composite Primary/Fresh verdict, а при изменении русскоязычной reader-facing prose — нового применимого Russian Style evidence. Lineage, finding history, coverage map и valid unit evidence сохраняются по разделу 7.
+
+Новый commit, который изменяет другую карточку, не аннулирует verdict неизменённой карточки при сохранении path, blob/content identity, review criteria identity и material dependencies.
 
 Repository-wide invariants повторно проверяются против final candidate commit независимо от переноса per-card verdicts.
 
-Execution report Codex не является смысловым evidence.
+Execution report Codex не является смысловым или language evidence.
 
 ## 13. Candidate readiness
 
@@ -550,6 +582,7 @@ CANDIDATE READY(Vn)
 только если одновременно:
 
 - для каждой применимой карточки current `FULL` или valid `DELTA PRIMARY WEB PASS` относится к actual path/blob identity;
+- для новой или изменённой русскоязычной reader-facing prose current candidate покрыт применимым `RUSSIAN_STYLE_PASS` или `RUSSIAN_STYLE_FINAL_PASS`, относящимся к current path/blob identity, либо Web доказал valid reuse unchanged-prose style evidence;
 - эта identity получила Initial `FRESH WEB PASS` либо current `DELTA`/`FULL FOLLOW-UP WEB PASS` после earlier full Fresh review той же lineage;
 - composite evidence покрывает inherited unchanged units, reviewed changed/impacted units и current whole-card consistency;
 - все Fresh findings имеют статус `RESOLVED` или доказанно `SUPERSEDED`, open findings отсутствуют;
@@ -562,6 +595,8 @@ CANDIDATE READY(Vn)
 `CANDIDATE READY` означает «одобрено для публикации», а не «опубликовано».
 
 Codex не заявляет этот статус.
+
+Существующий semantic status карточки, полученный до введения обязательного Russian Style baseline, не аннулируется только из-за отсутствия исторического style evidence; первый baseline для таких карточек закрывается отдельным repository-wide language-review проходом.
 
 ## 14. Publication gate
 
@@ -581,7 +616,7 @@ Codex не заявляет этот статус.
 
 ## 15. Репозиторный статус
 
-Repository checks отделены от уровней 1–4.
+Repository checks отделены от уровней 1–4 и Russian Style gate.
 
 Используются:
 
