@@ -2,19 +2,19 @@
 
 Этот файл задаёт обязательный отдельный language-quality gate для русскоязычных reader-facing карточек.
 
-Он дополняет [`00-workflow.md`](<./00-workflow.md>) и имеет приоритет в части Russian Style / Speakability Review, если более ранний workflow не перечисляет этот шаг явно.
-
-Russian Style Review не является новым уровнем 1–5 и не изменяет review criteria identity Levels 1–4.
+Он дополняет [`00-workflow.md`](<./00-workflow.md>). Russian Style Review не является новым уровнем 1–5 и не изменяет review criteria identity Levels 1–4.
 
 ## 1. Обязательность
 
 Каждая русскоязычная reader-facing карточка должна пройти Russian Style / Speakability Review хотя бы один раз.
 
-Для новой карточки или содержательной правки русскоязычной prose этот review выполняется на стороне ChatGPT Web после принятия технического смысла и до передачи финального reader-facing текста Codex.
+Для новой карточки или содержательной правки русскоязычной prose этот review выполняется на стороне ChatGPT Web по actual immutable GitHub candidate после Coordinator verification и до Fresh Web review.
 
 Если карточка уже проходила Russian Style Review и её reader-facing prose не изменилась, повторная языковая проверка только ради формальности не требуется.
 
-Если после PASS русскоязычная prose изменена локально, повторно проверяются изменённые и непосредственно затронутые фрагменты. После существенной reader-facing переработки карточка проверяется целиком снова.
+Если после PASS русскоязычная prose изменена локально, новая immutable candidate проходит follow-up изменённых и непосредственно затронутых фрагментов. После существенной reader-facing переработки карточка проверяется целиком снова.
+
+Изменения только кода, repository metadata или доказанно content-neutral структуры не требуют нового Russian Style Review, если reader-facing prose не менялась.
 
 Существующие semantic/Fresh verdict карточек, полученные до введения этого gate, не аннулируются автоматически. Такие карточки сохраняют свой semantic status, но должны получить первый Russian Style baseline в отдельном проходе по репозиторию.
 
@@ -27,19 +27,25 @@ Coordinator / Primary Web
 → accepted technical/content model
 → exact candidate
 → PRIMARY WEB PASS
-→ Russian Style / Speakability Review
-→ при findings: bounded language fixes на стороне Web
-→ Coordinator принимает финальный exact text
 → Codex EXACT_CANDIDATE execution
-→ Web actual GitHub verification
+→ Web actual GitHub identity/scope verification
+→ Russian Style / Speakability Review actual immutable candidate
+→ при findings: bounded language correction возвращается Primary Web
+→ новый Primary-approved candidate
+→ Codex execution
+→ Web verification
+→ Russian Style follow-up
+→ RUSSIAN_STYLE_PASS или RUSSIAN_STYLE_FINAL_PASS
 → Fresh Web
 ```
 
-Если Russian Style findings привели к изменению текста после `PRIMARY WEB PASS`, Coordinator выполняет применимую повторную Primary-проверку изменённого candidate до Codex.
+Russian Style Reviewer не получает задачу переписывать working draft до его появления в GitHub. GitHub-native review позволяет отдельному Web-чату самостоятельно прочитать exact candidate по commit/path/blob и не требует от пользователя переносить полный Markdown между чатами.
 
-Если correction после Fresh меняет reader-facing prose, эта новая prose также проходит Russian Style follow-up до следующего Codex execution.
+Если `SEMANTIC_BLOCKER` требует смыслового изменения, решение также возвращается Primary Web, после чего создаётся новая candidate identity и повторяется обычный цикл.
 
-Изменения только кода, repository metadata или доказанно content-neutral структуры не требуют нового Russian Style Review, если reader-facing prose не менялась.
+Fresh Web не запускается для current candidate identity, пока применимый Russian Style gate не закрыт.
+
+Если correction после Fresh меняет reader-facing prose, следующая immutable candidate также проходит Russian Style follow-up до следующего Fresh Follow-up.
 
 ## 3. Роль Reviewer
 
@@ -193,7 +199,19 @@ Russian Style Reviewer не проводит code review и не меняет п
 
 Они применяются только если пользователь прямо задал такое ограничение в конкретной задаче.
 
-## 12. Verdicts
+## 12. Verdicts и identity
+
+Каждый Russian Style verdict относится к конкретному проверенному GitHub state и обязательно содержит:
+
+```text
+Path: <card path>
+Candidate: <immutable commit SHA>
+Blob: <current card blob SHA>
+```
+
+Это позволяет доказать, какой именно текст прошёл language review.
+
+Если card blob позже изменился только из-за кода или content-neutral структуры, предыдущий style evidence может быть переиспользован только после явного подтверждения Web, что reader-facing prose byte-identical. Если prose менялась, нужен новый review или follow-up новой immutable candidate.
 
 ### `RUSSIAN_STYLE_PASS`
 
@@ -221,15 +239,17 @@ Reviewer указывает точное место, ambiguity и причину
 RUSSIAN_STYLE_FINAL_PASS
 ```
 
+`RUSSIAN_STYLE_MINOR`, `RUSSIAN_STYLE_MAJOR` и `SEMANTIC_BLOCKER` не закрывают language gate.
+
 ## 13. Candidate readiness
 
-Для новой карточки и для content candidate, чей текущий reader-facing русский текст был создан или изменён после введения этого правила, `CANDIDATE READY` требует применимого `RUSSIAN_STYLE_PASS` или `RUSSIAN_STYLE_FINAL_PASS` текущей prose наряду с уже существующими Primary, Fresh и repository gates.
+Для новой карточки и для content candidate, чей текущий reader-facing русский текст был создан или изменён после введения этого правила, `CANDIDATE READY` требует применимого `RUSSIAN_STYLE_PASS` или `RUSSIAN_STYLE_FINAL_PASS`, относящегося к current path/blob identity, наряду с уже существующими Primary, Fresh и repository gates.
 
 Для существующих карточек с ранее полученным semantic status отсутствие исторического Russian Style baseline не аннулирует этот status автоматически; обязательный baseline закрывается отдельным repository-wide language-review проходом.
 
 ## 14. Fresh independence
 
-Russian Style Review является Coordinator-side authoring/editorial context.
+Russian Style Review является Coordinator-side editorial context.
 
 Fresh Web не получает Russian Style verdict, findings, preferred wording, rationale или объяснение выполненных языковых исправлений.
 
@@ -254,10 +274,24 @@ Codex не выполняет Russian Style / Speakability Review.
 
 Для reader-facing prose Codex применяет уже принятую формулировку без самостоятельного editorial rewrite.
 
-## 16. Приоритет правила
+## 16. Coverage ledger
 
-Это правило принято позже текущей версии общего workflow.
+Обязательность «каждая карточка хотя бы один раз» должна быть проверяема.
 
-В части обязательности Russian Style / Speakability Review, его места до Codex, Candidate Readiness и запрета делегировать language review Codex этому файлу отдаётся приоритет над более ранними orchestration-фрагментами, где этот gate отсутствует или описан неполно.
+Permanent Russian Style workstream сохраняет compact coverage ledger с минимумом данных:
 
-Все остальные действующие правила Levels 1–5, Primary/Fresh review, repository verification и publication сохраняются, если они прямо не противоречат этому файлу.
+```text
+Path
+Reviewed blob
+Verdict
+```
+
+Ledger нужен только для продолжения review между сессиями и доказательства baseline coverage. Он не является новым repository status, не изменяет карточки и не требует отдельной registry-инфраструктуры в репозитории.
+
+При смене Style chat достаточно передать этот compact ledger следующей сессии.
+
+## 17. Совместимость с общим workflow
+
+[`00-workflow.md`](<./00-workflow.md>) является канонической точкой входа и включает Russian Style gate в общий порядок candidate review и `CANDIDATE READY`.
+
+Этот файл определяет конкретные language-quality criteria, verdict format, identity и coverage rules. Все остальные действующие правила Levels 1–5, Primary/Fresh review, repository verification и publication сохраняются, если они прямо не противоречат этим language-specific требованиям.
