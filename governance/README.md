@@ -15,7 +15,9 @@ User → ChatGPT Web → Codex → GitHub → ChatGPT Web
 
 ChatGPT Web владеет смысловым анализом, исследованием, последовательностью объяснения, формулировками, полнотой, понятностью и reader-facing качеством русского текста.
 
-Для изменений прозы Web до исполнения подготавливает точный кандидат и выполняет primary review. Текущий русскоязычный reader-facing текст также проходит применимый Russian Style / Speakability Review по отдельному правилу. Codex применяет уже принятый текст без перефразирования или самостоятельной языковой редактуры. После feature-branch push Web проверяет actual GitHub identity, а постоянный независимый Fresh Web lane читает candidate непосредственно из immutable GitHub commit.
+Для изменений прозы Web до исполнения подготавливает точный candidate и выполняет Primary review. Codex применяет approved candidate без перефразирования или самостоятельной языковой редактуры. После feature-branch push Web проверяет actual GitHub identity и scope. Затем current immutable GitHub candidate проходит применимый Russian Style / Speakability Review, а после закрытия language gate постоянный независимый Fresh Web lane читает candidate непосредственно из immutable GitHub commit.
+
+Если Russian Style review находит language findings, решение возвращается Primary Web: Web готовит bounded correction, повторно подтверждает изменённый candidate, Codex публикует новую feature-branch identity, после чего Russian Style выполняет follow-up. Fresh не запускается для этой identity до закрытия language gate.
 
 Первая Fresh-reviewed версия карточки проходит complete `FULL` Initial Fresh Review. Для corrected identity impact-aware `DELTA` Primary и `DELTA` Follow-up являются default: unchanged evidence той же lane наследуется по byte-identical semantic units, а reviewer заново проверяет changed units, dependency cone, affected sources и whole-card consistency. `FULL` Follow-up выполняется только при named escalation trigger; valid `DELTA FOLLOW-UP WEB PASS` удовлетворяет Fresh gate.
 
@@ -38,7 +40,7 @@ GitHub является фактическим доказательством br
 
 ## Приоритет новых правил
 
-[`web-review/russian-style-review.md`](<./web-review/russian-style-review.md>) принят позже текущих orchestration-фрагментов. В части обязательности Russian Style / Speakability Review, его применения к Candidate Readiness и запрета делегировать языковой review Codex этот файл имеет приоритет над более ранним текстом, где language gate отсутствует или описан неполно.
+[`web-review/russian-style-review.md`](<./web-review/russian-style-review.md>) определяет обязательность и критерии Russian Style / Speakability Review. Канонический [`web-review/00-workflow.md`](<./web-review/00-workflow.md>) включает этот gate в общий порядок candidate review и `CANDIDATE READY`.
 
 Остальная действующая governance сохраняется без изменений, если прямого конфликта нет.
 
