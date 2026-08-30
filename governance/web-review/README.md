@@ -14,10 +14,21 @@
 6. Применить [`04-content-quality.md`](<./04-content-quality.md>).
 7. Спроектировать изменение по [`05-change-design.md`](<./05-change-design.md>).
 8. Для точной прозы завершить `FULL` либо impact-aware `DELTA` Primary Web review exact candidate до исполнения Codex.
-9. После Codex push проверить actual feature-branch identity и scope.
-10. Передать permanent independent Fresh Web lane compact handoff с current/previous Fresh identities, workflow/criteria refs, lineage, own finding IDs и mode `DELTA` by default.
-11. Получить для каждой карточки `FULL` Initial Fresh либо current `DELTA`/`FULL` Follow-up verdict и только затем `CANDIDATE READY`.
-12. Отдельно опубликовать кандидата и проверить actual default branch до финального `READY`.
+9. Обеспечить применимый Russian Style / Speakability Review по [`russian-style-review.md`](<./russian-style-review.md>) до передачи финальной русскоязычной reader-facing prose Codex.
+10. После Codex push проверить actual feature-branch identity и scope.
+11. Передать permanent independent Fresh Web lane compact handoff с current/previous Fresh identities, workflow/criteria refs, lineage, own finding IDs и mode `DELTA` by default.
+12. Получить для каждой карточки `FULL` Initial Fresh либо current `DELTA`/`FULL` Follow-up verdict и только затем `CANDIDATE READY`.
+13. Отдельно опубликовать кандидата и проверить actual default branch до финального `READY`.
+
+## Russian Style / Speakability Review
+
+Каждая русскоязычная reader-facing карточка должна пройти отдельный Russian Style Review хотя бы один раз.
+
+Для новой карточки и изменённой русскоязычной prose применимый language review является обязательным gate. Если reader-facing prose после предыдущего PASS не менялась, повторная проверка только ради формальности не требуется.
+
+Russian Style Review проверяет языковую форму принятого технического смысла и не заменяет Levels 1–4, Primary или Fresh review.
+
+Канонические правила находятся в [`russian-style-review.md`](<./russian-style-review.md>).
 
 ## Структура и код
 
@@ -28,11 +39,11 @@ Codex может самостоятельно реализовать тольк�
 - `STRUCTURE_ONLY` / `BOUNDED_STRUCTURE`;
 - `CODE_CHANGE` / `BOUNDED_CODE`.
 
-Делегированная реализация не разрешает Codex изменять защищённую прозу, расширять тему или запускать автономный смысловой цикл.
+Делегированная реализация не разрешает Codex изменять защищённую прозу, расширять тему, проводить Russian-language/editorial review или запускать автономный смысловой цикл.
 
 ## Новая карточка
 
-Начать с [`new-card-workflow.md`](<./new-card-workflow.md>), затем применить соответствующий маршрут exact candidate либо bounded code.
+Начать с [`new-card-workflow.md`](<./new-card-workflow.md>), затем применить соответствующий маршрут exact candidate либо bounded code и обязательный Russian Style gate для reader-facing русскоязычной prose.
 
 ## Fresh review
 
@@ -44,14 +55,18 @@ Corrected identity использует `DELTA FOLLOW-UP` by default. Fresh не
 
 Valid `DELTA FOLLOW-UP WEB PASS` удовлетворяет Fresh gate. Он требует resolved/superseded prior findings, no open findings, passed changed/impacted units, valid inherited evidence, whole-card consistency `PASS` и отсутствие full-review trigger.
 
-Fresh independence означает независимость от Primary Web. Lane не получает Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation или requested outcome, но сохраняет own versions, finding history, unit coverage и source evidence.
+Fresh independence означает независимость от Primary Web и Coordinator-side authoring/editorial context. Lane не получает Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation, requested outcome или Russian Style findings/rationale, но сохраняет own versions, finding history, unit coverage и source evidence.
 
 Permanent lane является logical workstream, а не одной бесконечной chat. Он может optional rotate session через compact Fresh-owned lineage ledger; новая top-level chat per correction не требуется.
 
 Каждая карточка возвращает отдельный current verdict с identity и mode. Batch-level `PASS`, скрывающий результаты отдельных карточек, недопустим.
 
-Semantic verdict привязан к card path, card blob/content identity и review criteria identity — точным blobs [`01-file-structure.md`](<./01-file-structure.md>), [`02-block-structure.md`](<./02-block-structure.md>), [`03-content-distribution.md`](<./03-content-distribution.md>) и [`04-content-quality.md`](<./04-content-quality.md>). Изменение orchestration files само по себе verdict не аннулирует.
+Semantic verdict привязан к card path, card blob/content identity и review criteria identity — точным blobs [`01-file-structure.md`](<./01-file-structure.md>), [`02-block-structure.md`](<./02-block-structure.md>), [`03-content-distribution.md`](<./03-content-distribution.md>) и [`04-content-quality.md`](<./04-content-quality.md>). Изменение orchestration files само по себе verdict не аннулирует. Russian Style gate является отдельным language-quality requirement и не меняет эти criteria blobs.
+
+## Приоритет
+
+[`russian-style-review.md`](<./russian-style-review.md>) принят позже текущего общего workflow и имеет приоритет в части обязательности language review, его влияния на `CANDIDATE READY` и запрета делегировать эту проверку Codex.
 
 ## Канонический workflow
 
-[`00-workflow.md`](<./00-workflow.md>) определяет ownership, task classes, candidate identity, fresh Web review, publication gate и границу между Web и Codex.
+[`00-workflow.md`](<./00-workflow.md>) определяет ownership, task classes, candidate identity, fresh Web review, publication gate и границу между Web и Codex. [`russian-style-review.md`](<./russian-style-review.md>) дополняет его обязательным Russian Style / Speakability gate.
