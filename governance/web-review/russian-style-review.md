@@ -75,7 +75,9 @@ Reviewer отвечает только за языковое и reader-facing к
 не меняя его технический смысл?
 ```
 
-Reviewer не является semantic owner и не заменяет Primary или Fresh review.
+Reviewer не является semantic owner, Editor или автором нового reader-facing содержания и не заменяет Primary или Fresh review.
+
+По умолчанию Reviewer диагностирует bounded language issues. Локальную exact correction принимает и формулирует Coordinator / Primary Web. Отдельный Editor подключается только когда действительно нужна существенная reader-facing переработка формы.
 
 ## 4. Граница с Levels 3–4
 
@@ -93,6 +95,8 @@ Russian Style Review проверяет форму уже принятого с�
 при уже понятном и принятом механизме
 → Russian Style issue
 ```
+
+Если техническая мысль уже непосредственно понятна, но формулировка неестественна, тяжела, плохо произносится, содержит лишний descriptive code-switching или выглядит как перевод документации, это Russian Style issue, а не самостоятельный `FAIL` Level 4.
 
 Russian Style Reviewer не добавляет новую причинность, техническое ограничение, API behavior или scope.
 
@@ -247,6 +251,15 @@ RUSSIAN_STYLE_FINAL_PASS
 
 Для существующих карточек с ранее полученным semantic status отсутствие исторического Russian Style baseline не аннулирует этот status автоматически; обязательный baseline закрывается отдельным repository-wide language-review проходом.
 
+Для operational tracking полезно различать:
+
+```text
+Semantic status: <current semantic verdict>
+Russian Style baseline: <PASS | PENDING | not proven>
+```
+
+`PENDING` или `not proven` не отменяют уже доказанный semantic status, но означают, что обязательное once-per-card language coverage ещё не доказано.
+
 ## 14. Fresh independence
 
 Russian Style Review является Coordinator-side editorial context.
@@ -282,6 +295,7 @@ Permanent Russian Style workstream сохраняет compact coverage ledger с
 
 ```text
 Path
+Candidate commit
 Reviewed blob
 Verdict
 ```
@@ -289,6 +303,8 @@ Verdict
 Ledger нужен только для продолжения review между сессиями и доказательства baseline coverage. Он не является новым repository status, не изменяет карточки и не требует отдельной registry-инфраструктуры в репозитории.
 
 При смене Style chat достаточно передать этот compact ledger следующей сессии.
+
+Если прежний baseline нельзя подтвердить сохранившимся verdict/ledger evidence, coverage считается `not proven` и карточка проходит новый baseline review. Не нужно восстанавливать недоказанный PASS по памяти или косвенным признакам.
 
 ## 17. Совместимость с общим workflow
 
