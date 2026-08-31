@@ -11,7 +11,8 @@
 actual current card
 +
 подтверждённые FAIL уровней 1–4,
-явно запрошенное пользователем изменение
+явно запрошенное пользователем изменение,
+применимый Russian Style finding
 или применимый repository failure
 ```
 
@@ -47,7 +48,7 @@ Codex не принимает эти решения.
 
 Используется для любой прозы и может использоваться для структуры или кода.
 
-Web задаёт exact final file, patch либо replacements и candidate identity. Primary Web проверяет exact candidate до исполнения. Codex только применяет результат; Fresh Web проверяет уже опубликованный в feature branch immutable GitHub candidate.
+Web задаёт exact final file, patch либо replacements и candidate identity. Primary Web проверяет exact candidate до исполнения. Codex только применяет результат. После push Web подтверждает actual immutable feature-branch candidate, затем закрывается применимый Russian Style / Speakability gate, и только после этого candidate передаётся Fresh Web.
 
 ### `BOUNDED_STRUCTURE`
 
@@ -102,7 +103,7 @@ Codex может выбрать детали реализации кода вн�
 - заменить;
 - удалить.
 
-Каждое существенное действие должно следовать из подтверждённой проблемы или явной пользовательской цели.
+Каждое существенное действие должно следовать из подтверждённой проблемы, применимого Russian Style finding или явной пользовательской цели.
 
 Не добавлять несвязанные улучшения, обнаруженные во время редактирования. Реальную новую проблему нужно отдельно зафиксировать для будущего Web-review.
 
@@ -119,11 +120,11 @@ Codex может выбрать детали реализации кода вн�
 - не заменять конкретный механизм короткой абстракцией или метафорой, требующей восстановления смысла;
 - не сокращать текст ценой контекста или рассуждения.
 
-Для локально непрозрачного фрагмента выбирается формулировка, прямо показывающая необходимые субъект, действие, объект, условие, причину или следствие.
+Для локально непрозрачного фрагмента по Level 4 выбирается формулировка, прямо показывающая необходимые субъект, действие, объект, условие, причину или следствие.
 
-Уже понятная формулировка меняется только тогда, когда zero-trade-off contract уровня 4 доказывает конкретный редакционный дефект, а естественная равноточная форма даёт реальное преимущество восприятия.
+Если техническая мысль уже понятна, языковая правка выполняется только по отдельному Russian Style finding либо прямой пользовательской цели. Level 4 не создаёт semantic `FAIL` только потому, что существует более естественная русская формулировка.
 
-После того как одна адекватная равноточная формулировка устранила доказанный дефект, оптимизация прекращается. Не нужно искать красивую, уникальную или единственно лучшую фразу.
+После того как bounded проблема устранена одной адекватной равноточной формулировкой, оптимизация прекращается. Не нужно искать красивую, уникальную или единственно лучшую фразу.
 
 ## Терминология
 
@@ -131,6 +132,7 @@ Codex может выбрать детали реализации кода вн�
 - Устоявшийся английский термин сохраняется, если он понятен и полезен.
 - Термин поясняется или получает понятное обозначение, если иначе целевому читателю приходится его расшифровывать.
 - Искусственные переводы ради уменьшения количества английских слов не создаются.
+- Если technical meaning уже понятен, вопросы естественности русского, code-switching и speakability решаются через Russian Style Review, а не через отдельный semantic FAIL.
 
 ## Основной ответ и дополнительные вопросы
 
@@ -195,7 +197,7 @@ Task class: <CONTENT_CHANGE | CODE_CHANGE | NEW_CARD | STRUCTURE_ONLY | REPOSITO
 Execution mode: <EXACT_CANDIDATE | BOUNDED_CODE | BOUNDED_STRUCTURE>
 Analysis base: <sha>
 Allowed paths: <paths>
-Confirmed problems: <FAIL или явная цель пользователя>
+Confirmed problems: <FAIL | Russian Style finding | явная цель пользователя>
 Exact prose: <full file, exact patch, exact replacements или NONE>
 Technical contract: <bounded code/structure contract или NONE>
 Protected material: <что нельзя менять>
@@ -211,6 +213,7 @@ Workflow ref: <active orchestration commit>
 Review criteria identity: <exact blobs Levels 1–4>
 GitHub fresh identity: <candidate path/blob + candidate commit | PENDING_UNTIL_FEATURE_PUSH>
 Review lineage: <lineage id or NEW>
+Language gate: <REQUIRED | NOT_REQUIRED | VALID_REUSE>
 Fresh gate: <INITIAL_PENDING | INITIAL_PASS | FINDINGS_OPEN | FOLLOW_UP_PENDING | FOLLOW_UP_PASS>
 Open Fresh findings: <IDs or NONE>
 Addressed Fresh findings: <IDs or NONE>
@@ -219,7 +222,7 @@ Feature publication: <branch/push requirements>
 Default publication gate: <expected base и разрешённый method>
 ```
 
-Для `EXACT_CANDIDATE` `FULL`/`DELTA` Primary Web review exact content выполняется до Codex execution. После push Web подтверждает exact actual GitHub identity и только затем передаёт candidate independent Fresh Web lane.
+Для `EXACT_CANDIDATE` `FULL`/`DELTA` Primary Web review exact content выполняется до Codex execution. После push Web подтверждает exact actual GitHub identity, закрывает применимый Russian Style / Speakability gate или подтверждает valid reuse unchanged-prose evidence и только затем передаёт candidate independent Fresh Web lane.
 
 Для Codex-authored `BOUNDED_CODE` complete candidate review выполняется после feature-branch push. Для `BOUNDED_STRUCTURE` Web подтверждает structural result и неизменность semantic payload после исполнения.
 
