@@ -3,8 +3,27 @@
 Активная схема работы репозитория:
 
 ```text
-User → ChatGPT Web → Codex → GitHub → ChatGPT Web
+User → Coordinator ChatGPT Web → Codex → GitHub → Coordinator ChatGPT Web
 ```
+
+Для содержательной работы Coordinator при необходимости подключает отдельные ChatGPT Web-роли. Эти роли не передают semantic ownership Codex и не заменяют Coordinator как точку принятия решения.
+
+```text
+Independent Reviewer
+→ optional technical/semantic challenge существенной модели
+
+Editor
+→ optional substantial reader-facing rewrite внутри принятой semantic model
+
+Russian Style / Speakability Reviewer
+→ отдельный language-quality reviewer ChatGPT Web
+→ каждая русскоязычная reader-facing карточка проходит его хотя бы один раз
+
+Fresh Web Reviewer
+→ независимый candidate review по canonical card workflow
+```
+
+Coordinator остаётся semantic owner, orchestrator и acceptance authority. Codex остаётся bounded repository executor.
 
 ## Активные источники
 
@@ -17,7 +36,7 @@ ChatGPT Web владеет смысловым анализом, исследов
 
 Для изменений прозы Web до исполнения подготавливает точный candidate и выполняет Primary review. Codex применяет approved candidate без перефразирования или самостоятельной языковой редактуры. После feature-branch push Web проверяет actual GitHub identity и scope. Затем current immutable GitHub candidate проходит применимый Russian Style / Speakability Review, а после закрытия language gate постоянный независимый Fresh Web lane читает candidate непосредственно из immutable GitHub commit.
 
-Если Russian Style review находит language findings, решение возвращается Primary Web: Web готовит bounded correction, повторно подтверждает изменённый candidate, Codex публикует новую feature-branch identity, после чего Russian Style выполняет follow-up. Fresh не запускается для этой identity до закрытия language gate.
+Если Russian Style review находит language findings, решение возвращается Primary Web: Web готовит bounded correction, повторно подтверждает изменённый candidate, Codex создаёт новую feature-branch identity, после чего Russian Style выполняет follow-up. Fresh не запускается для этой identity до закрытия language gate.
 
 Первая Fresh-reviewed версия карточки проходит complete `FULL` Initial Fresh Review. Для corrected identity impact-aware `DELTA` Primary и `DELTA` Follow-up являются default: unchanged evidence той же lane наследуется по byte-identical semantic units, а reviewer заново проверяет changed units, dependency cone, affected sources и whole-card consistency. `FULL` Follow-up выполняется только при named escalation trigger; valid `DELTA FOLLOW-UP WEB PASS` удовлетворяет Fresh gate.
 
@@ -38,11 +57,21 @@ GitHub является фактическим доказательством br
 
 Отчёт Codex сам по себе не доказывает ни содержание кандидата, ни его публикацию.
 
-## Приоритет новых правил
+## Разделение ответственности между active rules
 
-[`web-review/russian-style-review.md`](<./web-review/russian-style-review.md>) определяет обязательность и критерии Russian Style / Speakability Review. Канонический [`web-review/00-workflow.md`](<./web-review/00-workflow.md>) включает этот gate в общий порядок candidate review и `CANDIDATE READY`.
+Если несколько active-файлов относятся к одной задаче, их области ответственности разделяются так:
 
-Остальная действующая governance сохраняется без изменений, если прямого конфликта нет.
+- [`repository-rules.md`](<./repository-rules.md>) — repository state, repository invariants и publication;
+- [`codex-execution.md`](<./codex-execution.md>) и [`../AGENTS.md`](<../AGENTS.md>) — граница и режимы исполнения Codex;
+- [`web-review/00-workflow.md`](<./web-review/00-workflow.md>) — orchestration card workflow;
+- [`web-review/01-file-structure.md`](<./web-review/01-file-structure.md>) — Level 1;
+- [`web-review/02-block-structure.md`](<./web-review/02-block-structure.md>) — Level 2;
+- [`web-review/03-content-distribution.md`](<./web-review/03-content-distribution.md>) — Level 3;
+- [`web-review/04-content-quality.md`](<./web-review/04-content-quality.md>) — Level 4;
+- [`web-review/05-change-design.md`](<./web-review/05-change-design.md>) — Level 5 change design;
+- [`web-review/russian-style-review.md`](<./web-review/russian-style-review.md>) — Russian-language/speakability gate.
+
+Более узкое правило действует внутри своей области. Если два active rule прямо требуют несовместимых результатов в одной области и конфликт нельзя разрешить этим разделением, execution останавливается до решения Coordinator ChatGPT Web.
 
 ## Архив
 
