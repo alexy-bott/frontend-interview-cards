@@ -378,7 +378,19 @@ Escalation: <NO | FULL with trigger>
 
 Для `CONTENT_CHANGE`, `NEW_CARD` и `CODE_CHANGE`, влияющего на учебное содержание, финальная готовность требует independent Fresh Web evidence exact immutable candidate каждой карточки после current Primary pass и после закрытия применимого Russian Style gate.
 
-Permanent Fresh lane работает read-only и независимо от Primary Web и Coordinator-side authoring/editorial context. Lane не получает Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation of correction, requested outcome или Russian Style verdict/findings/rationale. Он сохраняет собственные reviewed identities, coverage maps, source evidence и stable finding history.
+Permanent Fresh lane работает read-only и независимо от Primary Web и Coordinator-side authoring/editorial decisions. Независимость Fresh — это independence of evidence and decision, а не требование абсолютной изоляции памяти, проекта или workspace.
+
+Canonical Fresh handoff не передаёт Primary verdict/rationale/findings, Level 5 change design, Primary-provided diff, explanation of correction, requested outcome или Russian Style verdict/findings/rationale. Ambient project/workspace context может существовать, но не является Fresh evidence и сам по себе не аннулирует lane. Reviewer обязан игнорировать candidate-specific authoring/editorial history из такого контекста и выводить verdict только из current immutable candidate, active Levels 1–4, independently checked sources и собственной Fresh history, когда она разрешена Follow-up workflow.
+
+Если до verdict reviewer фактически прочитал или использовал previous candidate content, diff/patch, раскрывающий previous/current content, Primary/Coordinator rationale/findings/verdict, Russian Style findings/rationale/preferred wording или requested outcome, affected Fresh review считается contaminated и перезапускается. Непреднамеренно увиденный parent SHA, факт существования предыдущего commit, branch/ref metadata или иная repository metadata без previous content/diff/rationale не являются contamination сами по себе.
+
+Fresh lane сохраняет собственные reviewed identities, coverage maps, source evidence и stable finding history.
+
+### Initial Fresh evidence boundary
+
+Initial Fresh Review не получает previous candidate content и не сравнивает current candidate с предыдущей версией. Он может технически разрешать current immutable candidate ref/path/blob через GitHub даже если используемый repository endpoint также показывает нейтральную metadata. Такая metadata не используется для verdict.
+
+Если endpoint одновременно раскрыл actual diff/patch или previous file content и reviewer успел прочитать этот материал, Initial Fresh review для affected candidate перезапускается без verdict. Нет требования создавать отдельный ChatGPT Project или добиваться отсутствия любого ambient project context: требуется не использовать candidate-specific authoring history как review evidence.
 
 ### Initial Fresh Review
 

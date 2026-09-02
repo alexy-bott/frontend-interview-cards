@@ -264,9 +264,9 @@ Russian Style baseline: <PASS | PENDING | not proven>
 
 Russian Style Review является Coordinator-side editorial context.
 
-Fresh Web не получает Russian Style verdict, findings, preferred wording, rationale или объяснение выполненных языковых исправлений.
+Canonical Fresh handoff не включает Russian Style verdict, findings, preferred wording, rationale или объяснение выполненных языковых исправлений. Если такие сведения присутствуют в ambient project/workspace context, Fresh не использует их как evidence и не опирается на них при verdict.
 
-Fresh получает только канонический GitHub-native handoff, предусмотренный [`00-workflow.md`](<./00-workflow.md>), и сохраняет собственную независимую history.
+Fresh получает канонический GitHub-native handoff, предусмотренный [`00-workflow.md`](<./00-workflow.md>), и сохраняет собственную независимую history. Точная граница evidence independence и условия contamination определены в разделе Fresh Web review канонического workflow.
 
 ## 15. Codex boundary
 
